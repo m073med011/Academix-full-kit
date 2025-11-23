@@ -1,7 +1,6 @@
 import type {
   ApiResponse,
   Organization,
-  OrganizationMembership,
   User,
   UserProfile,
 } from "@/types/api"

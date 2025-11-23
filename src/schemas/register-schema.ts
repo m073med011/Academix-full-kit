@@ -34,8 +34,11 @@ export const RegisterSchema = z.object({
   role: z.enum(["student", "freelancer", "instructor", "organizer"], {
     required_error: "Please select a role.",
   }),
-  confirmPassword: z.string().min(1, { message: "Confirm Password is required" }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
+  confirmPassword: z
+    .string()
+    .min(1, { message: "Confirm Password is required" }),
 })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  })
