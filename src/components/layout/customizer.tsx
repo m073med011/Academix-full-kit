@@ -24,7 +24,6 @@ import { radii, themes } from "@/configs/themes"
 import { relocalizePathname } from "@/lib/i18n"
 
 import { useSettings } from "@/hooks/use-settings"
-import { useSidebar } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
@@ -36,6 +35,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { useSidebar } from "@/components/ui/sidebar"
 
 export function Customizer() {
   const { settings, updateSettings, resetSettings } = useSettings()

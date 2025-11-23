@@ -1,9 +1,4 @@
-import type {
-  ApiResponse,
-  Organization,
-  User,
-  UserProfile,
-} from "@/types/api"
+import type { ApiResponse, Organization, User, UserProfile } from "@/types/api"
 
 import { ApiClientError, apiClient } from "@/lib/api-client"
 

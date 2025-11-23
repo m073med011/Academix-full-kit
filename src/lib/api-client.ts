@@ -234,7 +234,7 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     const {
       skipAuth = false,
-      skipRefresh = false,
+      skipRefresh: _skipRefresh = false,
       ...fetchConfig
     } = config || {}
 
