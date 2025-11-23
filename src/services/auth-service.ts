@@ -1,0 +1,349 @@
+import type {
+  ApiResponse,
+  ForgotPasswordRequest,
+  GenerateOTPRequest,
+  LoginRequest,
+  LoginResponse,
+  RefreshTokenResponse,
+  RegisterRequest,
+  RegisterResponse,
+  ResendOTPRequest,
+  ResetPasswordRequest,
+  User,
+  VerifyEmailRequest,
+  VerifyOTPRequest,
+} from "@/types/api"
+
+import { ApiClientError, apiClient, tokenStorage } from "@/lib/api-client"
+
+// Auth service for client-side authentication operations
+export const authService = {
+  /**
+   * Login with email and password
+   */
+  async login(
+    credentials: LoginRequest
+  ): Promise<{ user: User; token: string }> {
+    const response = await apiClient.post<{
+      success: boolean
+      token: string
+      user: User
+    }>("/auth/login", credentials, { skipAuth: true })
+
+    if (response.success && response.data) {
+      const { user, token } = response.data
+      // Backend returns single token, use it for both access and refresh
+      tokenStorage.setTokens(token, token)
+      return { user, token }
+    }
+
+    throw new ApiClientError("Login failed", 401)
+  },
+
+  /**
+   * Register a new user
+   */
+  async register(data: RegisterRequest): Promise<User> {
+    const response = await apiClient.post<{
+      success: boolean
+      requiresEmailVerification?: boolean
+      user: User
+      message?: string
+    }>("/auth/register", data, { skipAuth: true })
+
+    if (response.success && response.data) {
+      return response.data.user
+    }
+
+    throw new ApiClientError("Registration failed", 400)
+  },
+
+  /**
+   * Logout - clear tokens and invalidate session
+   */
+  async logout(): Promise<void> {
+    try {
+      await apiClient.post("/auth/logout")
+    } catch {
+      // Ignore errors during logout
+    } finally {
+      tokenStorage.clearTokens()
+    }
+  },
+
+  /**
+   * Get current authenticated user
+   */
+  async getCurrentUser(): Promise<User> {
+    const response = await apiClient.get<User>("/auth/me")
+
+    if (response.success && response.data) {
+      return response.data
+    }
+
+    throw new ApiClientError("Failed to get current user", 401)
+  },
+
+  /**
+   * Refresh access token
+   */
+  async refreshToken(): Promise<{
+    accessToken: string
+    refreshToken: string
+  }> {
+    const refreshToken = tokenStorage.getRefreshToken()
+
+    if (!refreshToken) {
+      throw new ApiClientError("No refresh token available", 401)
+    }
+
+    const response = await apiClient.post<RefreshTokenResponse["data"]>(
+      "/auth/refresh",
+      { refreshToken },
+      { skipAuth: true, skipRefresh: true }
+    )
+
+    if (response.success && response.data) {
+      // Backend only returns accessToken, keep existing refreshToken
+      tokenStorage.setTokens(response.data.accessToken, refreshToken)
+      return { accessToken: response.data.accessToken, refreshToken }
+    }
+
+    tokenStorage.clearTokens()
+    throw new ApiClientError("Token refresh failed", 401)
+  },
+
+  /**
+   * Check if user is authenticated (has valid tokens)
+   */
+  isAuthenticated(): boolean {
+    return tokenStorage.hasTokens()
+  },
+
+  /**
+   * Get stored access token
+   */
+  getAccessToken(): string | null {
+    return tokenStorage.getAccessToken()
+  },
+
+  // ============================================
+  // Password Reset Flow
+  // ============================================
+
+  /**
+   * Request password reset - sends OTP to email
+   */
+  async forgotPassword(data: ForgotPasswordRequest): Promise<void> {
+    const response = await apiClient.post<void>("/auth/forgot-password", data, {
+      skipAuth: true,
+    })
+
+    if (!response.success) {
+      throw new ApiClientError("Failed to send reset email", 400)
+    }
+  },
+
+  /**
+   * Reset password with OTP verification
+   */
+  async resetPassword(data: ResetPasswordRequest): Promise<void> {
+    const response = await apiClient.post<void>("/auth/reset-password", data, {
+      skipAuth: true,
+    })
+
+    if (!response.success) {
+      throw new ApiClientError("Failed to reset password", 400)
+    }
+  },
+
+  // ============================================
+  // Email Verification Flow
+  // ============================================
+
+  /**
+   * Verify email with OTP
+   */
+  async verifyEmail(data: VerifyEmailRequest): Promise<void> {
+    const response = await apiClient.post<void>("/auth/verify-email", data, {
+      skipAuth: true,
+    })
+
+    if (!response.success) {
+      throw new ApiClientError("Email verification failed", 400)
+    }
+  },
+
+  // ============================================
+  // Two-Factor Authentication
+  // ============================================
+
+  /**
+   * Enable 2FA for user account
+   */
+  async enable2FA(password: string): Promise<void> {
+    const response = await apiClient.post<void>("/auth/enable-2fa", {
+      password,
+    })
+
+    if (!response.success) {
+      throw new ApiClientError("Failed to enable 2FA", 400)
+    }
+  },
+
+  /**
+   * Confirm 2FA setup with OTP
+   */
+  async confirm2FA(otp: string): Promise<void> {
+    const response = await apiClient.post<void>("/auth/confirm-2fa", { otp })
+
+    if (!response.success) {
+      throw new ApiClientError("Failed to confirm 2FA", 400)
+    }
+  },
+
+  /**
+   * Disable 2FA for user account
+   */
+  async disable2FA(): Promise<void> {
+    const response = await apiClient.post<void>("/auth/disable-2fa")
+
+    if (!response.success) {
+      throw new ApiClientError("Failed to disable 2FA", 400)
+    }
+  },
+
+  // ============================================
+  // OTP Operations
+  // ============================================
+
+  /**
+   * Generate OTP code
+   */
+  async generateOTP(data: GenerateOTPRequest): Promise<void> {
+    const response = await apiClient.post<void>("/otp/generate", data, {
+      skipAuth: true,
+    })
+
+    if (!response.success) {
+      throw new ApiClientError("Failed to generate OTP", 400)
+    }
+  },
+
+  /**
+   * Verify OTP code
+   */
+  async verifyOTP(data: VerifyOTPRequest): Promise<void> {
+    const response = await apiClient.post<void>("/otp/verify", data, {
+      skipAuth: true,
+    })
+
+    if (!response.success) {
+      throw new ApiClientError("OTP verification failed", 400)
+    }
+  },
+
+  /**
+   * Resend OTP code
+   */
+  async resendOTP(data: ResendOTPRequest): Promise<void> {
+    const response = await apiClient.post<void>("/otp/resend", data, {
+      skipAuth: true,
+    })
+
+    if (!response.success) {
+      throw new ApiClientError("Failed to resend OTP", 400)
+    }
+  },
+
+  // ============================================
+  // User Lookup (for checking email availability)
+  // ============================================
+
+  /**
+   * Check if email exists
+   */
+  async checkEmailExists(email: string): Promise<boolean> {
+    try {
+      const response = await apiClient.get<User>(`/auth/user/${email}`, {
+        skipAuth: true,
+      })
+      return response.success && !!response.data
+    } catch {
+      return false
+    }
+  },
+}
+
+// Server-side auth service (for API routes)
+export async function serverAuthService(accessToken?: string) {
+  const API_URL = process.env.LMS_BACKEND_URL || "http://localhost:5000/api"
+
+  return {
+    /**
+     * Login with credentials (server-side)
+     */
+    async login(credentials: LoginRequest): Promise<LoginResponse> {
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
+      })
+
+      return response.json()
+    },
+
+    /**
+     * Register user (server-side)
+     */
+    async register(data: RegisterRequest): Promise<RegisterResponse> {
+      const response = await fetch(`${API_URL}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+
+      return response.json()
+    },
+
+    /**
+     * Get current user (server-side)
+     */
+    async getCurrentUser(): Promise<ApiResponse<User>> {
+      if (!accessToken) {
+        throw new Error("No access token provided")
+      }
+
+      const response = await fetch(`${API_URL}/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+
+      return response.json()
+    },
+
+    /**
+     * Refresh token (server-side)
+     */
+    async refreshToken(
+      refreshToken: string
+    ): Promise<ApiResponse<RefreshTokenResponse["data"]>> {
+      const response = await fetch(`${API_URL}/auth/refresh`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refreshToken }),
+      })
+
+      return response.json()
+    },
+  }
+}
+
+export { ApiClientError }
