@@ -48,7 +48,26 @@ export async function middleware(request: NextRequest) {
 
     // Redirect authenticated users away from guest routes
     if (isAuthenticated && isGuest) {
-      return redirect(process.env.HOME_PATHNAME || "/", request)
+      return redirect(process.env.NEXT_PUBLIC_HOME_PATHNAME || "/", request)
+    }
+
+    // Handle Guest Role Redirection
+    if (isAuthenticated && token.role === "guest") {
+      // Allow access to role selection page
+      if (pathnameWithoutLocale === "/role-selection") {
+        return NextResponse.next()
+      }
+      // Redirect all other requests to role selection
+      return redirect("/role-selection", request)
+    }
+
+    // Prevent fully registered users from accessing role selection
+    if (
+      isAuthenticated &&
+      token.role !== "guest" &&
+      pathnameWithoutLocale === "/role-selection"
+    ) {
+      return redirect(process.env.NEXT_PUBLIC_HOME_PATHNAME || "/", request)
     }
 
     // Redirect unauthenticated users from protected routes to sign-in

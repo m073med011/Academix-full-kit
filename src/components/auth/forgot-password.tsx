@@ -13,13 +13,13 @@ export function ForgotPassword({ dictionary }: { dictionary: DictionaryType }) {
   return (
     <Auth dictionary={dictionary}>
       <AuthHeader>
-        <AuthTitle>Forgot Password</AuthTitle>
+        <AuthTitle>{dictionary.auth.forgotPassword.title}</AuthTitle>
         <AuthDescription>
-          Enter your email below to send you instructions to reset your password
+          {dictionary.auth.forgotPassword.description}
         </AuthDescription>
       </AuthHeader>
       <AuthForm>
-        <ForgotPasswordForm />
+        <ForgotPasswordForm dictionary={dictionary} />
       </AuthForm>
     </Auth>
   )

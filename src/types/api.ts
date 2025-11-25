@@ -12,6 +12,7 @@ export type UserRole =
   | "organizer"
   | "instructor"
   | "user"
+  | "guest"
 
 export type CourseLevel = "beginner" | "intermediate" | "advanced"
 

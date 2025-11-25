@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
 import type { VerifyEmailFormType } from "@/types"
 
 import { VerifyEmailSchema } from "@/schemas/verify-email-schema"
@@ -29,11 +30,21 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp"
 
-export function VerifyEmailForm() {
+interface VerifyEmailFormProps {
+  email?: string
+  onSuccess?: () => void
+  dictionary: DictionaryType
+}
+
+export function VerifyEmailForm({
+  email: propEmail,
+  onSuccess,
+  dictionary,
+}: VerifyEmailFormProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
 
-  const emailParam = searchParams.get("email") || ""
+  const emailParam = propEmail || searchParams.get("email") || ""
   const redirectPathname =
     searchParams.get("redirectTo") ||
     process.env.NEXT_PUBLIC_HOME_PATHNAME ||
@@ -49,6 +60,13 @@ export function VerifyEmailForm() {
       code: "",
     },
   })
+
+  // Update form email if propEmail changes
+  useEffect(() => {
+    if (propEmail) {
+      form.setValue("email", propEmail)
+    }
+  }, [propEmail, form])
 
   const { isSubmitting } = form.formState
   const isDisabled = isSubmitting
@@ -83,19 +101,25 @@ export function VerifyEmailForm() {
       }
 
       toast({
-        title: "Email Verified!",
+        title: dictionary.auth.verifyEmail.emailVerified,
         description:
-          result.message || "Your email has been verified successfully.",
+          result.message || dictionary.auth.verifyEmail.verificationSuccess,
       })
 
-      // Redirect to the intended destination or home
-      router.push(redirectPathname)
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        // Redirect to the intended destination or home
+        router.push(redirectPathname)
+      }
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Verification Failed",
+        title: dictionary.auth.verifyEmail.verificationFailed,
         description:
-          error instanceof Error ? error.message : "Invalid or expired code",
+          error instanceof Error
+            ? error.message
+            : dictionary.auth.verifyEmail.invalidCode,
       })
     }
   }
@@ -123,8 +147,8 @@ export function VerifyEmailForm() {
       }
 
       toast({
-        title: "Code Resent",
-        description: "A new verification code has been sent to your email.",
+        title: dictionary.auth.verifyEmail.codeResent,
+        description: dictionary.auth.verifyEmail.codeResentMessage,
       })
 
       // Start 60 second countdown
@@ -133,9 +157,11 @@ export function VerifyEmailForm() {
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Resend Failed",
+        title: dictionary.auth.verifyEmail.resendFailed,
         description:
-          error instanceof Error ? error.message : "Could not resend code",
+          error instanceof Error
+            ? error.message
+            : dictionary.auth.verifyEmail.resendError,
       })
     } finally {
       setIsResending(false)
@@ -151,11 +177,11 @@ export function VerifyEmailForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{dictionary.auth.verifyEmail.email}</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="name@example.com"
+                    placeholder={dictionary.auth.verifyEmail.emailPlaceholder}
                     {...field}
                     readOnly
                     className="bg-muted"
@@ -171,7 +197,9 @@ export function VerifyEmailForm() {
             name="code"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Verification Code</FormLabel>
+                <FormLabel>
+                  {dictionary.auth.verifyEmail.verificationCode}
+                </FormLabel>
                 <FormControl>
                   <div className="flex justify-center">
                     <InputOTP maxLength={6} {...field}>
@@ -191,7 +219,7 @@ export function VerifyEmailForm() {
                 </FormControl>
                 <FormMessage />
                 <p className="text-muted-foreground text-xs">
-                  Enter the 6-digit code sent to your email
+                  {dictionary.auth.verifyEmail.codeDescription}
                 </p>
               </FormItem>
             )}
@@ -199,11 +227,11 @@ export function VerifyEmailForm() {
         </div>
 
         <ButtonLoading isLoading={isSubmitting} disabled={isDisabled}>
-          Verify Email
+          {dictionary.auth.verifyEmail.button}
         </ButtonLoading>
 
         <div className="text-center text-sm">
-          Didn&apos;t receive the code?{" "}
+          {dictionary.auth.verifyEmail.didntReceive}{" "}
           <button
             type="button"
             onClick={handleResendCode}
@@ -211,10 +239,13 @@ export function VerifyEmailForm() {
             className="underline disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {countdown > 0
-              ? `Resend in ${countdown}s`
+              ? dictionary.auth.verifyEmail.resendIn.replace(
+                  "{seconds}",
+                  countdown.toString()
+                )
               : isResending
-                ? "Sending..."
-                : "Resend"}
+                ? dictionary.auth.verifyEmail.sending
+                : dictionary.auth.verifyEmail.resend}
           </button>
         </div>
       </form>

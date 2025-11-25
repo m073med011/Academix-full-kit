@@ -15,7 +15,7 @@ import { buttonVariants } from "@/components/ui/button"
 
 export function ProfileHeader({ locale }: { locale: LocaleType }) {
   return (
-    <section className="bg-background border-y border-border">
+    <section className="bg-background">
       <AspectRatio ratio={5 / 1} className="bg-muted">
         {userData.background && (
           <Image

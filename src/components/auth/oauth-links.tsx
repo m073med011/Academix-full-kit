@@ -3,25 +3,28 @@
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
+
 import { oauthLinksData } from "@/data/oauth-links"
 
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 
-export function OAuthLinks({ selectedRole }: { selectedRole?: string }) {
+export function OAuthLinks({ dictionary }: { dictionary: DictionaryType }) {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
 
   const handleSignIn = async (provider: string) => {
     if (provider.toLowerCase() === "google") {
-      // Set role cookie if selected
-      if (selectedRole) {
-        document.cookie = `registration_role=${selectedRole}; path=/; max-age=3600`
-      }
-
       setIsGoogleLoading(true)
       toast({
-        title: "Redirecting to Google",
-        description: "Please wait while we redirect you to Google sign in...",
+        title: dictionary.auth.oauth.redirecting.replace(
+          "{provider}",
+          "Google"
+        ),
+        description: dictionary.auth.oauth.redirectingMessage.replace(
+          "{provider}",
+          "Google"
+        ),
       })
     }
 
@@ -31,8 +34,11 @@ export function OAuthLinks({ selectedRole }: { selectedRole?: string }) {
       setIsGoogleLoading(false)
       toast({
         variant: "destructive",
-        title: "Something went wrong",
-        description: "Failed to initiate Google sign in.",
+        title: dictionary.auth.oauth.failed,
+        description: dictionary.auth.oauth.failedMessage.replace(
+          "{provider}",
+          "Google"
+        ),
       })
     }
   }

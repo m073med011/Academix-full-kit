@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType, NewPasswordFormType } from "@/types"
 
 import { NewPasswordSchema } from "@/schemas/new-passward-schema"
@@ -24,7 +25,11 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
-export function NewPasswordForm() {
+export function NewPasswordForm({
+  dictionary,
+}: {
+  dictionary: DictionaryType
+}) {
   const params = useParams()
   const searchParams = useSearchParams()
 
@@ -44,14 +49,13 @@ export function NewPasswordForm() {
   async function onSubmit(_data: NewPasswordFormType) {
     try {
       toast({
-        title: "Check your email",
-        description:
-          "We've sent you an email with instructions to reset your password.",
+        title: dictionary.auth.newPassword.passwordUpdated,
+        description: dictionary.auth.newPassword.passwordUpdateSuccess,
       })
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Something went wrong",
+        title: dictionary.auth.newPassword.somethingWrong,
         description: error instanceof Error ? error.message : undefined,
       })
     }
@@ -66,7 +70,7 @@ export function NewPasswordForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>{dictionary.auth.newPassword.password}</FormLabel>
                 <FormControl>
                   <Input type="password" {...field} />
                 </FormControl>
@@ -79,7 +83,9 @@ export function NewPasswordForm() {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
+                <FormLabel>
+                  {dictionary.auth.newPassword.confirmPassword}
+                </FormLabel>
                 <FormControl>
                   <Input type="password" {...field} />
                 </FormControl>
@@ -90,7 +96,7 @@ export function NewPasswordForm() {
         </div>
 
         <ButtonLoading isLoading={isSubmitting} disabled={isDisabled}>
-          Set new password
+          {dictionary.auth.newPassword.button}
         </ButtonLoading>
         <Link
           href={ensureLocalizedPathname(
@@ -102,7 +108,7 @@ export function NewPasswordForm() {
           )}
           className="-mt-4 text-center text-sm underline"
         >
-          Back to Sign in
+          {dictionary.auth.newPassword.backToSignIn}
         </Link>
       </form>
     </Form>

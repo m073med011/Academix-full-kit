@@ -13,14 +13,13 @@ export function VerifyEmail({ dictionary }: { dictionary: DictionaryType }) {
   return (
     <Auth dictionary={dictionary}>
       <AuthHeader>
-        <AuthTitle>Verify Your Email</AuthTitle>
+        <AuthTitle>{dictionary.auth.verifyEmail.title}</AuthTitle>
         <AuthDescription>
-          Enter the 6-digit code sent to your email address to verify your
-          account.
+          {dictionary.auth.verifyEmail.codeDescription}
         </AuthDescription>
       </AuthHeader>
       <AuthForm>
-        <VerifyEmailForm />
+        <VerifyEmailForm dictionary={dictionary} />
       </AuthForm>
     </Auth>
   )

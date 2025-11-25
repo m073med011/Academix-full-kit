@@ -27,6 +27,40 @@
     "verifyEmail": "Verify Email",
     "register": "Register",
     "signIn": "Sign In",
+    "public": "Public",
+    "store": "Store",
+    "roleSelection": {
+      "title": "Complete Your Profile",
+      "description": "Please select how you want to use the platform to continue.",
+      "roles": {
+        "student": {
+          "label": "Student",
+          "description": "I want to learn and take courses."
+        },
+        "freelancer": {
+          "label": "Freelancer",
+          "description": "I want to offer my services."
+        },
+        "organizer": {
+          "label": "Organizer",
+          "description": "I want to manage events and courses."
+        },
+        "instructor": {
+          "label": "Instructor",
+          "description": "I want to teach and create courses."
+        },
+        "guest": {
+          "label": "Guest",
+          "description": "I want to explore the platform."
+        }
+      },
+      "continue": "Continue",
+      "saving": "Saving...",
+      "successTitle": "Registration Complete",
+      "successDescription": "You have successfully registered as a {role}.",
+      "errorTitle": "Error",
+      "errorDescription": "Something went wrong"
+    },
     "designSystem": "Design System",
     "forms": "Forms",
     "basicInputs": "Basic Inputs",
@@ -151,9 +185,177 @@
       "signOut": "Sign out"
     }
   },
+  "auth": {
+    "signIn": {
+      "title": "Sign In",
+      "description": "Enter your email below to sign in to your account",
+      "email": "Email",
+      "emailPlaceholder": "name@example.com",
+      "password": "Password",
+      "forgotPassword": "Forgot your password?",
+      "button": "Sign In with Email",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up",
+      "orContinue": "Or continue with",
+      "emailVerificationRequired": "Email Verification Required",
+      "verifyEmailMessage": "Please verify your email to continue.",
+      "twoFactorRequired": "Two-Factor Authentication Required",
+      "twoFactorMessage": "Please check your email for the verification code.",
+      "signInFailed": "Sign In Failed"
+    },
+    "register": {
+      "title": "Sign Up",
+      "description": "Enter your information to create an account",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "John Doe",
+      "role": "Role",
+      "rolePlaceholder": "Select your role",
+      "email": "Email",
+      "emailPlaceholder": "name@example.com",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "button": "Create Account",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "orContinue": "Or continue with",
+      "roles": {
+        "student": "Student",
+        "instructor": "Instructor",
+        "freelancer": "Freelancer",
+        "organizer": "Organizer"
+      },
+      "checkEmail": "Check your email",
+      "verificationSent": "We sent a verification code to",
+      "registrationSuccessful": "Registration Successful",
+      "checkEmailMessage": "Please check your email to verify your account.",
+      "registrationFailed": "Registration Failed"
+    },
+    "verifyEmail": {
+      "title": "Verify Email",
+      "email": "Email",
+      "emailPlaceholder": "name@example.com",
+      "verificationCode": "Verification Code",
+      "codeDescription": "Enter the 6-digit code sent to your email",
+      "button": "Verify Email",
+      "didntReceive": "Didn't receive the code?",
+      "resend": "Resend",
+      "resendIn": "Resend in {seconds}s",
+      "sending": "Sending...",
+      "emailVerified": "Email Verified!",
+      "verificationSuccess": "Your email has been verified successfully.",
+      "verificationFailed": "Verification Failed",
+      "invalidCode": "Invalid or expired code",
+      "codeResent": "Code Resent",
+      "codeResentMessage": "A new verification code has been sent to your email.",
+      "resendFailed": "Resend Failed",
+      "resendError": "Could not resend code"
+    },
+    "verify2FA": {
+      "title": "Two-Factor Authentication",
+      "email": "Email",
+      "emailPlaceholder": "name@example.com",
+      "verificationCode": "Verification Code",
+      "codeDescription": "Enter the 6-digit code sent to your email",
+      "button": "Verify",
+      "didntReceive": "Didn't receive the code?",
+      "resend": "Resend",
+      "resendIn": "Resend in {seconds}s",
+      "sending": "Sending...",
+      "verificationSuccessful": "Verification Successful!",
+      "verificationSuccess": "Two-factor authentication verified successfully.",
+      "verificationFailed": "Verification Failed",
+      "invalidCode": "Invalid or expired code",
+      "codeResent": "Code Resent",
+      "codeResentMessage": "A new verification code has been sent to your email.",
+      "resendFailed": "Resend Failed",
+      "resendError": "Could not resend code"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "description": "Enter your email address and we'll send you instructions to reset your password",
+      "email": "Email",
+      "emailPlaceholder": "name@example.com",
+      "button": "Send instructions",
+      "backToSignIn": "Back to Sign in",
+      "checkEmail": "Check your email",
+      "emailSent": "We've sent you an email with instructions to reset your password.",
+      "somethingWrong": "Something went wrong"
+    },
+    "newPassword": {
+      "title": "Set New Password",
+      "description": "Enter your new password below",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "button": "Set new password",
+      "backToSignIn": "Back to Sign in",
+      "passwordUpdated": "Password Updated",
+      "passwordUpdateSuccess": "Your password has been updated successfully.",
+      "somethingWrong": "Something went wrong"
+    },
+    "oauth": {
+      "redirecting": "Redirecting to {provider}",
+      "redirectingMessage": "Please wait while we redirect you to {provider} sign in...",
+      "failed": "Something went wrong",
+      "failedMessage": "Failed to initiate {provider} sign in."
+    },
+    "passwordRequirements": {
+      "title": "Password requirements:",
+      "length": "At least 8 characters",
+      "lowercase": "At least one lowercase letter",
+      "uppercase": "At least one uppercase letter",
+      "number": "At least one number",
+      "special": "At least one special character"
+    }
+  },
   "label": {
     "soon": "Soon",
     "new": "New"
+  },
+  "storePage": {
+    "hero": {
+      "title": "Unlock Your Team's Potential",
+      "description": "Discover thousands of expert-led courses to upskill your entire organization."
+    },
+    "search": {
+      "placeholder": "Search for courses, skills, or instructors..."
+    },
+    "filters": {
+      "title": "Filters",
+      "clearAll": "Clear All",
+      "category": "Category",
+      "level": "Level",
+      "rating": "Rating",
+      "categories": {
+        "business": "Business",
+        "technology": "Technology",
+        "design": "Design",
+        "marketing": "Marketing"
+      },
+      "levels": {
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced"
+      },
+      "stars": "stars",
+      "up": "& Up"
+    },
+    "sort": {
+      "label": "Sort by:",
+      "placeholder": "Sort by",
+      "options": {
+        "popular": "Most Popular",
+        "rated": "Highest Rated",
+        "newest": "Newest",
+        "priceLowHigh": "Price: Low to High",
+        "priceHighLow": "Price: High to Low"
+      }
+    },
+    "results": "Showing {count} of {total} results",
+    "card": {
+      "addToCart": "Add to Cart",
+      "bestseller": "BESTSELLER",
+      "new": "NEW"
+    }
   },
   "search": {
     "search": "Search...",

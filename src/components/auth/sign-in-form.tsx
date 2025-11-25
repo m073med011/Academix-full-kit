@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { signIn } from "next-auth/react"
 import { useForm } from "react-hook-form"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType, SignInFormType } from "@/types"
 
 import { SignInSchema } from "@/schemas/sign-in-schema"
@@ -28,7 +29,7 @@ import { PasswordInput } from "@/components/ui/password-input"
 import { SeparatorWithText } from "@/components/ui/separator"
 import { OAuthLinks } from "./oauth-links"
 
-export function SignInForm() {
+export function SignInForm({ dictionary }: { dictionary: DictionaryType }) {
   const params = useParams()
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -65,8 +66,8 @@ export function SignInForm() {
         if (result.error.startsWith("EMAIL_VERIFICATION_REQUIRED:")) {
           const userEmail = result.error.split(":")[1]
           toast({
-            title: "Email Verification Required",
-            description: "Please verify your email to continue.",
+            title: dictionary.auth.signIn.emailVerificationRequired,
+            description: dictionary.auth.signIn.verifyEmailMessage,
           })
           router.push(
             ensureLocalizedPathname(
@@ -85,8 +86,8 @@ export function SignInForm() {
         if (result.error.startsWith("2FA_REQUIRED:")) {
           const userEmail = result.error.split(":")[1]
           toast({
-            title: "Two-Factor Authentication Required",
-            description: "Please check your email for the verification code.",
+            title: dictionary.auth.signIn.twoFactorRequired,
+            description: dictionary.auth.signIn.twoFactorMessage,
           })
           router.push(
             ensureLocalizedPathname(
@@ -110,7 +111,7 @@ export function SignInForm() {
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Sign In Failed",
+        title: dictionary.auth.signIn.signInFailed,
         description: error instanceof Error ? error.message : undefined,
       })
     }
@@ -125,11 +126,11 @@ export function SignInForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{dictionary.auth.signIn.email}</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="name@example.com"
+                    placeholder={dictionary.auth.signIn.emailPlaceholder}
                     {...field}
                   />
                 </FormControl>
@@ -143,7 +144,7 @@ export function SignInForm() {
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center">
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>{dictionary.auth.signIn.password}</FormLabel>
                   <Link
                     href={ensureLocalizedPathname(
                       redirectPathname
@@ -156,7 +157,7 @@ export function SignInForm() {
                     )}
                     className="ms-auto inline-block text-sm underline"
                   >
-                    Forgot your password?
+                    {dictionary.auth.signIn.forgotPassword}
                   </Link>
                 </div>
                 <FormControl>
@@ -169,10 +170,10 @@ export function SignInForm() {
         </div>
 
         <ButtonLoading isLoading={isSubmitting} disabled={isDisabled}>
-          Sign In with Email
+          {dictionary.auth.signIn.button}
         </ButtonLoading>
         <div className="-mt-4 text-center text-sm">
-          Don&apos;t have an account?{" "}
+          {dictionary.auth.signIn.noAccount}{" "}
           <Link
             href={ensureLocalizedPathname(
               redirectPathname
@@ -182,11 +183,13 @@ export function SignInForm() {
             )}
             className="underline"
           >
-            Sign up
+            {dictionary.auth.signIn.signUp}
           </Link>
         </div>
-        <SeparatorWithText>Or continue with</SeparatorWithText>
-        <OAuthLinks />
+        <SeparatorWithText>
+          {dictionary.auth.signIn.orContinue}
+        </SeparatorWithText>
+        <OAuthLinks dictionary={dictionary} />
       </form>
     </Form>
   )

@@ -13,13 +13,13 @@ export function Verify2FA({ dictionary }: { dictionary: DictionaryType }) {
   return (
     <Auth dictionary={dictionary}>
       <AuthHeader>
-        <AuthTitle>Two-Factor Authentication</AuthTitle>
+        <AuthTitle>{dictionary.auth.verify2FA.title}</AuthTitle>
         <AuthDescription>
-          Enter the 6-digit code sent to your email address to complete sign in.
+          {dictionary.auth.verify2FA.codeDescription}
         </AuthDescription>
       </AuthHeader>
       <AuthForm>
-        <Verify2FAForm />
+        <Verify2FAForm dictionary={dictionary} />
       </AuthForm>
     </Auth>
   )

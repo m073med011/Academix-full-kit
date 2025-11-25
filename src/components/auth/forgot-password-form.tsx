@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
 import type { ForgotPasswordFormType, LocaleType } from "@/types"
 
 import { ForgotPasswordSchema } from "@/schemas/forgot-passward-schema"
@@ -24,7 +25,11 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
-export function ForgotPasswordForm() {
+export function ForgotPasswordForm({
+  dictionary,
+}: {
+  dictionary: DictionaryType
+}) {
   const params = useParams()
   const searchParams = useSearchParams()
 
@@ -43,14 +48,13 @@ export function ForgotPasswordForm() {
   async function onSubmit(_data: ForgotPasswordFormType) {
     try {
       toast({
-        title: "Check your email",
-        description:
-          "We've sent you an email with instructions to reset your password.",
+        title: dictionary.auth.forgotPassword.checkEmail,
+        description: dictionary.auth.forgotPassword.emailSent,
       })
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Something went wrong",
+        title: dictionary.auth.forgotPassword.somethingWrong,
         description: error instanceof Error ? error.message : undefined,
       })
     }
@@ -65,11 +69,13 @@ export function ForgotPasswordForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{dictionary.auth.forgotPassword.email}</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="name@example.com"
+                    placeholder={
+                      dictionary.auth.forgotPassword.emailPlaceholder
+                    }
                     {...field}
                   />
                 </FormControl>
@@ -80,7 +86,7 @@ export function ForgotPasswordForm() {
         </div>
 
         <ButtonLoading isLoading={isSubmitting} disabled={isDisabled}>
-          Send instructions
+          {dictionary.auth.forgotPassword.button}
         </ButtonLoading>
         <Link
           href={ensureLocalizedPathname(
@@ -92,7 +98,7 @@ export function ForgotPasswordForm() {
           )}
           className="-mt-4 text-center text-sm underline"
         >
-          Back to Sign in
+          {dictionary.auth.forgotPassword.backToSignIn}
         </Link>
       </form>
     </Form>

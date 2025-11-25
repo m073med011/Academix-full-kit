@@ -13,11 +13,13 @@ export function NewPassword({ dictionary }: { dictionary: DictionaryType }) {
   return (
     <Auth dictionary={dictionary}>
       <AuthHeader>
-        <AuthTitle>New Password</AuthTitle>
-        <AuthDescription>Enter your new password</AuthDescription>
+        <AuthTitle>{dictionary.auth.newPassword.title}</AuthTitle>
+        <AuthDescription>
+          {dictionary.auth.newPassword.description}
+        </AuthDescription>
       </AuthHeader>
       <AuthForm>
-        <NewPasswordForm />
+        <NewPasswordForm dictionary={dictionary} />
       </AuthForm>
     </Auth>
   )

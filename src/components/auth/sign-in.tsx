@@ -16,13 +16,11 @@ export function SignIn({ dictionary }: { dictionary: DictionaryType }) {
       dictionary={dictionary}
     >
       <AuthHeader>
-        <AuthTitle>Sign In</AuthTitle>
-        <AuthDescription>
-          Enter your email below to sign in to your account
-        </AuthDescription>
+        <AuthTitle>{dictionary.auth.signIn.title}</AuthTitle>
+        <AuthDescription>{dictionary.auth.signIn.description}</AuthDescription>
       </AuthHeader>
       <AuthForm>
-        <SignInForm />
+        <SignInForm dictionary={dictionary} />
       </AuthForm>
     </Auth>
   )

@@ -186,7 +186,15 @@ export const authOptions: NextAuthOptions = {
     maxAge: 7 * 24 * 60 * 60, // 7 days (matching refresh token expiry)
   },
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger, session }) {
+      // Handle session updates (e.g., role selection)
+      if (trigger === "update" && session?.role) {
+        return {
+          ...token,
+          role: session.role,
+        }
+      }
+
       // Initial sign in
       if (user && account) {
         // If signing in with Google, we need to authenticate with our backend

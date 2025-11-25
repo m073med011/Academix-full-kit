@@ -16,13 +16,13 @@ export function Register({ dictionary }: { dictionary: DictionaryType }) {
       dictionary={dictionary}
     >
       <AuthHeader>
-        <AuthTitle>Sign Up</AuthTitle>
+        <AuthTitle>{dictionary.auth.register.title}</AuthTitle>
         <AuthDescription>
-          Enter your information to create an account
+          {dictionary.auth.register.description}
         </AuthDescription>
       </AuthHeader>
       <AuthForm>
-        <RegisterForm />
+        <RegisterForm dictionary={dictionary} />
       </AuthForm>
     </Auth>
   )

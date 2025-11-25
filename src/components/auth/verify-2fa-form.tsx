@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
+
 import { tokenStorage } from "@/lib/api-client"
 
 import { toast } from "@/hooks/use-toast"
@@ -40,7 +42,7 @@ const Verify2FASchema = z.object({
 
 type Verify2FAFormType = z.infer<typeof Verify2FASchema>
 
-export function Verify2FAForm() {
+export function Verify2FAForm({ dictionary }: { dictionary: DictionaryType }) {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -94,9 +96,9 @@ export function Verify2FAForm() {
       }
 
       toast({
-        title: "Verification Successful!",
+        title: dictionary.auth.verify2FA.verificationSuccessful,
         description:
-          result.message || "Two-factor authentication verified successfully.",
+          result.message || dictionary.auth.verify2FA.verificationSuccess,
       })
 
       // Redirect to the intended destination or home
@@ -104,9 +106,11 @@ export function Verify2FAForm() {
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Verification Failed",
+        title: dictionary.auth.verify2FA.verificationFailed,
         description:
-          error instanceof Error ? error.message : "Invalid or expired code",
+          error instanceof Error
+            ? error.message
+            : dictionary.auth.verify2FA.invalidCode,
       })
     }
   }
@@ -134,8 +138,8 @@ export function Verify2FAForm() {
       }
 
       toast({
-        title: "Code Resent",
-        description: "A new verification code has been sent to your email.",
+        title: dictionary.auth.verify2FA.codeResent,
+        description: dictionary.auth.verify2FA.codeResentMessage,
       })
 
       // Start 60 second countdown
@@ -144,9 +148,11 @@ export function Verify2FAForm() {
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Resend Failed",
+        title: dictionary.auth.verify2FA.resendFailed,
         description:
-          error instanceof Error ? error.message : "Could not resend code",
+          error instanceof Error
+            ? error.message
+            : dictionary.auth.verify2FA.resendError,
       })
     } finally {
       setIsResending(false)
@@ -162,11 +168,11 @@ export function Verify2FAForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{dictionary.auth.verify2FA.email}</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="name@example.com"
+                    placeholder={dictionary.auth.verify2FA.emailPlaceholder}
                     {...field}
                     readOnly
                     className="bg-muted"
@@ -182,7 +188,9 @@ export function Verify2FAForm() {
             name="code"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Verification Code</FormLabel>
+                <FormLabel>
+                  {dictionary.auth.verify2FA.verificationCode}
+                </FormLabel>
                 <FormControl>
                   <div className="flex justify-center">
                     <InputOTP maxLength={6} {...field}>
@@ -202,7 +210,7 @@ export function Verify2FAForm() {
                 </FormControl>
                 <FormMessage />
                 <p className="text-muted-foreground text-xs">
-                  Enter the 6-digit code sent to your email
+                  {dictionary.auth.verify2FA.codeDescription}
                 </p>
               </FormItem>
             )}
@@ -210,11 +218,11 @@ export function Verify2FAForm() {
         </div>
 
         <ButtonLoading isLoading={isSubmitting} disabled={isDisabled}>
-          Verify
+          {dictionary.auth.verify2FA.button}
         </ButtonLoading>
 
         <div className="text-center text-sm">
-          Didn&apos;t receive the code?{" "}
+          {dictionary.auth.verify2FA.didntReceive}{" "}
           <button
             type="button"
             onClick={handleResendCode}
@@ -222,10 +230,13 @@ export function Verify2FAForm() {
             className="underline disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {countdown > 0
-              ? `Resend in ${countdown}s`
+              ? dictionary.auth.verify2FA.resendIn.replace(
+                  "{seconds}",
+                  countdown.toString()
+                )
               : isResending
-                ? "Sending..."
-                : "Resend"}
+                ? dictionary.auth.verify2FA.sending
+                : dictionary.auth.verify2FA.resend}
           </button>
         </div>
       </form>

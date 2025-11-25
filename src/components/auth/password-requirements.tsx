@@ -3,41 +3,45 @@
 
 import { Check, X } from "lucide-react"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
+
 import { cn } from "@/lib/utils"
 
 interface PasswordRequirementsProps {
   password?: string
   isVisible?: boolean
+  dictionary: DictionaryType
 }
 
 export function PasswordRequirements({
   password = "",
   isVisible = false,
+  dictionary,
 }: PasswordRequirementsProps) {
   const requirements = [
     {
       id: "length",
-      label: "At least 8 characters",
+      label: dictionary.auth.passwordRequirements.length,
       isValid: password.length >= 8,
     },
     {
       id: "lowercase",
-      label: "At least one lowercase letter",
+      label: dictionary.auth.passwordRequirements.lowercase,
       isValid: /[a-z]/.test(password),
     },
     {
       id: "uppercase",
-      label: "At least one uppercase letter",
+      label: dictionary.auth.passwordRequirements.uppercase,
       isValid: /[A-Z]/.test(password),
     },
     {
       id: "number",
-      label: "At least one number",
+      label: dictionary.auth.passwordRequirements.number,
       isValid: /\d/.test(password),
     },
     {
       id: "special",
-      label: "At least one special character",
+      label: dictionary.auth.passwordRequirements.special,
       isValid: /[@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/]/.test(password),
     },
   ]
@@ -56,7 +60,7 @@ export function PasswordRequirements({
     >
       <div className="mt-2 space-y-2 rounded-md border bg-muted/50 p-3 text-sm">
         <p className="font-medium text-muted-foreground">
-          Password requirements:
+          {dictionary.auth.passwordRequirements.title}
         </p>
         <ul className="space-y-1">
           {requirements.map((req) => (
