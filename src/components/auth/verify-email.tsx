@@ -9,7 +9,13 @@ import {
 } from "./auth-layout"
 import { VerifyEmailForm } from "./verify-email-form"
 
-export function VerifyEmail({ dictionary }: { dictionary: DictionaryType }) {
+export function VerifyEmail({
+  dictionary,
+  email,
+}: {
+  dictionary: DictionaryType
+  email?: string
+}) {
   return (
     <Auth dictionary={dictionary}>
       <AuthHeader>
@@ -19,7 +25,7 @@ export function VerifyEmail({ dictionary }: { dictionary: DictionaryType }) {
         </AuthDescription>
       </AuthHeader>
       <AuthForm>
-        <VerifyEmailForm dictionary={dictionary} />
+        <VerifyEmailForm dictionary={dictionary} email={email} />
       </AuthForm>
     </Auth>
   )

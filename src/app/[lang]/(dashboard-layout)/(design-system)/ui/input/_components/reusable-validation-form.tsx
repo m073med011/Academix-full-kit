@@ -1,6 +1,13 @@
 "use client"
 
-import { FieldValues, Path, RegisterOptions, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
+
+import type {
+  DefaultValues,
+  FieldValues,
+  Path,
+  RegisterOptions,
+} from "react-hook-form"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -20,7 +27,7 @@ export interface FieldConfig<T extends FieldValues> {
   placeholder?: string
   type?: "text" | "email" | "password" | "number" | "tel" | "url"
   rules?: RegisterOptions<T>
-  defaultValue?: any
+  defaultValue?: unknown
 }
 
 // Props for the reusable form
@@ -49,7 +56,7 @@ export function ReusableValidationForm<T extends FieldValues>({
       ...acc,
       [field.name]: field.defaultValue ?? "",
     }),
-    {} as T
+    {} as DefaultValues<T>
   )
 
   const form = useForm<T>({

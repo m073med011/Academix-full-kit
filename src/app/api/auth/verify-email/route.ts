@@ -62,7 +62,7 @@ export async function POST(req: Request) {
           role: data.user.role,
           avatar: data.user.imageProfileUrl || null,
         },
-        accessToken: data.accessToken,
+        accessToken: data.accessToken || data.token,
         refreshToken: data.refreshToken,
         organizations: data.organizations || [],
         activeOrganizationId: data.activeOrganizationId,

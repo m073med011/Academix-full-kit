@@ -93,6 +93,20 @@ export function Verify2FAForm({ dictionary }: { dictionary: DictionaryType }) {
       // Store tokens
       if (result.accessToken && result.refreshToken) {
         tokenStorage.setTokens(result.accessToken, result.refreshToken)
+
+        // Establish NextAuth session
+        // We use the tokens to sign in via the custom Credentials flow we added
+        const signInResult = await import("next-auth/react").then((mod) =>
+          mod.signIn("credentials", {
+            token: result.accessToken,
+            refreshToken: result.refreshToken,
+            redirect: false,
+          })
+        )
+
+        if (signInResult?.error) {
+          throw new Error("Failed to establish session")
+        }
       }
 
       toast({
@@ -127,7 +141,7 @@ export function Verify2FAForm({ dictionary }: { dictionary: DictionaryType }) {
         },
         body: JSON.stringify({
           email: emailParam,
-          purpose: "TWO_FACTOR",
+          purpose: "LOGIN_VERIFICATION",
         }),
       })
 

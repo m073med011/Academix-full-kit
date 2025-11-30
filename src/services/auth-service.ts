@@ -27,13 +27,13 @@ export const authService = {
     const response = await apiClient.post<{
       success: boolean
       token: string
+      refreshToken: string
       user: User
     }>("/auth/login", credentials, { skipAuth: true })
 
     if (response.success && response.data) {
-      const { user, token } = response.data
-      // Backend returns single token, use it for both access and refresh
-      tokenStorage.setTokens(token, token)
+      const { user, token, refreshToken } = response.data
+      tokenStorage.setTokens(token, refreshToken)
       return { user, token }
     }
 
@@ -165,12 +165,21 @@ export const authService = {
    * Verify email with OTP
    */
   async verifyEmail(data: VerifyEmailRequest): Promise<void> {
-    const response = await apiClient.post<void>("/auth/verify-email", data, {
+    const response = await apiClient.post<{
+      success: boolean
+      token: string
+      refreshToken: string
+      user: User
+    }>("/auth/verify-email", data, {
       skipAuth: true,
     })
 
     if (!response.success) {
       throw new ApiClientError("Email verification failed", 400)
+    }
+
+    if (response.data && response.data.token && response.data.refreshToken) {
+      tokenStorage.setTokens(response.data.token, response.data.refreshToken)
     }
   },
 

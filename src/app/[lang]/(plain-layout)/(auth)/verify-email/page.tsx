@@ -1,6 +1,9 @@
+import { getServerSession } from "next-auth"
+
 import type { LocaleType } from "@/types"
 import type { Metadata } from "next"
 
+import { authOptions } from "@/configs/next-auth"
 import { getDictionary } from "@/lib/get-dictionary"
 
 import { VerifyEmail } from "@/components/auth/verify-email"
@@ -16,6 +19,12 @@ export default async function VerifyEmailPage(props: {
 }) {
   const params = await props.params
   const dictionary = await getDictionary(params.lang)
+  const session = await getServerSession(authOptions)
 
-  return <VerifyEmail dictionary={dictionary} />
+  return (
+    <VerifyEmail
+      dictionary={dictionary}
+      email={session?.user?.email || undefined}
+    />
+  )
 }

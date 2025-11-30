@@ -46,6 +46,22 @@ export async function middleware(request: NextRequest) {
     const isGuest = isGuestRoute(pathnameWithoutLocale)
     const isProtected = !isGuest
 
+    // Handle Email Verification Requirement
+    if (isAuthenticated && token.requiresEmailVerification) {
+      if (pathnameWithoutLocale !== "/verify-email") {
+        return redirect("/verify-email", request)
+      }
+      return NextResponse.next()
+    }
+
+    // Handle 2FA Requirement
+    if (isAuthenticated && token.requires2FA) {
+      if (pathnameWithoutLocale !== "/verify-2fa") {
+        return redirect("/verify-2fa", request)
+      }
+      return NextResponse.next()
+    }
+
     // Redirect authenticated users away from guest routes
     if (isAuthenticated && isGuest) {
       return redirect(process.env.NEXT_PUBLIC_HOME_PATHNAME || "/", request)

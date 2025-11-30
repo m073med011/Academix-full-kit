@@ -1,8 +1,9 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { signIn } from "next-auth/react"
 import { useForm } from "react-hook-form"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
@@ -42,12 +43,11 @@ export function VerifyEmailForm({
   dictionary,
 }: VerifyEmailFormProps) {
   const searchParams = useSearchParams()
-  const router = useRouter()
 
   const emailParam = propEmail || searchParams.get("email") || ""
   const redirectPathname =
-    searchParams.get("redirectTo") ||
     process.env.NEXT_PUBLIC_HOME_PATHNAME ||
+    // searchParams.get("redirectTo") ||
     "/"
 
   const [isResending, setIsResending] = useState(false)
@@ -80,6 +80,8 @@ export function VerifyEmailForm({
   }, [countdown])
 
   async function onSubmit(data: VerifyEmailFormType) {
+    if (isSubmitting) return
+
     try {
       const response = await fetch("/api/auth/verify-email", {
         method: "POST",
@@ -92,12 +94,35 @@ export function VerifyEmailForm({
       const result = await response.json()
 
       if (!response.ok || !result.success) {
+        // If the error is "Invalid or expired OTP" but we just verified successfully (race condition),
+        // or if the user is already verified, we should proceed.
+        // However, since we can't easily distinguish a "just verified" race condition from a genuine invalid OTP
+        // without more complex state, we rely on the first success.
+        // If this is a retry and the OTP is now gone, it's a genuine error unless we handle it.
         throw new Error(result.message || "Verification failed")
       }
 
       // Store tokens
       if (result.accessToken && result.refreshToken) {
+        console.log("Tokens received, updating session...")
         tokenStorage.setTokens(result.accessToken, result.refreshToken)
+
+        // Update NextAuth session by re-signing in with the new tokens
+        console.log("Re-authenticating with new tokens...", {
+          accessToken: result.accessToken ? "Present" : "Missing",
+          refreshToken: result.refreshToken ? "Present" : "Missing",
+        })
+        const signInResult = await signIn("credentials", {
+          token: result.accessToken,
+          refreshToken: result.refreshToken,
+          redirect: false,
+        })
+
+        if (signInResult?.error) {
+          console.error("Re-authentication failed:", signInResult.error)
+          throw new Error("Failed to refresh session")
+        }
+        console.log("Re-authentication successful")
       }
 
       toast({
@@ -110,7 +135,8 @@ export function VerifyEmailForm({
         onSuccess()
       } else {
         // Redirect to the intended destination or home
-        router.push(redirectPathname)
+        // Force a hard navigation to ensure middleware sees the new session
+        window.location.href = redirectPathname
       }
     } catch (error) {
       toast({

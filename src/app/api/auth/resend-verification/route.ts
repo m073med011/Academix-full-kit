@@ -8,8 +8,19 @@ const LMS_BACKEND_URL =
 // Validation schema for resend verification request
 const ResendVerificationSchema = z.object({
   email: z.string().email("Please enter a valid email"),
-  purpose: z.enum(["EMAIL_VERIFICATION", "PASSWORD_RESET", "TWO_FACTOR"]),
+  purpose: z.enum([
+    "EMAIL_VERIFICATION",
+    "PASSWORD_RESET",
+    "LOGIN_VERIFICATION",
+  ]),
 })
+
+// Map frontend purpose values to backend purpose values
+const purposeMap: Record<string, string> = {
+  EMAIL_VERIFICATION: "email_verification",
+  PASSWORD_RESET: "password_reset",
+  LOGIN_VERIFICATION: "login_verification",
+}
 
 export async function POST(req: Request) {
   try {
@@ -26,6 +37,9 @@ export async function POST(req: Request) {
 
     const { email, purpose } = parsedData.data
 
+    // Map frontend purpose to backend purpose
+    const backendPurpose = purposeMap[purpose] || purpose.toLowerCase()
+
     // Forward request to LMS Backend
     const response = await fetch(`${LMS_BACKEND_URL}/otp/resend`, {
       method: "POST",
@@ -34,7 +48,7 @@ export async function POST(req: Request) {
       },
       body: JSON.stringify({
         email: email.toLowerCase().trim(),
-        purpose,
+        purpose: backendPurpose,
       }),
     })
 

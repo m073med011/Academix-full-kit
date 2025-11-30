@@ -71,7 +71,7 @@ export async function POST(req: Request) {
     }
 
     // Successful login
-    if ("accessToken" in data && data.accessToken) {
+    if ("token" in data && data.token) {
       return NextResponse.json(
         {
           success: true,
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
             avatar: data.user.imageProfileUrl || null,
             role: data.user.role,
           },
-          accessToken: data.accessToken,
+          accessToken: data.token,
           refreshToken: data.refreshToken,
           organizations: data.organizations || [],
           activeOrganizationId: data.activeOrganizationId,

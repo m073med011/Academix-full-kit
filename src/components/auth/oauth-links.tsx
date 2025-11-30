@@ -29,7 +29,9 @@ export function OAuthLinks({ dictionary }: { dictionary: DictionaryType }) {
     }
 
     try {
-      await signIn(provider.toLowerCase(), { callbackUrl: "/" })
+      await signIn(provider.toLowerCase(), {
+        callbackUrl: "/en/role-selection",
+      })
     } catch (_error) {
       setIsGoogleLoading(false)
       toast({

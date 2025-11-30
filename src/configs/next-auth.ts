@@ -14,10 +14,14 @@ declare module "next-auth" {
       avatar: string | null
       status: string
       role: UserRole
+      requires2FA?: boolean
+      requiresEmailVerification?: boolean
     }
     accessToken: string
     refreshToken: string
     error?: string
+    requires2FA?: boolean
+    requiresEmailVerification?: boolean
   }
 
   interface User {
@@ -44,12 +48,14 @@ declare module "next-auth/jwt" {
     refreshToken: string
     accessTokenExpires: number
     error?: string
+    requires2FA?: boolean
+    requiresEmailVerification?: boolean
   }
 }
 
 // LMS Backend URL
 const LMS_BACKEND_URL =
-  process.env.LMS_BACKEND_URL || "http://localhost:5000/api"
+  process.env.LMS_BACKEND_URL || "http://localhost:5000/v1"
 
 // Helper function to refresh access token
 async function refreshAccessToken(token: {
@@ -96,8 +102,61 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: { type: "email" },
         password: { type: "password" },
+        token: { type: "text" },
+        refreshToken: { type: "text" },
       },
       async authorize(credentials) {
+        // Case 1: Token-based login (after 2FA or external verification)
+        if (credentials?.token && credentials?.refreshToken) {
+          console.log("Authorize: Attempting token-based login")
+          try {
+            // Verify the token by fetching user profile
+            const response = await fetch(`${LMS_BACKEND_URL}/auth/me`, {
+              headers: {
+                Authorization: `Bearer ${credentials.token}`,
+              },
+            })
+            console.log("Authorize: /auth/me status:", response.status)
+
+            const data = await response.json()
+            console.log(
+              "Authorize: /auth/me data received:",
+              JSON.stringify(data, null, 2)
+            )
+
+            if (!response.ok || !data.success) {
+              console.error("Authorize: /auth/me failed", data)
+              throw new Error("Invalid token")
+            }
+
+            // Handle potential response wrapping (e.g. { data: { user: ... } } or { user: ... })
+            const userProfile = data.data?.user || data.user || data.data
+
+            if (!userProfile) {
+              console.error(
+                "Authorize: User profile not found in response",
+                data
+              )
+              throw new Error("Invalid user profile")
+            }
+
+            return {
+              id: (userProfile.id || userProfile._id).toString(),
+              email: userProfile.email,
+              name: userProfile.name,
+              avatar: userProfile.imageProfileUrl || null,
+              status: "ONLINE",
+              role: userProfile.role,
+              accessToken: credentials.token,
+              refreshToken: credentials.refreshToken,
+            }
+          } catch (error) {
+            console.error("Token login failed:", error)
+            return null
+          }
+        }
+
+        // Case 2: Email/Password Login
         if (!credentials?.email || !credentials?.password) {
           return null
         }
@@ -187,11 +246,38 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user, account, trigger, session }) {
-      // Handle session updates (e.g., role selection)
-      if (trigger === "update" && session?.role) {
-        return {
-          ...token,
-          role: session.role,
+      console.log("JWT Callback Trigger:", trigger)
+      console.log("JWT Token State:", {
+        requiresEmailVerification: token.requiresEmailVerification,
+        requires2FA: token.requires2FA,
+        expires: token.accessTokenExpires,
+      })
+
+      // Handle session updates
+      if (trigger === "update") {
+        // Role update
+        if (session?.role) {
+          return {
+            ...token,
+            role: session.role,
+          }
+        }
+        // Verification update (Email or 2FA)
+        if (
+          session?.verified &&
+          session?.accessToken &&
+          session?.refreshToken
+        ) {
+          console.log("Updating session with verified tokens")
+          return {
+            ...token,
+            requiresEmailVerification: false,
+            requires2FA: false,
+            accessToken: session.accessToken,
+            refreshToken: session.refreshToken,
+            accessTokenExpires: Date.now() + 150 * 60 * 1000,
+            status: "ONLINE",
+          }
         }
       }
 
@@ -227,6 +313,40 @@ export const authOptions: NextAuthOptions = {
               throw new Error(data.message || "Google authentication failed")
             }
 
+            // Handle 2FA requirement for OAuth
+            if (data.requires2FA) {
+              return {
+                ...token,
+                id: data.user.id,
+                email: data.user.email,
+                name: data.user.name,
+                avatar: data.user.imageProfileUrl,
+                status: "PENDING_2FA",
+                role: data.user.role,
+                requires2FA: true,
+                accessToken: "", // No access token yet
+                refreshToken: "",
+                accessTokenExpires: 0,
+              }
+            }
+
+            // Handle Email Verification requirement for OAuth
+            if (data.requiresEmailVerification) {
+              return {
+                ...token,
+                id: data.user.id,
+                email: data.user.email,
+                name: data.user.name,
+                avatar: data.user.imageProfileUrl,
+                status: "PENDING_VERIFICATION",
+                role: data.user.role,
+                requiresEmailVerification: true,
+                accessToken: "", // No access token yet
+                refreshToken: "",
+                accessTokenExpires: 0,
+              }
+            }
+
             return {
               ...token,
               id: data.user.id,
@@ -235,6 +355,7 @@ export const authOptions: NextAuthOptions = {
               avatar: data.user.imageProfileUrl,
               status: "ONLINE",
               role: data.user.role,
+              requires2FA: false,
               accessToken: data.token,
               refreshToken: data.refreshToken, // Now returned by backend
               accessTokenExpires: Date.now() + 150 * 60 * 1000,
@@ -267,6 +388,11 @@ export const authOptions: NextAuthOptions = {
         return token
       }
 
+      // If verification is required, do not try to refresh
+      if (token.requiresEmailVerification || token.requires2FA) {
+        return token
+      }
+
       // Access token has expired, try to refresh it
       const refreshedToken = await refreshAccessToken(
         token as { refreshToken: string }
@@ -278,6 +404,10 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ session, token }) {
+      console.log("Session Callback Token State:", {
+        requiresEmailVerification: token.requiresEmailVerification,
+        requires2FA: token.requires2FA,
+      })
       if (token) {
         session.user = {
           id: token.id,
@@ -286,6 +416,8 @@ export const authOptions: NextAuthOptions = {
           avatar: token.avatar,
           status: token.status,
           role: token.role,
+          requires2FA: token.requires2FA,
+          requiresEmailVerification: token.requiresEmailVerification,
         }
         session.accessToken = token.accessToken
         session.refreshToken = token.refreshToken

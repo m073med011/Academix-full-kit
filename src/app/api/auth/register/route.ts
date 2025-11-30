@@ -90,6 +90,7 @@ export async function POST(req: Request) {
         {
           success: true,
           token: data.token,
+          refreshToken: data.refreshToken,
           user: {
             id: data.user._id || data.user.id,
             name: data.user.name,

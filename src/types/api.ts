@@ -32,7 +32,10 @@ export type AttendanceStatus = "PRESENT" | "ABSENT" | "LATE"
 
 export type MembershipStatus = "ACTIVE" | "INACTIVE" | "INVITED"
 
-export type OTPPurpose = "EMAIL_VERIFICATION" | "PASSWORD_RESET" | "TWO_FACTOR"
+export type OTPPurpose =
+  | "EMAIL_VERIFICATION"
+  | "PASSWORD_RESET"
+  | "LOGIN_VERIFICATION"
 
 export type DiscountType = "PERCENTAGE" | "FIXED"
 
@@ -85,7 +88,7 @@ export interface LoginSuccessResponse {
   user: User
   organizations?: Organization[]
   activeOrganizationId?: string
-  accessToken: string
+  token: string
   refreshToken: string
 }
 
@@ -145,6 +148,7 @@ export interface RegisterSuccessResponse {
 export interface RegisterOAuthResponse {
   success: true
   token: string
+  refreshToken: string
   user: User
 }
 
@@ -186,7 +190,7 @@ export interface VerifyEmailResponse {
   user: User
   organizations?: Organization[]
   activeOrganizationId?: string
-  accessToken: string
+  token: string
   refreshToken: string
   message: string
 }

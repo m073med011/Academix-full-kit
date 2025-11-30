@@ -1,43 +1,60 @@
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { cn } from "@/lib/utils"
+
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-export function CardWithTabs() {
+export interface TabItem {
+  value: string
+  label: string
+  content: React.ReactNode
+  disabled?: boolean
+}
+
+interface CardWithTabsProps {
+  tabs: TabItem[]
+  defaultValue?: string
+  value?: string
+  onValueChange?: (value: string) => void
+  className?: string
+}
+
+export function CardWithTabs({
+  tabs,
+  defaultValue,
+  value,
+  onValueChange,
+  className,
+}: CardWithTabsProps) {
   return (
-    <Card>
-      <Tabs defaultValue="home">
+    <Card className={cn(className)}>
+      <Tabs
+        defaultValue={defaultValue}
+        value={value}
+        onValueChange={onValueChange}
+      >
         <CardHeader>
-          <TabsList>
-            <TabsTrigger value="home">Home</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
-            <TabsTrigger value="disabled" disabled>
-              Disabled
-            </TabsTrigger>
+          <TabsList className="mx-auto">
+            {tabs.map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                disabled={tab.disabled}
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
           </TabsList>
         </CardHeader>
         <CardContent>
-          <TabsContent value="home" className="text-center space-y-3">
-            <CardTitle>Welcome to the Homepage</CardTitle>
-            <CardDescription>
-              Discover the latest updates and explore new features available on
-              our platform.
-            </CardDescription>
-            <Button>Explore</Button>
-          </TabsContent>
-          <TabsContent value="settings" className="text-center space-y-3">
-            <CardTitle>Manage Your Preferences</CardTitle>
-            <CardDescription>
-              Customize your experience by updating your settings and
-              preferences here.
-            </CardDescription>
-            <Button>Update Settings</Button>
-          </TabsContent>
+          {tabs.map((tab) => (
+            <TabsContent
+              key={tab.value}
+              value={tab.value}
+              className="space-y-3"
+            >
+              {tab.content}
+            </TabsContent>
+          ))}
         </CardContent>
       </Tabs>
     </Card>

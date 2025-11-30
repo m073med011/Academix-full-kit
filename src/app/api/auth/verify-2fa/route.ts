@@ -35,7 +35,7 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         email: email.toLowerCase().trim(),
         code,
-        purpose: "TWO_FACTOR",
+        purpose: "login_verification",
       }),
     })
 

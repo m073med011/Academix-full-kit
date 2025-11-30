@@ -1,9 +1,8 @@
 "use client"
 
-import {
-  FieldConfig,
-  ReusableValidationForm,
-} from "../../(design-system)/ui/input/_components/reusable-validation-form"
+import type { FieldConfig } from "../../(design-system)/ui/input/_components/reusable-validation-form"
+
+import { ReusableValidationForm } from "../../(design-system)/ui/input/_components/reusable-validation-form"
 
 // Define the form data structure
 interface UserRegistrationForm {
@@ -53,7 +52,8 @@ export default function TestingPage() {
       type: "tel",
       rules: {
         pattern: {
-          value: /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/,
+          value:
+            /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/,
           message: "Invalid phone number format",
         },
       },
