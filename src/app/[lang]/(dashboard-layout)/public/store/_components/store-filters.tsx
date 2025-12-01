@@ -2,6 +2,7 @@
 
 import { Filter } from "lucide-react"
 
+import type { CourseFilterParams, CourseLevel } from "@/types/api"
 import type { DictionaryType } from "@/lib/get-dictionary"
 
 import {
@@ -12,8 +13,8 @@ import {
 } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Rating } from "@/components/ui/rating"
 import {
   Sheet,
   SheetContent,
@@ -26,12 +27,18 @@ interface StoreFiltersProps {
   dictionary: DictionaryType
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
+  onFilterChange: (filters: Partial<CourseFilterParams>) => void
+  onClearFilters: () => void
+  currentFilters: CourseFilterParams
 }
 
 export function StoreFilters({
   dictionary,
   isOpen,
   setIsOpen,
+  onFilterChange,
+  onClearFilters,
+  currentFilters,
 }: StoreFiltersProps) {
   const t = dictionary.storePage.filters
 
@@ -54,7 +61,12 @@ export function StoreFilters({
               <SheetTitle>{t.title}</SheetTitle>
             </SheetHeader>
             <div className="mt-6">
-              <FiltersContent dictionary={dictionary} />
+              <FiltersContent
+                dictionary={dictionary}
+                onFilterChange={onFilterChange}
+                onClearFilters={onClearFilters}
+                currentFilters={currentFilters}
+              />
             </div>
           </SheetContent>
         </Sheet>
@@ -68,123 +80,127 @@ export function StoreFilters({
             <Button
               variant="link"
               className="text-primary h-auto p-0 text-sm hover:no-underline"
+              onClick={onClearFilters}
             >
               {t.clearAll}
             </Button>
           </div>
-          <FiltersContent dictionary={dictionary} />
+          <FiltersContent
+            dictionary={dictionary}
+            onFilterChange={onFilterChange}
+            onClearFilters={onClearFilters}
+            currentFilters={currentFilters}
+          />
         </div>
       </aside>
     </>
   )
 }
 
-function FiltersContent({ dictionary }: { dictionary: DictionaryType }) {
+function FiltersContent({
+  dictionary,
+  onFilterChange,
+  currentFilters,
+}: {
+  dictionary: DictionaryType
+  onFilterChange: (filters: Partial<CourseFilterParams>) => void
+  onClearFilters: () => void
+  currentFilters: CourseFilterParams
+}) {
   const t = dictionary.storePage.filters
 
-  // Mock counts - in a real app, these would come from the backend
-  const categoryCounts = {
-    business: 12,
-    technology: 8,
-    design: 15,
-    marketing: 5,
+  const handleCategoryChange = (category: string, checked: boolean) => {
+    onFilterChange({ category: checked ? category : undefined })
+  }
+
+  const handleLevelChange = (level: CourseLevel, checked: boolean) => {
+    onFilterChange({ level: checked ? level : undefined })
+  }
+
+  const handleSearchChange = (search: string) => {
+    onFilterChange({ search: search || undefined })
   }
 
   return (
-    <Accordion type="multiple" defaultValue={["category"]} className="w-full">
-      {/* Category Section */}
-      <AccordionItem value="category">
-        <AccordionTrigger className="text-sm font-semibold hover:no-underline">
-          {t.category}
-        </AccordionTrigger>
-        <AccordionContent>
-          <div className="space-y-3 pt-2">
-            {Object.entries(t.categories).map(([key, label]) => (
-              <div
-                key={key}
-                className="flex items-center space-x-3 rtl:space-x-reverse"
-              >
-                <Checkbox id={`category-${key}`} />
-                <Label
-                  htmlFor={`category-${key}`}
-                  className="font-normal cursor-pointer flex-1"
+    <div className="space-y-6">
+      {/* Search Input */}
+      <div className="space-y-2">
+        <Label htmlFor="search" className="text-sm font-semibold">
+          Search
+        </Label>
+        <Input
+          id="search"
+          type="text"
+          placeholder="Search courses..."
+          value={currentFilters.search || ""}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          className="w-full"
+        />
+      </div>
+
+      <Accordion type="multiple" defaultValue={["category"]} className="w-full">
+        {/* Category Section */}
+        <AccordionItem value="category">
+          <AccordionTrigger className="text-sm font-semibold hover:no-underline">
+            {t.category}
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-3 pt-2">
+              {Object.entries(t.categories).map(([key, label]) => (
+                <div
+                  key={key}
+                  className="flex items-center space-x-3 rtl:space-x-reverse"
                 >
-                  {label}
-                </Label>
-                <span className="text-xs text-muted-foreground">
-                  ({categoryCounts[key as keyof typeof categoryCounts] || 0})
-                </span>
-              </div>
-            ))}
-          </div>
-        </AccordionContent>
-      </AccordionItem>
+                  <Checkbox
+                    id={`category-${key}`}
+                    checked={currentFilters.category === key}
+                    onCheckedChange={(checked) =>
+                      handleCategoryChange(key, checked as boolean)
+                    }
+                  />
+                  <Label
+                    htmlFor={`category-${key}`}
+                    className="font-normal cursor-pointer flex-1"
+                  >
+                    {label}
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
 
-      {/* Experience Level Section */}
-      <AccordionItem value="level">
-        <AccordionTrigger className="text-sm font-semibold hover:no-underline">
-          {t.level}
-        </AccordionTrigger>
-        <AccordionContent>
-          <div className="space-y-3 pt-2">
-            {Object.entries(t.levels).map(([key, label]) => (
-              <div
-                key={key}
-                className="flex items-center space-x-3 rtl:space-x-reverse"
-              >
-                <Checkbox id={`level-${key}`} />
-                <Label
-                  htmlFor={`level-${key}`}
-                  className="font-normal cursor-pointer"
+        {/* Experience Level Section */}
+        <AccordionItem value="level">
+          <AccordionTrigger className="text-sm font-semibold hover:no-underline">
+            {t.level}
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-3 pt-2">
+              {Object.entries(t.levels).map(([key, label]) => (
+                <div
+                  key={key}
+                  className="flex items-center space-x-3 rtl:space-x-reverse"
                 >
-                  {label}
-                </Label>
-              </div>
-            ))}
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-
-      {/* Rating Section */}
-      <AccordionItem value="rating">
-        <AccordionTrigger className="text-sm font-semibold hover:no-underline">
-          {t.rating}
-        </AccordionTrigger>
-        <AccordionContent>
-          <div className="pt-2">
-            <Rating value="5" size="sm" />
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-
-      {/* Price Section */}
-      <AccordionItem value="price" className="border-b-0">
-        <AccordionTrigger className="text-sm font-semibold hover:no-underline">
-          Price
-        </AccordionTrigger>
-        <AccordionContent>
-          <div className="space-y-3 pt-2">
-            <div className="flex items-center space-x-3 rtl:space-x-reverse">
-              <Checkbox id="price-free" />
-              <Label
-                htmlFor="price-free"
-                className="font-normal cursor-pointer"
-              >
-                Free
-              </Label>
+                  <Checkbox
+                    id={`level-${key}`}
+                    checked={currentFilters.level === key}
+                    onCheckedChange={(checked) =>
+                      handleLevelChange(key as CourseLevel, checked as boolean)
+                    }
+                  />
+                  <Label
+                    htmlFor={`level-${key}`}
+                    className="font-normal cursor-pointer"
+                  >
+                    {label}
+                  </Label>
+                </div>
+              ))}
             </div>
-            <div className="flex items-center space-x-3 rtl:space-x-reverse">
-              <Checkbox id="price-paid" />
-              <Label
-                htmlFor="price-paid"
-                className="font-normal cursor-pointer"
-              >
-                Paid
-              </Label>
-            </div>
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
   )
 }

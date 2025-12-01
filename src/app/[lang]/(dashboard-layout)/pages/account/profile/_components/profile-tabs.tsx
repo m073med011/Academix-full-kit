@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation"
 
-import { CardWithTabs } from "@/app/[lang]/(dashboard-layout)/(design-system)/cards/basic/_components/card-with-tabs"
+import { CardWithUnderlineTabs } from "@/app/[lang]/(dashboard-layout)/(design-system)/cards/basic/_components/card-with-underline-tabs"
 import { Activity } from "./tabs/activity"
 import { CreatedCourses } from "./tabs/created-courses"
 import { PersonalInformation } from "./tabs/personal-information"
@@ -27,14 +27,14 @@ export function ProfileTabs() {
       content: <CreatedCourses />,
     },
     {
-      value: "personal",
-      label: "Personal Information",
-      content: <PersonalInformation />,
-    },
-    {
       value: "purchased",
       label: "Purchased Courses",
       content: <PurchasedCourses />,
+    },
+    {
+      value: "personal",
+      label: "Personal Information",
+      content: <PersonalInformation />,
     },
     {
       value: "activity",
@@ -45,7 +45,7 @@ export function ProfileTabs() {
 
   return (
     <section className="py-2">
-      <CardWithTabs
+      <CardWithUnderlineTabs
         tabs={tabs}
         value={activeTab}
         onValueChange={handleTabChange}

@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
 
+import { tabsData } from "./_data/tabs-data"
+
 import { Button } from "@/components/ui/button"
 import { CardDescription, CardTitle } from "@/components/ui/card"
 import { CardOverlay } from "./_components/card-overlay"
@@ -8,6 +10,7 @@ import { CardWithFilledImageHorizontal } from "./_components/card-with-filled-im
 import { CardWithImage } from "./_components/card-with-image"
 import { CardWithImageHorizontal } from "./_components/card-with-image-horizontal"
 import { CardWithTabs } from "./_components/card-with-tabs"
+import { CardWithUnderlineTabs } from "./_components/card-with-underline-tabs"
 
 // Define metadata for the page
 // More info: https://nextjs.org/docs/app/building-your-application/optimizing/metadata
@@ -63,6 +66,19 @@ export default function BasicCardsPage() {
         <CardWithFilledImageHorizontal />
       </div>
       <CardWithTabs tabs={tabs} defaultValue="home" />
+      <CardWithUnderlineTabs
+        tabs={tabsData.map((tab) => ({
+          value: tab.value,
+          label: tab.label,
+          content: (
+            <div className="text-center space-y-3">
+              <CardTitle>{tab.title}</CardTitle>
+              <CardDescription>{tab.description}</CardDescription>
+            </div>
+          ),
+        }))}
+        defaultValue="created"
+      />
     </section>
   )
 }

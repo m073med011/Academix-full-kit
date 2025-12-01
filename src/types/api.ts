@@ -525,3 +525,29 @@ export interface InstructorAnalysis {
   totalRevenue: number
   averageRating: number
 }
+
+// ============================================
+// Course Filter & Pagination Types
+// ============================================
+
+export interface CourseFilterParams {
+  page?: number
+  limit?: number
+  category?: string
+  level?: CourseLevel
+  search?: string
+}
+
+export interface CoursePagination {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+  hasMore: boolean
+}
+
+export interface CourseListResponse {
+  success: boolean
+  data: Course[]
+  pagination: CoursePagination
+}

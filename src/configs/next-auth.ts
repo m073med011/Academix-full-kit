@@ -33,6 +33,8 @@ declare module "next-auth" {
     role: UserRole
     accessToken: string
     refreshToken: string
+    emailVerified?: boolean
+    twoFactorEnabled?: boolean
   }
 }
 
@@ -149,6 +151,8 @@ export const authOptions: NextAuthOptions = {
               role: userProfile.role,
               accessToken: credentials.token,
               refreshToken: credentials.refreshToken,
+              emailVerified: userProfile.emailVerified,
+              twoFactorEnabled: userProfile.twoFactorEnabled,
             }
           } catch (error) {
             console.error("Token login failed:", error)
@@ -218,6 +222,8 @@ export const authOptions: NextAuthOptions = {
               role: data.user.role,
               accessToken: data.token, // Use token as accessToken
               refreshToken: data.refreshToken, // Use returned refresh token
+              emailVerified: data.user.emailVerified,
+              twoFactorEnabled: data.user.twoFactorEnabled,
             }
           }
 
@@ -252,6 +258,12 @@ export const authOptions: NextAuthOptions = {
         requires2FA: token.requires2FA,
         expires: token.accessTokenExpires,
       })
+      if (user) {
+        console.log("User data in JWT callback:", {
+          emailVerified: user.emailVerified,
+          twoFactorEnabled: user.twoFactorEnabled,
+        })
+      }
 
       // Handle session updates
       if (trigger === "update") {
@@ -377,6 +389,9 @@ export const authOptions: NextAuthOptions = {
           role: user.role,
           accessToken: user.accessToken,
           refreshToken: user.refreshToken,
+          // Map backend properties to token properties
+          requiresEmailVerification: !user.emailVerified,
+          requires2FA: user.twoFactorEnabled,
           // Set expiration to 150 minutes from now
           accessTokenExpires: Date.now() + 150 * 60 * 1000,
         }
