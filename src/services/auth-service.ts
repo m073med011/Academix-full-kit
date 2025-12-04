@@ -14,7 +14,7 @@ import type {
   VerifyOTPRequest,
 } from "@/types/api"
 
-import { ApiClientError, apiClient, tokenStorage } from "@/lib/api-client"
+import { ApiClientError, apiClient } from "@/lib/api-client"
 
 // Auth service for client-side authentication operations
 export const authService = {
@@ -32,8 +32,8 @@ export const authService = {
     }>("/auth/login", credentials, { skipAuth: true })
 
     if (response.success && response.data) {
-      const { user, token, refreshToken } = response.data
-      tokenStorage.setTokens(token, refreshToken)
+      const { user, token } = response.data
+      // Token storage handled by NextAuth
       return { user, token }
     }
 
@@ -66,8 +66,6 @@ export const authService = {
       await apiClient.post("/auth/logout")
     } catch {
       // Ignore errors during logout
-    } finally {
-      tokenStorage.clearTokens()
     }
   },
 
@@ -89,42 +87,47 @@ export const authService = {
    */
   async refreshToken(): Promise<{
     accessToken: string
-    refreshToken: string
+    refreshToken?: string
   }> {
-    const refreshToken = tokenStorage.getRefreshToken()
-
-    if (!refreshToken) {
-      throw new ApiClientError("No refresh token available", 401)
+    // Refresh is handled automatically by NextAuth on the server
+    // We just return the current token via the API route
+    try {
+      const res = await fetch("/api/auth/token")
+      if (!res.ok) throw new Error("Failed to get token")
+      const data = await res.json()
+      if (!data.accessToken) throw new ApiClientError("No session", 401)
+      return { accessToken: data.accessToken }
+    } catch (_e) {
+      throw new ApiClientError("No session", 401)
     }
-
-    const response = await apiClient.post<RefreshTokenResponse["data"]>(
-      "/auth/refresh",
-      { refreshToken },
-      { skipAuth: true, skipRefresh: true }
-    )
-
-    if (response.success && response.data) {
-      // Backend only returns accessToken, keep existing refreshToken
-      tokenStorage.setTokens(response.data.accessToken, refreshToken)
-      return { accessToken: response.data.accessToken, refreshToken }
-    }
-
-    tokenStorage.clearTokens()
-    throw new ApiClientError("Token refresh failed", 401)
   },
 
   /**
    * Check if user is authenticated (has valid tokens)
    */
-  isAuthenticated(): boolean {
-    return tokenStorage.hasTokens()
+  async isAuthenticated(): Promise<boolean> {
+    try {
+      const res = await fetch("/api/auth/token")
+      if (!res.ok) return false
+      const data = await res.json()
+      return !!data.accessToken
+    } catch {
+      return false
+    }
   },
 
   /**
    * Get stored access token
    */
-  getAccessToken(): string | null {
-    return tokenStorage.getAccessToken()
+  async getAccessToken(): Promise<string | null> {
+    try {
+      const res = await fetch("/api/auth/token")
+      if (!res.ok) return null
+      const data = await res.json()
+      return data.accessToken
+    } catch {
+      return null
+    }
   },
 
   // ============================================
@@ -179,7 +182,7 @@ export const authService = {
     }
 
     if (response.data && response.data.token && response.data.refreshToken) {
-      tokenStorage.setTokens(response.data.token, response.data.refreshToken)
+      // Tokens handled by NextAuth session update
     }
   },
 

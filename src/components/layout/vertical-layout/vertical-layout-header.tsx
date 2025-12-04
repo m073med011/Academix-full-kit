@@ -6,6 +6,7 @@ import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType } from "@/types"
 
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import { CartIcon } from "@/app/[lang]/(dashboard-layout)/public/store/_components/cart-icon"
 import { LanguageDropdown } from "@/components/language-dropdown"
 import { FullscreenToggle } from "@/components/layout/full-screen-toggle"
 import { NotificationDropdown } from "@/components/layout/notification-dropdown"
@@ -28,6 +29,7 @@ export function VerticalLayoutHeader({
         <ToggleMobileSidebar />
         <div className="grow flex justify-end gap-2">
           <SidebarTrigger className="hidden lg:flex lg:me-auto" />
+          <CartIcon />
           <NotificationDropdown dictionary={dictionary} />
           <FullscreenToggle />
           <ModeDropdown dictionary={dictionary} />

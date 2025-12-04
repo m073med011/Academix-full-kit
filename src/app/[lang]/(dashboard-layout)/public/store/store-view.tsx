@@ -1,46 +1,99 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 
-import type { CourseFilterParams } from "@/types/api"
 import type { DictionaryType } from "@/lib/get-dictionary"
+import type { Course, CourseFilterParams, CoursePagination } from "@/types/api"
 
 import { useCourses } from "@/hooks/use-courses"
-
 import { StoreFilters } from "./_components/store-filters"
 import { StoreHero } from "./_components/store-hero"
 import { StoreList } from "./_components/store-list"
 
-export function StoreView({ dictionary }: { dictionary: DictionaryType }) {
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [filters, setFilters] = useState<CourseFilterParams>({
-    page: 1,
-    limit: 12,
-  })
+interface StoreViewProps {
+  dictionary: DictionaryType
+  initialCourses: Course[]
+  initialPagination: CoursePagination
+}
 
-  const { courses, pagination, loading, error, setFilters: updateFilters } = useCourses(filters)
+export function StoreView({
+  dictionary,
+  initialCourses,
+  initialPagination,
+}: StoreViewProps) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
+
+  // Initialize filters from URL search params
+  const initialFilters: CourseFilterParams = {
+    page: Number(searchParams.get("page")) || 1,
+    limit: 12,
+    category: searchParams.get("category") || undefined,
+    level:
+      (searchParams.get("level") as CourseFilterParams["level"]) || undefined,
+    search: searchParams.get("search") || undefined,
+  }
+
+  // Use the hook for filter state management only
+  // Courses and pagination come directly from server-side props
+  const { filters, setFilters } = useCourses(initialFilters)
+
+  /**
+   * Update URL and trigger server-side navigation
+   * This causes the page to re-render on the server with new data
+   */
+  const updateURL = (newFilters: CourseFilterParams) => {
+    const params = new URLSearchParams()
+
+    if (newFilters.page && newFilters.page > 1) {
+      params.set("page", newFilters.page.toString())
+    }
+    if (newFilters.category) params.set("category", newFilters.category)
+    if (newFilters.level) params.set("level", newFilters.level)
+    if (newFilters.search) params.set("search", newFilters.search)
+
+    const queryString = params.toString()
+    const newURL = queryString ? `?${queryString}` : ""
+
+    // Navigate to new URL - this triggers server-side re-render
+    router.push(newURL)
+  }
 
   const handleFilterChange = (newFilters: Partial<CourseFilterParams>) => {
-    const updatedFilters = { ...filters, ...newFilters, page: 1 } // Reset to page 1 on filter change
+    // Merge filters and remove undefined values
+    const merged = { ...filters, ...newFilters, page: 1 }
+
+    // Remove undefined properties to ensure clean filter state
+    const updatedFilters: CourseFilterParams = {
+      page: merged.page,
+      limit: merged.limit,
+      ...(merged.category && { category: merged.category }),
+      ...(merged.level && { level: merged.level }),
+      ...(merged.search && { search: merged.search }),
+    }
+
     setFilters(updatedFilters)
-    updateFilters(updatedFilters)
+    updateURL(updatedFilters)
   }
 
   const handlePageChange = (page: number) => {
     const updatedFilters = { ...filters, page }
     setFilters(updatedFilters)
-    updateFilters(updatedFilters)
+    updateURL(updatedFilters)
   }
 
   const handleSortChange = (sortValue: string) => {
-    // Sort is handled client-side for now, can be added to backend later
+    // Sort can be added to backend later
     console.log("Sort changed:", sortValue)
   }
 
   const handleClearFilters = () => {
     const clearedFilters = { page: 1, limit: 12 }
     setFilters(clearedFilters)
-    updateFilters(clearedFilters)
+    updateURL(clearedFilters)
   }
 
   return (
@@ -60,10 +113,10 @@ export function StoreView({ dictionary }: { dictionary: DictionaryType }) {
           />
           <StoreList
             dictionary={dictionary}
-            courses={courses}
-            pagination={pagination}
-            loading={loading}
-            error={error}
+            courses={initialCourses}
+            pagination={initialPagination}
+            loading={false}
+            error={null}
             onPageChange={handlePageChange}
             onSortChange={handleSortChange}
           />

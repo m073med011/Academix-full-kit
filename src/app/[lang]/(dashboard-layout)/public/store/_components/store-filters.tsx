@@ -2,8 +2,8 @@
 
 import { Filter } from "lucide-react"
 
-import type { CourseFilterParams, CourseLevel } from "@/types/api"
 import type { DictionaryType } from "@/lib/get-dictionary"
+import type { CourseFilterParams, CourseLevel } from "@/types/api"
 
 import {
   Accordion,

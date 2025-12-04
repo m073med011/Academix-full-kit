@@ -8,8 +8,6 @@ import { z } from "zod"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
 
-import { tokenStorage } from "@/lib/api-client"
-
 import { toast } from "@/hooks/use-toast"
 import { ButtonLoading } from "@/components/ui/button"
 import {
@@ -92,7 +90,7 @@ export function Verify2FAForm({ dictionary }: { dictionary: DictionaryType }) {
 
       // Store tokens
       if (result.accessToken && result.refreshToken) {
-        tokenStorage.setTokens(result.accessToken, result.refreshToken)
+        // Tokens are handled by NextAuth session update below
 
         // Establish NextAuth session
         // We use the tokens to sign in via the custom Credentials flow we added

@@ -3,6 +3,7 @@
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { ReactNode } from "react"
 
+import { useCartInit } from "@/hooks/use-cart-init"
 import { useIsVertical } from "@/hooks/use-is-vertical"
 import { Customizer } from "./customizer"
 import { HorizontalLayout } from "./horizontal-layout"
@@ -16,6 +17,9 @@ export function Layout({
   dictionary: DictionaryType
 }) {
   const isVertical = useIsVertical()
+
+  // Initialize cart on app load
+  useCartInit()
 
   return (
     <>

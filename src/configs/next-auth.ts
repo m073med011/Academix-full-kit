@@ -56,8 +56,7 @@ declare module "next-auth/jwt" {
 }
 
 // LMS Backend URL
-const LMS_BACKEND_URL =
-  process.env.LMS_BACKEND_URL || "http://localhost:5000/v1"
+const LMS_BACKEND_URL = process.env.LMS_BACKEND_URL || ""
 
 // Helper function to refresh access token
 async function refreshAccessToken(token: {
@@ -252,12 +251,12 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user, account, trigger, session }) {
-      console.log("JWT Callback Trigger:", trigger)
-      console.log("JWT Token State:", {
-        requiresEmailVerification: token.requiresEmailVerification,
-        requires2FA: token.requires2FA,
-        expires: token.accessTokenExpires,
-      })
+      // console.log("JWT Callback Trigger:", trigger)
+      // console.log("JWT Token State:", {
+      //   requiresEmailVerification: token.requiresEmailVerification,
+      //   requires2FA: token.requires2FA,
+      //   expires: token.accessTokenExpires,
+      // })
       if (user) {
         console.log("User data in JWT callback:", {
           emailVerified: user.emailVerified,
@@ -419,10 +418,10 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ session, token }) {
-      console.log("Session Callback Token State:", {
-        requiresEmailVerification: token.requiresEmailVerification,
-        requires2FA: token.requires2FA,
-      })
+      // console.log("Session Callback Token State:", {
+      //   requiresEmailVerification: token.requiresEmailVerification,
+      //   requires2FA: token.requires2FA,
+      // })
       if (token) {
         session.user = {
           id: token.id,

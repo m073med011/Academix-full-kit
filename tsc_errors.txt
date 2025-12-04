@@ -1,0 +1,16 @@
+﻿src/app/[lang]/(dashboard-layout)/checkout/page.tsx(77,9): error TS2353: Object literal may only specify known properties, and 'shippingMethod' does not exist in type 'BillingData'.
+src/app/[lang]/(dashboard-layout)/checkout/page.tsx(81,9): error TS2353: Object literal may only specify known properties, and 'cartId' does not exist in type 'CreatePaymentRequest'.
+src/app/[lang]/(dashboard-layout)/checkout/page.tsx(86,20): error TS2551: Property 'paymentUrl' does not exist on type 'PaymentResponse'. Did you mean 'payment'?
+src/app/[lang]/(dashboard-layout)/checkout/page.tsx(88,41): error TS2551: Property 'paymentUrl' does not exist on type 'PaymentResponse'. Did you mean 'payment'?
+src/app/[lang]/(dashboard-layout)/checkout/page.tsx(178,26): error TS2322: Type '(formData: { firstName: string; lastName: string; email: string; phoneNumber: string; address: string; city: string; country: string; postalCode: string; }) => Promise<...>' is not assignable to type '(data: BillingData) => Promise<void>'.
+  Types of parameters 'formData' and 'data' are incompatible.
+    Property 'address' is missing in type 'BillingData' but required in type '{ firstName: string; lastName: string; email: string; phoneNumber: string; address: string; city: string; country: string; postalCode: string; }'.
+src/app/[lang]/(dashboard-layout)/order-confirmation/page.tsx(35,20): error TS2345: Argument of type 'Payment' is not assignable to parameter of type 'SetStateAction<PaymentResponse | null>'.
+src/app/[lang]/(dashboard-layout)/order-confirmation/page.tsx(70,29): error TS2339: Property 'status' does not exist on type 'PaymentResponse'.
+src/app/[lang]/(dashboard-layout)/order-confirmation/page.tsx(100,52): error TS2339: Property 'orderId' does not exist on type 'PaymentResponse'.
+src/app/[lang]/(dashboard-layout)/order-confirmation/page.tsx(109,29): error TS2339: Property 'status' does not exist on type 'PaymentResponse'.
+src/app/[lang]/(dashboard-layout)/order-confirmation/page.tsx(114,24): error TS2339: Property 'status' does not exist on type 'PaymentResponse'.
+src/app/[lang]/(dashboard-layout)/order-confirmation/page.tsx(121,24): error TS2339: Property 'paymentMethod' does not exist on type 'PaymentResponse'.
+src/app/[lang]/(dashboard-layout)/order-confirmation/page.tsx(129,29): error TS2339: Property 'amount' does not exist on type 'PaymentResponse'.
+src/app/[lang]/(dashboard-layout)/pages/account/profile/_components/tabs/purchased-courses.tsx(69,22): error TS18048: 'course.rating' is possibly 'undefined'.
+src/app/[lang]/(dashboard-layout)/payment/callback/page.tsx(211,18): error TS18048: 'paymentDetails.discountAmount' is possibly 'undefined'.

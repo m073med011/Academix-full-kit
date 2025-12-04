@@ -1,5 +1,5 @@
 {
-  "name": "shadboard-nextjs-full-kit",
+  "name": "Academix-nextjs-full-kit",
   "version": "1.0.0",
   "license": "MIT",
   "private": true,
@@ -102,7 +102,8 @@
     "sonner": "2.0.2",
     "tailwind-merge": "2.5.2",
     "vaul": "1.1.2",
-    "zod": "3.23.8"
+    "zod": "3.23.8",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@eslint/compat": "1.2.7",

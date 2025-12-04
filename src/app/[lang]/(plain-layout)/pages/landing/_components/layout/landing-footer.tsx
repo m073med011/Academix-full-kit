@@ -17,13 +17,13 @@ export function LandingFooter() {
         <section className="max-w-prose w-full mb-3 space-y-1.5 md:w-auto">
           <Link href="/" className="w-fit flex text-foreground font-black mb-6">
             <Image
-              src="/images/icons/shadboard.svg"
+              src="/images/icons/Academix.svg"
               alt=""
               height={24}
               width={24}
               className="dark:invert"
             />
-            <span>Shadboard</span>
+            <span>Academix</span>
           </Link>
           <h3 className="font-semibold leading-none tracking-tight">
             Subscribe to our newsletter
@@ -70,7 +70,7 @@ export function LandingFooter() {
               rel="noopener noreferrer"
               className={cn(buttonVariants({ variant: "link" }), "inline p-0")}
             >
-              Shadboard
+              Academix
             </a>
             .
           </p>

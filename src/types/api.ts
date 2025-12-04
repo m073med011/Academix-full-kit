@@ -241,7 +241,7 @@ export interface Course extends BaseEntity {
   duration: number
   level: CourseLevel
   category: string
-  thumbnail?: string
+  thumbnailUrl?: string
   isPublished: boolean
   students?: string[] | User[]
   rating?: number
@@ -258,7 +258,7 @@ export interface CreateCourseRequest {
   duration: number
   level: CourseLevel
   category: string
-  thumbnail?: string
+  thumbnailUrl?: string
   isPublished?: boolean
   organizationId?: string
   isOrgPrivate?: boolean
@@ -342,10 +342,8 @@ export interface Payment extends BaseEntity {
   paymobOrderId?: string
   paymobTransactionId?: string
   invoiceId?: string
-}
-
-export interface CreatePaymentRequest {
-  courseId: string
+  discountAmount?: number
+  originalAmount?: number
 }
 
 export interface CreateBulkPaymentRequest {
@@ -386,6 +384,51 @@ export interface Cart extends BaseEntity {
 
 export interface AddToCartRequest {
   courseId: string
+}
+
+// Extended cart type with populated courses and computed values
+export interface CartWithCourses extends Cart {
+  items: Array<{
+    courseId: string | Course
+    addedDate: string
+    course?: Course
+  }>
+  totalPrice: number
+  itemCount: number
+}
+
+// ============================================
+// Billing & Payment Types (Extended)
+// ============================================
+
+export interface BillingData {
+  firstName: string
+  lastName: string
+  email: string
+  phoneNumber: string
+  apartment?: string
+  floor?: string
+  street?: string
+  building?: string
+  postalCode?: string
+  city?: string
+  country?: string
+  state?: string
+}
+
+export interface CreatePaymentRequest {
+  courseIds: string[]
+  amount: number
+  billingData: BillingData
+  discountCode?: string
+  paymentMethod: "card" | "wallet" | "cash"
+}
+
+export interface PaymentResponse {
+  success: boolean
+  payment: Payment
+  paymobPaymentUrl?: string
+  message: string
 }
 
 // ============================================

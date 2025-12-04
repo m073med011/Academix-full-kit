@@ -9,6 +9,7 @@ import type { LocaleType } from "@/types"
 
 import { ensureLocalizedPathname } from "@/lib/i18n"
 
+import { CartIcon } from "@/app/[lang]/(dashboard-layout)/public/store/_components/cart-icon"
 import { LanguageDropdown } from "@/components/language-dropdown"
 import { FullscreenToggle } from "@/components/layout/full-screen-toggle"
 import { NotificationDropdown } from "@/components/layout/notification-dropdown"
@@ -32,15 +33,16 @@ export function BottomBarHeader({
         className="hidden text-foreground font-black lg:flex"
       >
         <Image
-          src="/images/icons/shadboard.svg"
+          src="/images/icons/Academix.svg"
           alt=""
           height={24}
           width={24}
           className="dark:invert"
         />
-        <span>Shadboard</span>
+        <span>Academix</span>
       </Link>
       <div className="flex gap-2">
+        <CartIcon />
         <NotificationDropdown dictionary={dictionary} />
         <FullscreenToggle />
         <ModeDropdown dictionary={dictionary} />

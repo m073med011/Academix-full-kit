@@ -1,10 +1,9 @@
 import type {
-  ApiResponse,
   Course,
+  CourseListResponse,
   CreateCourseRequest,
   CreateMaterialRequest,
   Material,
-  PaginatedResponse,
   UpdateCourseRequest,
 } from "@/types/api"
 
@@ -31,7 +30,7 @@ export const courseService = {
    */
   async getCourses(
     params: CourseQueryParams = {}
-  ): Promise<PaginatedResponse<Course>> {
+  ): Promise<CourseListResponse> {
     const queryParams = new URLSearchParams()
 
     if (params.page) queryParams.set("page", String(params.page))
@@ -45,12 +44,12 @@ export const courseService = {
     const queryString = queryParams.toString()
     const endpoint = `/courses${queryString ? `?${queryString}` : ""}`
 
-    const response = await apiClient.get<PaginatedResponse<Course>["data"]>(
-      endpoint,
-      { skipAuth: true }
-    )
+    const response = await apiClient.get<CourseListResponse>(endpoint, {
+      skipAuth: true,
+    })
 
-    return response as unknown as PaginatedResponse<Course>
+    // Backend returns CourseListResponse directly (not wrapped in ApiResponse)
+    return response as unknown as CourseListResponse
   },
 
   /**
@@ -291,49 +290,48 @@ export const courseService = {
   },
 }
 
-// Server-side course service
-export function createServerCourseService(accessToken?: string) {
-  const API_URL = process.env.LMS_BACKEND_URL || "http://localhost:5000/api"
+// ============================================
+// Server-Side Course Service (Using ApiClient)
+// ============================================
 
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-  }
+/**
+ * Server-side course service
+ * Uses the unified ApiClient for consistent behavior
+ * All fetching happens server-side, no client-side data fetching
+ */
+export const serverCourseService = {
+  /**
+   * Get courses with pagination and filters (Server-side)
+   * Uses ApiClient for consistent error handling and response format
+   */
+  async getCourses(
+    params: CourseQueryParams = {}
+  ): Promise<CourseListResponse> {
+    // Use the same courseService.getCourses that uses apiClient
+    return courseService.getCourses(params)
+  },
 
-  if (accessToken) {
-    ;(headers as Record<string, string>)["Authorization"] =
-      `Bearer ${accessToken}`
-  }
+  /**
+   * Get a single course by ID (Server-side)
+   */
+  async getCourse(id: string): Promise<Course> {
+    return courseService.getCourse(id)
+  },
 
-  return {
-    async getCourses(
-      params: CourseQueryParams = {}
-    ): Promise<ApiResponse<Course[]>> {
-      const queryParams = new URLSearchParams()
+  /**
+   * Get user's purchased courses (Server-side, requires auth)
+   */
+  async getPurchasedCourses(): Promise<Course[]> {
+    return courseService.getPurchasedCourses()
+  },
+}
 
-      if (params.page) queryParams.set("page", String(params.page))
-      if (params.limit) queryParams.set("limit", String(params.limit))
-      if (params.category) queryParams.set("category", params.category)
-      if (params.level) queryParams.set("level", params.level)
-
-      const queryString = queryParams.toString()
-      const endpoint = `/courses${queryString ? `?${queryString}` : ""}`
-
-      const response = await fetch(`${API_URL}${endpoint}`, { headers })
-      return response.json()
-    },
-
-    async getCourse(id: string): Promise<ApiResponse<Course>> {
-      const response = await fetch(`${API_URL}/courses/${id}`, { headers })
-      return response.json()
-    },
-
-    async getPurchasedCourses(): Promise<ApiResponse<Course[]>> {
-      const response = await fetch(`${API_URL}/courses/user/purchased`, {
-        headers,
-      })
-      return response.json()
-    },
-  }
+/**
+ * @deprecated Use serverCourseService instead
+ * Legacy function for backward compatibility
+ */
+export function createServerCourseService() {
+  return serverCourseService
 }
 
 export { ApiClientError }

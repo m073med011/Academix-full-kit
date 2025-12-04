@@ -1,12 +1,12 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Iphone15Pro } from "@/components/ui/iphone-15-pro"
 
 export function Iphone15ProMockup() {
   return (
     <Card>
-      <CardHeader>
+      {/* <CardHeader>
         <CardTitle>iPhone 15 Pro Mockup</CardTitle>
-      </CardHeader>
+      </CardHeader> */}
       <CardContent className="grid gap-4">
         <Iphone15Pro
           imageSrc="/images/misc/mobile.jpg"

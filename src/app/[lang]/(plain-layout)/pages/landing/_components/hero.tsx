@@ -46,7 +46,7 @@ export function Hero() {
 function SocialProofBadge() {
   return (
     <a
-      href="https://github.com/Qualiora/shadboard"
+      href="https://github.com/Qualiora/Academix"
       className={cn(
         buttonVariants({ variant: "outline", size: "sm" }),
         "group gap-x-1.5"

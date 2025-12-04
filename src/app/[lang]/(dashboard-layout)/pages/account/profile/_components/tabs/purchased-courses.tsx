@@ -1,46 +1,55 @@
 "use client"
 
+import { useEffect } from "react"
 import Image from "next/image"
+import Link from "next/link"
+import { usePurchasedCoursesStore } from "@/stores/purchased-courses-store"
+import { Loader2 } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
 
 export function PurchasedCourses() {
-  const courses = [
-    {
-      id: 1,
-      title: "Introduction to Web Development",
-      image:
-        "https://images.unsplash.com/photo-1593720213428-28a5b9e94613?w=400&h=225&fit=crop",
-      instructor: "John Smith",
-      progress: 75,
-    },
-    {
-      id: 2,
-      title: "Advanced TypeScript Patterns",
-      image:
-        "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&h=225&fit=crop",
-      instructor: "Sarah Johnson",
-      progress: 45,
-    },
-    {
-      id: 3,
-      title: "UI/UX Design Principles",
-      image:
-        "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=400&h=225&fit=crop",
-      instructor: "Mike Chen",
-      progress: 100,
-    },
-  ]
+  const { courses, isLoading, initializePurchasedCourses } =
+    usePurchasedCoursesStore()
+
+  useEffect(() => {
+    initializePurchasedCourses()
+  }, [initializePurchasedCourses])
+
+  if (isLoading) {
+    return (
+      <div className="mt-6 flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  if (courses.length === 0) {
+    return (
+      <div className="mt-6 flex flex-col items-center justify-center min-h-[400px] text-center">
+        <p className="text-lg font-medium mb-2">No purchased courses yet</p>
+        <p className="text-muted-foreground mb-6">
+          Start learning by browsing our course catalog
+        </p>
+        <Button asChild>
+          <Link href="/public/store">Browse Courses</Link>
+        </Button>
+      </div>
+    )
+  }
 
   return (
     <div className="mt-6">
       <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-6">
         {courses.map((course) => (
-          <div
-            key={course.id}
-            className="flex flex-col gap-3 pb-3 bg-card rounded-xl shadow-sm overflow-hidden border"
+          <Link
+            key={course._id}
+            href={`/public/course/${course._id}`}
+            className="flex flex-col gap-3 pb-3 bg-card rounded-xl shadow-sm overflow-hidden border hover:shadow-md transition-shadow"
           >
             <div className="relative w-full aspect-video bg-muted">
               <Image
-                src={course.image}
+                src={course.thumbnailUrl || "/placeholder-course.jpg"}
                 alt={`Course thumbnail for ${course.title}`}
                 fill
                 className="object-cover"
@@ -51,22 +60,21 @@ export function PurchasedCourses() {
                 {course.title}
               </p>
               <p className="text-muted-foreground text-sm font-normal leading-normal">
-                by {course.instructor}
+                {course.level} • {course.duration} hours
               </p>
-              <div className="mt-2">
-                <div className="flex items-center justify-between text-xs mb-1">
-                  <span className="text-muted-foreground">Progress</span>
-                  <span className="font-medium">{course.progress}%</span>
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex items-center gap-1">
+                  <span className="text-yellow-500">★</span>
+                  <span className="text-sm font-medium">
+                    {course.rating?.toFixed(1) || "0.0"}
+                  </span>
                 </div>
-                <div className="w-full bg-muted rounded-full h-2">
-                  <div
-                    className="bg-primary h-2 rounded-full transition-all"
-                    style={{ width: `${course.progress}%` }}
-                  />
-                </div>
+                <span className="text-muted-foreground text-sm">
+                  {course.students?.length || 0} students
+                </span>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

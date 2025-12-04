@@ -17,7 +17,7 @@ export function ReadyToBuildCTA() {
           </p>
         </div>
         <a
-          href="https://github.com/Qualiora/shadboard"
+          href="https://github.com/Qualiora/Academix"
           className={buttonVariants({ size: "lg" })}
           target="_blank"
           rel="noopener noreferrer"

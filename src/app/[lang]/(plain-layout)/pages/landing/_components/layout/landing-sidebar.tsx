@@ -61,13 +61,13 @@ export function LandingSidebar({ fullPathname }: { fullPathname: string }) {
               onClick={() => isMobile && setOpenMobile(!openMobile)}
             >
               <Image
-                src="/images/icons/shadboard.svg"
+                src="/images/icons/Academix.svg"
                 alt=""
                 height={24}
                 width={24}
                 className="dark:invert"
               />
-              <span>Shadboard</span>
+              <span>Academix</span>
             </Link>
             <Link
               href={ensureLocalizedPathname("/register", locale)}

@@ -11,8 +11,6 @@ import type { VerifyEmailFormType } from "@/types"
 
 import { VerifyEmailSchema } from "@/schemas/verify-email-schema"
 
-import { tokenStorage } from "@/lib/api-client"
-
 import { toast } from "@/hooks/use-toast"
 import { ButtonLoading } from "@/components/ui/button"
 import {
@@ -104,8 +102,7 @@ export function VerifyEmailForm({
 
       // Store tokens
       if (result.accessToken && result.refreshToken) {
-        console.log("Tokens received, updating session...")
-        tokenStorage.setTokens(result.accessToken, result.refreshToken)
+        // Tokens are handled by NextAuth session update below
 
         // Update NextAuth session by re-signing in with the new tokens
         console.log("Re-authenticating with new tokens...", {

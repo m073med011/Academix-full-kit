@@ -45,13 +45,13 @@ export function Auth({
             className="flex text-foreground font-black z-50"
           >
             <Image
-              src="/images/icons/shadboard.svg"
+              src="/images/icons/Academix.svg"
               alt=""
               height={24}
               width={24}
               className="dark:invert"
             />
-            <span>Shadboard</span>
+            <span>Academix</span>
           </Link>
           <LanguageDropdown dictionary={dictionary} />
         </div>

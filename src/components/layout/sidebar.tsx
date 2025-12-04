@@ -152,15 +152,13 @@ export function Sidebar({ dictionary }: { dictionary: DictionaryType }) {
           onClick={() => isMobile && setOpenMobile(!openMobile)}
         >
           <Image
-            src="/images/icons/shadboard.svg"
+            src="/images/icons/Academix.svg"
             alt=""
             height={24}
             width={24}
             className="dark:invert"
           />
-          <span className="group-data-[collapsible=icon]:hidden">
-            Shadboard
-          </span>
+          <span className="group-data-[collapsible=icon]:hidden">Academix</span>
         </Link>
         <CommandMenu dictionary={dictionary} buttonClassName="max-w-full" />
       </SidebarHeader>

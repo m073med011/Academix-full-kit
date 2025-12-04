@@ -1,12 +1,15 @@
 "use client"
 
-import { AlertCircle, Loader2, ShoppingCart, Star } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import { useParams } from "next/navigation"
+import { AlertCircle, Loader2, Star } from "lucide-react"
 
-import type { Course, CoursePagination, User } from "@/types/api"
 import type { DictionaryType } from "@/lib/get-dictionary"
+import type { LocaleType } from "@/types"
+import type { Course, CoursePagination, User } from "@/types/api"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import {
@@ -25,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { AddToCartButton } from "./add-to-cart-button"
 
 interface StoreListProps {
   dictionary: DictionaryType
@@ -45,10 +49,15 @@ export function StoreList({
   onPageChange,
   onSortChange,
 }: StoreListProps) {
+  const params = useParams()
+  const locale = params.lang as LocaleType
   const t = dictionary.storePage
 
   // Helper to get instructor name
-  const getInstructorName = (instructor: string | User): string => {
+  const getInstructorName = (
+    instructor: string | User | null | undefined
+  ): string => {
+    if (!instructor) return "Instructor"
     if (typeof instructor === "string") return "Instructor"
     return instructor.name || "Instructor"
   }
@@ -125,55 +134,56 @@ export function StoreList({
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
             {courses.map((course) => (
-              <Card
+              <Link
                 key={course._id}
-                className="group overflow-hidden border-border transition-all duration-300 hover:border-primary/50 hover:shadow-lg"
+                href={`/${locale}/public/course/${course._id}`}
+                className="block"
               >
-                <div className="relative overflow-hidden aspect-[16/9]">
-                  <img
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    src={
-                      course.thumbnail ||
-                      "https://placehold.co/600x400?text=Course+Image"
-                    }
-                    alt={course.title}
-                  />
-                  {course.price === 0 && (
-                    <div className="absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-full border bg-green-500/20 text-green-300 border-green-500/30 rtl:left-auto rtl:right-3">
-                      FREE
-                    </div>
-                  )}
-                </div>
-                <CardContent className="p-5 flex flex-col flex-grow">
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {getInstructorName(course.instructor)}
-                  </p>
-                  <h3 className="text-lg font-bold leading-tight mb-3 flex-grow line-clamp-2">
-                    {course.title}
-                  </h3>
-                  <div className="flex items-center gap-1 text-sm mb-4">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="font-bold text-foreground">
-                      {course.rating?.toFixed(1) || "0.0"}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      ({getStudentCount(course.students).toLocaleString()})
-                    </span>
+                <Card className="group overflow-hidden border-border transition-all duration-300 hover:border-primary/50 hover:shadow-lg h-full">
+                  <div className="relative overflow-hidden aspect-[16/9]">
+                    <Image
+                      width={600}
+                      height={400}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      src={
+                        course.thumbnailUrl ||
+                        "https://placehold.co/600x400?text=Course+Image"
+                      }
+                      alt={course.title}
+                    />
+                    {course.price === 0 && (
+                      <div className="absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-full border bg-green-500/20 text-green-300 border-green-500/30 rtl:left-auto rtl:right-3">
+                        FREE
+                      </div>
+                    )}
                   </div>
-                  <div className="flex justify-between items-center mt-auto">
-                    <p className="text-xl font-bold text-primary">
-                      ${course.price.toFixed(2)}
+                  <CardContent className="p-5 flex flex-col flex-grow">
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {getInstructorName(course.instructor)}
                     </p>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground"
-                    >
-                      <ShoppingCart className="h-5 w-5" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                    <h3 className="text-lg font-bold leading-tight mb-3 flex-grow line-clamp-2">
+                      {course.title}
+                    </h3>
+                    <div className="flex items-center gap-1 text-sm mb-4">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span className="font-bold text-foreground">
+                        {course.rating?.toFixed(1) || "0.0"}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        ({getStudentCount(course.students).toLocaleString()})
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center mt-auto gap-2">
+                      <p className="text-xl font-bold text-primary">
+                        ${course.price.toFixed(2)}
+                      </p>
+                      <div onClick={(e) => e.preventDefault()}>
+                        <AddToCartButton courseId={course._id} size="sm" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
 
@@ -187,7 +197,9 @@ export function StoreList({
                       href="#"
                       onClick={(e) => {
                         e.preventDefault()
-                        pagination.page > 1 && onPageChange(pagination.page - 1)
+                        if (pagination.page > 1) {
+                          onPageChange(pagination.page - 1)
+                        }
                       }}
                       className={
                         pagination.page === 1
@@ -238,7 +250,11 @@ export function StoreList({
 
                   {/* Current page */}
                   <PaginationItem>
-                    <PaginationLink href="#" isActive className="cursor-pointer">
+                    <PaginationLink
+                      href="#"
+                      isActive
+                      className="cursor-pointer"
+                    >
                       {pagination.page}
                     </PaginationLink>
                   </PaginationItem>
@@ -287,8 +303,9 @@ export function StoreList({
                       href="#"
                       onClick={(e) => {
                         e.preventDefault()
-                        pagination.page < pagination.totalPages &&
+                        if (pagination.page < pagination.totalPages) {
                           onPageChange(pagination.page + 1)
+                        }
                       }}
                       className={
                         pagination.page === pagination.totalPages
