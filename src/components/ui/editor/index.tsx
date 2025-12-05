@@ -87,8 +87,7 @@ export function Editor({
       <EditorMenuBar editor={editor} />
       <ScrollArea
         className={cn(
-          "flex flex-col min-h-9 rounded-md cursor-text",
-          !bubbleMenu && "border-t border-border",
+          "flex flex-col min-h-9 rounded-md cursor-text border-t border-border",
           editor.isFocused && "outline-hidden ring-1 ring-ring"
         )}
       >
