@@ -28,15 +28,15 @@ function ModifiedChartTooltipContent(
   const propsWithPayload = props as any
   if (!propsWithPayload.payload || propsWithPayload.payload.length === 0) return null
 
-  return (
-    <ChartTooltipContent
-      {...props}
-      payload={propsWithPayload.payload.map((item) => ({
-        ...item,
-        value: formatCurrency(Number(item.value)),
-      }))}
-    />
-  )
+  const modifiedProps = {
+    ...props,
+    payload: propsWithPayload.payload.map((item: any) => ({
+      ...item,
+      value: formatCurrency(Number(item.value)),
+    })),
+  }
+
+  return <ChartTooltipContent {...(modifiedProps as any)} />
 }
 
 export function RevenueTrendChart({

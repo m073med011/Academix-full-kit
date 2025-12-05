@@ -30,18 +30,18 @@ function ModifiedChartTooltipContent(
 
   const item = propsWithPayload.payload[0]
 
-  return (
-    <ChartTooltipContent
-      {...props}
-      payload={[
-        {
-          ...item,
-          name: item.payload.name,
-          value: item.payload.value,
-        },
-      ]}
-    />
-  )
+  const modifiedProps = {
+    ...props,
+    payload: [
+      {
+        ...item,
+        name: item.payload.name,
+        value: item.payload.value,
+      },
+    ],
+  }
+
+  return <ChartTooltipContent {...(modifiedProps as any)} />
 }
 
 export function GenderDistributionChart({

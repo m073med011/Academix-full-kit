@@ -21,37 +21,37 @@ function ModifiedChartTooltipContent(
   const propsWithPayload = props as any
   if (!propsWithPayload.payload || propsWithPayload.payload.length === 0) return null
 
-  return (
-    <ChartTooltipContent
-      {...props}
-      formatter={(value, name, item, index) => (
-        <>
-          <div
-            className="shrink-0 h-2.5 w-2.5 rounded-sm bg-(--color-bg)"
-            style={
-              {
-                // @ts-ignore
-                "--color-bg": item.fill,
-              } as CSSProperties
-            }
-          />
-          {camelCaseToTitleCase(String(name))}
-          <div className="flex items-baseline gap-0.5 ms-auto font-mono font-medium tabular-nums text-foreground">
-            {value.toLocaleString()}
-          </div>
-          {/* Add this after the last item */}
-          {index === 1 && (
-            <div className="flex basis-full items-center border-t mt-1.5 pt-1.5 text-sm font-medium text-foreground">
-              Churn Rate
-              <div className="flex items-baseline gap-0.5 ms-auto font-mono font-medium tabular-nums text-foreground">
-                {formatPercent(item.payload.churnRate)}
-              </div>
+  const modifiedProps = {
+    ...props,
+    formatter: (value: any, name: any, item: any, index: any) => (
+      <>
+        <div
+          className="shrink-0 h-2.5 w-2.5 rounded-sm bg-(--color-bg)"
+          style={
+            {
+              // @ts-ignore
+              "--color-bg": item.fill,
+            } as CSSProperties
+          }
+        />
+        {camelCaseToTitleCase(String(name))}
+        <div className="flex items-baseline gap-0.5 ms-auto font-mono font-medium tabular-nums text-foreground">
+          {value.toLocaleString()}
+        </div>
+        {/* Add this after the last item */}
+        {index === 1 && (
+          <div className="flex basis-full items-center border-t mt-1.5 pt-1.5 text-sm font-medium text-foreground">
+            Churn Rate
+            <div className="flex items-baseline gap-0.5 ms-auto font-mono font-medium tabular-nums text-foreground">
+              {formatPercent(item.payload.churnRate)}
             </div>
-          )}
-        </>
-      )}
-    />
-  )
+          </div>
+        )}
+      </>
+    ),
+  }
+
+  return <ChartTooltipContent {...(modifiedProps as any)} />
 }
 
 export function ChurnRateChart({ data }: { data: ChurnRateType["months"] }) {
@@ -90,7 +90,9 @@ export function ChurnRateChart({ data }: { data: ChurnRateType["months"] }) {
           <LabelList
             position="top"
             dataKey="churnRate"
-            formatter={(value: number) => formatPercent(value)}
+            formatter={(value: number | string | undefined) =>
+              value != null ? formatPercent(Number(value)) : ''
+            }
             fontWeight={700}
           />
           {data.map((item) => (
