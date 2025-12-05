@@ -1,7 +1,10 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
 import { UserPen } from "lucide-react"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType } from "@/types"
 
 import { userData } from "@/data/user"
@@ -11,9 +14,17 @@ import { cn, formatNumberToCompact, getInitials } from "@/lib/utils"
 
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { buttonVariants } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 
-export function ProfileHeader({ locale }: { locale: LocaleType }) {
+interface ProfileHeaderProps {
+  locale: LocaleType
+  dictionary: DictionaryType
+}
+
+export function ProfileHeader({ locale, dictionary }: ProfileHeaderProps) {
+  const t = dictionary.profilePage.header
+
   return (
     <section className="bg-background">
       <AspectRatio ratio={5 / 1} className="bg-muted">
@@ -37,16 +48,19 @@ export function ProfileHeader({ locale }: { locale: LocaleType }) {
             {getInitials(userData.name)}
           </AvatarFallback>
         </Avatar>
-        <Link
-          href={ensureLocalizedPathname("/pages/account/settings", locale)}
-          className={cn(
-            buttonVariants({ variant: "ghost", size: "icon" }),
-            "absolute top-4 end-4"
-          )}
-          aria-label="Edit your profile"
+        <Button
+          variant="ghost"
+          size="icon"
+          asChild
+          className="absolute top-4 end-4"
         >
-          <UserPen className="size-4" />
-        </Link>
+          <Link
+            href={ensureLocalizedPathname("/pages/account/settings", locale)}
+            aria-label={t.editProfile}
+          >
+            <UserPen className="size-4" />
+          </Link>
+        </Button>
         <div className="text-center md:text-start">
           <div>
             <h1 className="text-2xl font-bold line-clamp-1">{userData.name}</h1>
@@ -55,13 +69,13 @@ export function ProfileHeader({ locale }: { locale: LocaleType }) {
               {userData.country}
             </p>
           </div>
-          <div className="inline-flex w-full">
-            <p className="text-primary after:content-['\00b7'] after:mx-1">
-              {formatNumberToCompact(userData.followers)} followers
-            </p>
-            <p className="text-primary">
-              {formatNumberToCompact(userData.connections)} connections
-            </p>
+          <div className="inline-flex items-center gap-2 mt-2">
+            <Badge variant="outline">
+              {formatNumberToCompact(userData.followers)} {t.followers}
+            </Badge>
+            <Badge variant="outline">
+              {formatNumberToCompact(userData.connections)} {t.connections}
+            </Badge>
           </div>
         </div>
       </div>

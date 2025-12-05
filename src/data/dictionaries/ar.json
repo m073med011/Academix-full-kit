@@ -361,5 +361,47 @@
     "search": "بحث...",
     "noResults": "لم يتم العثور على نتائج.",
     "typeCommand": "اكتب أمراً أو ابحث..."
+  },
+  "profilePage": {
+    "header": {
+      "editProfile": "تعديل ملفك الشخصي",
+      "followers": "متابعين",
+      "connections": "اتصالات"
+    },
+    "tabs": {
+      "createdCourses": "الدورات المُنشأة",
+      "purchasedCourses": "الدورات المشتراة",
+      "personalInformation": "المعلومات الشخصية",
+      "activity": "النشاط"
+    },
+    "personalInfo": {
+      "title": "المعلومات الشخصية",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "location": "الموقع",
+      "joined": "تاريخ الانضمام",
+      "occupation": "المهنة",
+      "education": "التعليم"
+    },
+    "activity": {
+      "title": "النشاط الأخير",
+      "hoursAgo": "منذ {count} ساعات",
+      "dayAgo": "منذ يوم واحد",
+      "daysAgo": "منذ {count} أيام",
+      "weekAgo": "منذ أسبوع واحد",
+      "weeksAgo": "منذ {count} أسابيع"
+    },
+    "createdCourses": {
+      "published": "منشور",
+      "draft": "مسودة",
+      "students": "طلاب"
+    },
+    "purchasedCourses": {
+      "noCoursesTitle": "لا توجد دورات مشتراة بعد",
+      "noCoursesDescription": "ابدأ التعلم من خلال تصفح كتالوج الدورات",
+      "browseCourses": "تصفح الدورات",
+      "hours": "ساعات",
+      "students": "طلاب"
+    }
   }
 }

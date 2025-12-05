@@ -1,6 +1,8 @@
 import type { LocaleType } from "@/types"
 import type { Metadata } from "next"
 
+import { getDictionary } from "@/lib/get-dictionary"
+
 import { ProfileHeader } from "./_components/profile-header"
 import { ProfileTabs } from "./_components/profile-tabs"
 
@@ -14,10 +16,12 @@ export default async function ProfilePage(props: {
   params: Promise<{ lang: LocaleType }>
 }) {
   const params = await props.params
+  const dictionary = await getDictionary(params.lang)
+
   return (
     <div className="container px-0">
-      <ProfileHeader locale={params.lang} />
-      <ProfileTabs />
+      <ProfileHeader locale={params.lang} dictionary={dictionary} />
+      <ProfileTabs dictionary={dictionary} />
     </div>
   )
 }

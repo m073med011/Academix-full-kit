@@ -361,5 +361,47 @@
     "search": "Search...",
     "noResults": "No results found.",
     "typeCommand": "Type a command or search..."
+  },
+  "profilePage": {
+    "header": {
+      "editProfile": "Edit your profile",
+      "followers": "followers",
+      "connections": "connections"
+    },
+    "tabs": {
+      "createdCourses": "Created Courses",
+      "purchasedCourses": "Purchased Courses",
+      "personalInformation": "Personal Information",
+      "activity": "Activity"
+    },
+    "personalInfo": {
+      "title": "Personal Information",
+      "email": "Email",
+      "phone": "Phone",
+      "location": "Location",
+      "joined": "Joined",
+      "occupation": "Occupation",
+      "education": "Education"
+    },
+    "activity": {
+      "title": "Recent Activity",
+      "hoursAgo": "{count} hours ago",
+      "dayAgo": "1 day ago",
+      "daysAgo": "{count} days ago",
+      "weekAgo": "1 week ago",
+      "weeksAgo": "{count} weeks ago"
+    },
+    "createdCourses": {
+      "published": "Published",
+      "draft": "Draft",
+      "students": "students"
+    },
+    "purchasedCourses": {
+      "noCoursesTitle": "No purchased courses yet",
+      "noCoursesDescription": "Start learning by browsing our course catalog",
+      "browseCourses": "Browse Courses",
+      "hours": "hours",
+      "students": "students"
+    }
   }
 }

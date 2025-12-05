@@ -4,11 +4,27 @@ import { useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePurchasedCoursesStore } from "@/stores/purchased-courses-store"
-import { Loader2 } from "lucide-react"
+import { Loader2, Star } from "lucide-react"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
+
+import { AspectRatio } from "@/components/ui/aspect-ratio"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
-export function PurchasedCourses() {
+interface PurchasedCoursesProps {
+  dictionary: DictionaryType
+}
+
+export function PurchasedCourses({ dictionary }: PurchasedCoursesProps) {
+  const t = dictionary.profilePage.purchasedCourses
   const { courses, isLoading, initializePurchasedCourses } =
     usePurchasedCoursesStore()
 
@@ -26,55 +42,59 @@ export function PurchasedCourses() {
 
   if (courses.length === 0) {
     return (
-      <div className="mt-6 flex flex-col items-center justify-center min-h-[400px] text-center">
-        <p className="text-lg font-medium mb-2">No purchased courses yet</p>
-        <p className="text-muted-foreground mb-6">
-          Start learning by browsing our course catalog
-        </p>
-        <Button asChild>
-          <Link href="/public/store">Browse Courses</Link>
-        </Button>
-      </div>
+      <Card className="mt-6">
+        <CardContent className="flex flex-col items-center justify-center min-h-[400px] text-center p-6">
+          <CardTitle className="text-lg mb-2">{t.noCoursesTitle}</CardTitle>
+          <CardDescription className="mb-6">
+            {t.noCoursesDescription}
+          </CardDescription>
+          <Button asChild>
+            <Link href="/public/store">{t.browseCourses}</Link>
+          </Button>
+        </CardContent>
+      </Card>
     )
   }
 
   return (
     <div className="mt-6">
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-6">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6">
         {courses.map((course) => (
-          <Link
+          <Card
             key={course._id}
-            href={`/public/course/${course._id}`}
-            className="flex flex-col gap-3 pb-3 bg-card rounded-xl shadow-sm overflow-hidden border hover:shadow-md transition-shadow"
+            asChild
+            className="overflow-hidden hover:shadow-md transition-shadow"
           >
-            <div className="relative w-full aspect-video bg-muted">
-              <Image
-                src={course.thumbnailUrl || "/placeholder-course.jpg"}
-                alt={`Course thumbnail for ${course.title}`}
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="px-4">
-              <p className="text-base font-medium leading-normal line-clamp-2">
-                {course.title}
-              </p>
-              <p className="text-muted-foreground text-sm font-normal leading-normal">
-                {course.level} • {course.duration} hours
-              </p>
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex items-center gap-1">
-                  <span className="text-yellow-500">★</span>
-                  <span className="text-sm font-medium">
-                    {course.rating?.toFixed(1) || "0.0"}
-                  </span>
+            <Link href={`/public/course/${course._id}`}>
+              <CardContent className="p-0">
+                <AspectRatio ratio={16 / 9} className="bg-muted">
+                  <Image
+                    src={course.thumbnailUrl || "/placeholder-course.jpg"}
+                    alt={`Course thumbnail for ${course.title}`}
+                    fill
+                    className="object-cover"
+                  />
+                </AspectRatio>
+              </CardContent>
+              <CardHeader className="p-4">
+                <CardTitle className="text-base line-clamp-2">
+                  {course.title}
+                </CardTitle>
+                <CardDescription>
+                  {course.level} • {course.duration} {t.hours}
+                </CardDescription>
+                <div className="flex items-center gap-3 mt-2">
+                  <Badge variant="outline" className="flex items-center gap-1">
+                    <Star className="size-3 fill-yellow-500 text-yellow-500" />
+                    <span>{course.rating?.toFixed(1) || "0.0"}</span>
+                  </Badge>
+                  <Badge variant="secondary">
+                    {course.students?.length || 0} {t.students}
+                  </Badge>
                 </div>
-                <span className="text-muted-foreground text-sm">
-                  {course.students?.length || 0} students
-                </span>
-              </div>
-            </div>
-          </Link>
+              </CardHeader>
+            </Link>
+          </Card>
         ))}
       </div>
     </div>

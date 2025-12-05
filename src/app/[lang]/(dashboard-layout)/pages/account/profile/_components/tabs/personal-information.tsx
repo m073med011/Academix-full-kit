@@ -9,38 +9,46 @@ import {
   Phone,
 } from "lucide-react"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-export function PersonalInformation() {
+interface PersonalInformationProps {
+  dictionary: DictionaryType
+}
+
+export function PersonalInformation({ dictionary }: PersonalInformationProps) {
+  const t = dictionary.profilePage.personalInfo
+
   const userInfo = [
     {
       icon: Mail,
-      label: "Email",
+      label: t.email,
       value: "user@example.com",
     },
     {
       icon: Phone,
-      label: "Phone",
+      label: t.phone,
       value: "+1 (555) 123-4567",
     },
     {
       icon: MapPin,
-      label: "Location",
+      label: t.location,
       value: "New York, United States",
     },
     {
       icon: Calendar,
-      label: "Joined",
+      label: t.joined,
       value: "January 2023",
     },
     {
       icon: Briefcase,
-      label: "Occupation",
+      label: t.occupation,
       value: "Senior Software Engineer",
     },
     {
       icon: GraduationCap,
-      label: "Education",
+      label: t.education,
       value: "Master's in Computer Science",
     },
   ]
@@ -49,7 +57,7 @@ export function PersonalInformation() {
     <div className="mt-6">
       <Card>
         <CardHeader>
-          <CardTitle>Personal Information</CardTitle>
+          <CardTitle>{t.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">

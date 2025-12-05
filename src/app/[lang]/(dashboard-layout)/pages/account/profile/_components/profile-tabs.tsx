@@ -2,16 +2,23 @@
 
 import { useRouter, useSearchParams } from "next/navigation"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
+
 import { CardWithUnderlineTabs } from "@/app/[lang]/(dashboard-layout)/(design-system)/cards/basic/_components/card-with-underline-tabs"
 import { Activity } from "./tabs/activity"
 import { CreatedCourses } from "./tabs/created-courses"
 import { PersonalInformation } from "./tabs/personal-information"
 import { PurchasedCourses } from "./tabs/purchased-courses"
 
-export function ProfileTabs() {
+interface ProfileTabsProps {
+  dictionary: DictionaryType
+}
+
+export function ProfileTabs({ dictionary }: ProfileTabsProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const activeTab = searchParams.get("tab") || "created"
+  const t = dictionary.profilePage.tabs
 
   const handleTabChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -23,23 +30,23 @@ export function ProfileTabs() {
   const tabs = [
     {
       value: "created",
-      label: "Created Courses",
-      content: <CreatedCourses />,
+      label: t.createdCourses,
+      content: <CreatedCourses dictionary={dictionary} />,
     },
     {
       value: "purchased",
-      label: "Purchased Courses",
-      content: <PurchasedCourses />,
+      label: t.purchasedCourses,
+      content: <PurchasedCourses dictionary={dictionary} />,
     },
     {
       value: "personal",
-      label: "Personal Information",
-      content: <PersonalInformation />,
+      label: t.personalInformation,
+      content: <PersonalInformation dictionary={dictionary} />,
     },
     {
       value: "activity",
-      label: "Activity",
-      content: <Activity />,
+      label: t.activity,
+      content: <Activity dictionary={dictionary} />,
     },
   ]
 
