@@ -12,9 +12,7 @@ import { ButtonLoading } from "@/components/ui/button"
 export function DeleteAccountForm({ user }: { user: UserType }) {
   const form = useForm<DeleteAccountFormType>({
     resolver: zodResolver(DeleteAccountSchema),
-    defaultValues: {
-      ...user,
-    },
+    defaultValues: {},
   })
 
   const { isSubmitting } = form.formState

@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     // Validate request data
     if (!parsedData.success) {
       return NextResponse.json(
-        { message: "Invalid data", errors: parsedData.error.errors },
+        { message: "Invalid data", errors: parsedData.error.issues },
         { status: 400 }
       )
     }

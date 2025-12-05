@@ -146,7 +146,7 @@ function FormatHandler({
 
 interface AlignmentType {
   alignment: string
-  iconName: DynamicIconNameType
+  iconName: string
 }
 
 const alignments: AlignmentType[] = [
@@ -163,7 +163,7 @@ function AlignmentHandler({
 }: {
   editor: Editor
   alignment: string
-  iconName: DynamicIconNameType
+  iconName: string
 }) {
   return (
     <Toggle

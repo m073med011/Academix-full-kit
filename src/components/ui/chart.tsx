@@ -128,6 +128,12 @@ type ChartTooltipContentProps = ComponentProps<
     indicator?: "line" | "dot" | "dashed"
     nameKey?: string
     labelKey?: string
+    payload?: any[]
+    label?: any
+    labelFormatter?: any
+    labelClassName?: string
+    formatter?: any
+    color?: any
   }
 
 export function ChartTooltipContent({
@@ -269,11 +275,12 @@ export function ChartTooltipContent({
 
 export const ChartLegend = RechartsPrimitive.Legend
 
-type ChartLegendContentProps = ComponentProps<"div"> &
-  Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
-    hideIcon?: boolean
-    nameKey?: string
-  }
+type ChartLegendContentProps = ComponentProps<"div"> & {
+  payload?: any[]
+  verticalAlign?: "top" | "bottom" | "middle"
+  hideIcon?: boolean
+  nameKey?: string
+}
 
 export function ChartLegendContent({
   className,

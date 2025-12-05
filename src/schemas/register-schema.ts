@@ -18,11 +18,9 @@ export const RegisterSchema = z
       .email({ message: "Invalid email address" })
       .toLowerCase()
       .trim(),
-    role: z
-      .enum(["student", "instructor", "freelancer", "organizer"], {
-        errorMap: () => ({ message: "Please select a valid role" }),
-      })
-      .default("student"),
+    role: z.enum(["student", "instructor", "freelancer", "organizer"], {
+      errorMap: () => ({ message: "Please select a valid role" }),
+    }),
     password: z
       .string()
       .min(8, {
