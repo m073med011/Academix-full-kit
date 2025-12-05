@@ -1,8 +1,6 @@
 "use client"
 
 import { useDirection } from "@radix-ui/react-direction"
-import BubbleMenu from "@tiptap/extension-bubble-menu"
-import Color from "@tiptap/extension-color"
 import Image from "@tiptap/extension-image"
 import Link from "@tiptap/extension-link"
 import Placeholder from "@tiptap/extension-placeholder"
@@ -58,7 +56,6 @@ export function Editor({
         types: ["heading", "paragraph"],
         defaultAlignment: isRtl ? "right" : "left",
       }),
-      Color,
       TextStyle,
       Image,
       Link.configure({
@@ -87,22 +84,7 @@ export function Editor({
 
   return (
     <Card>
-      {bubbleMenu ? (
-        <BubbleMenu
-          className="z-50 h-auto rounded-md border bg-popover text-popover-foreground shadow-md outline-hidden"
-          editor={editor}
-          tippyOptions={{
-            duration: 100,
-            maxWidth: "98vw",
-            appendTo: document.body,
-            zIndex: 50,
-          }}
-        >
-          <EditorMenuBar editor={editor} />
-        </BubbleMenu>
-      ) : (
-        <EditorMenuBar editor={editor} />
-      )}
+      <EditorMenuBar editor={editor} />
       <ScrollArea
         className={cn(
           "flex flex-col min-h-9 rounded-md cursor-text",
