@@ -67,21 +67,26 @@ export default function CheckoutPage() {
         state: "",
       }
 
-      const courseIds = cart.items.map((item) =>
-        typeof item.courseId === "string" ? item.courseId : item.courseId._id
-      )
-
       const response = await paymentService.initiateCheckout({
-        courseIds,
-        amount: totalPrice,
+        cartId: cart._id,
         paymentMethod,
         billingData,
       })
 
-      if (response.paymobPaymentUrl) {
-        window.location.href = response.paymobPaymentUrl
+      console.log("Payment response received:", response)
+
+      // Check for paymentUrl (from backend) or paymobPaymentUrl (legacy)
+      const paymentUrl = response.paymentUrl || response.paymobPaymentUrl
+
+      console.log("Payment URL:", paymentUrl)
+
+      if (paymentUrl) {
+        // Redirect to Paymob iframe for card/wallet payment
+        console.log("Redirecting to Paymob:", paymentUrl)
+        window.location.href = paymentUrl
       } else if (response.success) {
-        // If no payment URL (e.g. cash or free), redirect to confirmation
+        // If no payment URL (e.g. cash payment), redirect to confirmation
+        console.log("No payment URL, clearing cart and redirecting to success")
         await clearCart()
         router.push(
           `/${locale}/payment/success?paymentId=${response.payment._id}`

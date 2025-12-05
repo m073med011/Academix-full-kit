@@ -18,7 +18,7 @@ export type CourseLevel = "beginner" | "intermediate" | "advanced"
 
 export type MaterialType = "VIDEO" | "DOCUMENT" | "LINK" | "QUIZ"
 
-export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED"
+export type PaymentStatus = "pending" | "success" | "failed" | "refunded" | "cancelled"
 
 export type PaymentMethod = "CARD"
 
@@ -417,8 +417,8 @@ export interface BillingData {
 }
 
 export interface CreatePaymentRequest {
-  courseIds: string[]
-  amount: number
+  cartId?: string
+  courseId?: string
   billingData: BillingData
   discountCode?: string
   paymentMethod: "card" | "wallet" | "cash"
@@ -427,7 +427,8 @@ export interface CreatePaymentRequest {
 export interface PaymentResponse {
   success: boolean
   payment: Payment
-  paymobPaymentUrl?: string
+  paymentUrl?: string // Backend returns this
+  paymobPaymentUrl?: string // Legacy support
   message: string
 }
 

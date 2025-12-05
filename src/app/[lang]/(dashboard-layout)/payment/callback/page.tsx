@@ -54,7 +54,7 @@ export default function PaymentCallbackPage() {
             const payment = await paymentService.getPayment(paymentId)
             setPaymentDetails(payment)
 
-            if (payment.status === "COMPLETED") {
+            if (payment.status === "success") {
               setStatus("success")
               toast.success(
                 "Payment successful! You can now access your courses."
@@ -72,13 +72,13 @@ export default function PaymentCallbackPage() {
             }
 
             // If still pending, manually verify and complete payment
-            if (payment.status === "PENDING") {
+            if (payment.status === "pending") {
               console.log("Payment still pending, manually verifying...")
               const verifiedPayment =
                 await paymentService.manuallyVerifyPayment(paymentId)
               setPaymentDetails(verifiedPayment)
 
-              if (verifiedPayment.status === "COMPLETED") {
+              if (verifiedPayment.status === "success") {
                 setStatus("success")
                 toast.success(
                   "Payment successful! You can now access your courses."
@@ -116,7 +116,7 @@ export default function PaymentCallbackPage() {
         const payment = await paymentService.getPayment(paymentId)
         setPaymentDetails(payment)
 
-        if (payment.status === "COMPLETED") {
+        if (payment.status === "success") {
           setStatus("success")
           toast.success("Payment successful! You can now access your courses.")
 
@@ -128,7 +128,7 @@ export default function PaymentCallbackPage() {
           setTimeout(() => {
             router.push("/courses/user/purchased")
           }, 3000)
-        } else if (payment.status === "PENDING") {
+        } else if (payment.status === "pending") {
           // Still processing - retry up to 5 times
           const retryCount = parseInt(
             sessionStorage.getItem("paymentRetryCount") || "0"

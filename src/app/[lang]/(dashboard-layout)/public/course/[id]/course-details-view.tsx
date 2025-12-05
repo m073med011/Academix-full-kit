@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useCartStore } from "@/stores/cart-store"
+import { usePurchasedCoursesStore } from "@/stores/purchased-courses-store"
 import {
   ArrowLeft,
   CheckCircle,
@@ -16,6 +17,7 @@ import {
   Heart,
   Play,
   Share2,
+  ShoppingCart,
   Smartphone,
   Star,
   Trophy,
@@ -49,8 +51,43 @@ export function CourseDetailsView({
   const router = useRouter()
   const locale = params.lang as LocaleType
   const { toast } = useToast()
+
+  // Cart and purchased courses state
   const addToCart = useCartStore((state) => state.addToCart)
+  const cart = useCartStore((state) => state.cart)
+  const initializeCart = useCartStore((state) => state.initializeCart)
+  const purchasedCourses = usePurchasedCoursesStore((state) => state.courses)
+  const initializePurchasedCourses = usePurchasedCoursesStore(
+    (state) => state.initializePurchasedCourses
+  )
+
   const [isWishlisted, setIsWishlisted] = useState(false)
+  const [isLoadingStores, setIsLoadingStores] = useState(true)
+
+  // Initialize stores on mount
+  useEffect(() => {
+    const initStores = async () => {
+      try {
+        await Promise.all([initializeCart(), initializePurchasedCourses()])
+      } catch (error) {
+        console.error("Failed to initialize stores:", error)
+      } finally {
+        setIsLoadingStores(false)
+      }
+    }
+    initStores()
+  }, [initializeCart, initializePurchasedCourses])
+
+  // Check if course is already purchased or in cart (reactive)
+  const courseAlreadyPurchased = purchasedCourses.some(
+    (c) => c._id === course._id
+  )
+  const courseInCart =
+    cart?.items.some((item) =>
+      typeof item.courseId === "string"
+        ? item.courseId === course._id
+        : item.courseId._id === course._id
+    ) ?? false
 
   // Helper to get instructor name
   const getInstructorName = (
@@ -554,26 +591,78 @@ export function CourseDetailsView({
 
                   {/* Action Buttons */}
                   <div className="space-y-3">
-                    <Button
-                      size="lg"
-                      className="w-full"
-                      onClick={handleEnrollNow}
-                    >
-                      Enroll Now
-                    </Button>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="w-full"
-                      onClick={handleAddToCart}
-                    >
-                      Add to Cart
-                    </Button>
+                    {courseAlreadyPurchased ? (
+                      // Already purchased - show "Go to Course"
+                      <>
+                        <div className="flex items-center justify-center gap-2 p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
+                          <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                          <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                            You own this course
+                          </span>
+                        </div>
+                        <Button
+                          size="lg"
+                          className="w-full"
+                          onClick={() => router.push(`/${locale}/courses/user/purchased`)}
+                        >
+                          Go to Course
+                        </Button>
+                      </>
+                    ) : courseInCart ? (
+                      // Already in cart - show "Go to Cart" and remove option
+                      <>
+                        <div className="flex items-center justify-center gap-2 p-3 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+                          <ShoppingCart className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                          <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                            Already in your cart
+                          </span>
+                        </div>
+                        <Button
+                          size="lg"
+                          className="w-full"
+                          onClick={() => router.push(`/${locale}/cart`)}
+                        >
+                          Go to Cart
+                        </Button>
+                        <Button
+                          size="lg"
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => router.push(`/${locale}/checkout`)}
+                        >
+                          Checkout Now
+                        </Button>
+                      </>
+                    ) : (
+                      // Not purchased and not in cart - show normal buttons
+                      <>
+                        <Button
+                          size="lg"
+                          className="w-full"
+                          onClick={handleEnrollNow}
+                          disabled={isLoadingStores}
+                        >
+                          Enroll Now
+                        </Button>
+                        <Button
+                          size="lg"
+                          variant="outline"
+                          className="w-full gap-2"
+                          onClick={handleAddToCart}
+                          disabled={isLoadingStores}
+                        >
+                          <ShoppingCart className="h-4 w-4" />
+                          Add to Cart
+                        </Button>
+                      </>
+                    )}
                   </div>
 
-                  <p className="text-xs text-center text-muted-foreground">
-                    30-Day Money-Back Guarantee
-                  </p>
+                  {!courseAlreadyPurchased && (
+                    <p className="text-xs text-center text-muted-foreground">
+                      30-Day Money-Back Guarantee
+                    </p>
+                  )}
 
                   <Separator />
 
