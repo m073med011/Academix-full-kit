@@ -1,11 +1,18 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
+import { useParams } from "next/navigation"
+import { Plus } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
+import type { LocaleType } from "@/types"
+
+import { ensureLocalizedPathname } from "@/lib/i18n"
 
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -19,7 +26,10 @@ interface CreatedCoursesProps {
 }
 
 export function CreatedCourses({ dictionary }: CreatedCoursesProps) {
+  const params = useParams()
+  const locale = params.lang as LocaleType
   const t = dictionary.profilePage.createdCourses
+  const tCreate = dictionary.profilePage.createCourse
 
   const courses = [
     {
@@ -71,6 +81,27 @@ export function CreatedCourses({ dictionary }: CreatedCoursesProps) {
 
   return (
     <div className="mt-6">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-xl font-semibold">
+            {dictionary.profilePage.tabs.createdCourses}
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {courses.length} {courses.length === 1 ? "course" : "courses"}
+          </p>
+        </div>
+        <Button asChild>
+          <Link
+            href={ensureLocalizedPathname(
+              "/pages/account/courses/create",
+              locale
+            )}
+          >
+            <Plus className="size-4" />
+            {tCreate.createNewCourse}
+          </Link>
+        </Button>
+      </div>
       <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6">
         {courses.map((course) => (
           <Card key={course.id} className="overflow-hidden">

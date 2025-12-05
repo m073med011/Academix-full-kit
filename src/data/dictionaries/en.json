@@ -402,6 +402,128 @@
       "browseCourses": "Browse Courses",
       "hours": "hours",
       "students": "students"
+    },
+    "createCourse": {
+      "createNewCourse": "Create New Course",
+      "steps": {
+        "basicInfo": "Basic Info",
+        "curriculum": "Course Content",
+        "pricing": "Pricing",
+        "media": "Media",
+        "review": "Publish"
+      },
+      "basicInfo": {
+        "title": "Create a New Course",
+        "description": "Start by providing the fundamental details for your new course.",
+        "courseTitle": "Course Title",
+        "courseTitlePlaceholder": "e.g., Introduction to Python Programming",
+        "courseDescription": "Course Description",
+        "courseDescriptionPlaceholder": "Provide a detailed summary, learning objectives, and any prerequisites for your course.",
+        "courseCategories": "Course Categories",
+        "categoriesPlaceholder": "Add a category...",
+        "targetAudience": "Target Audience",
+        "audienceLevels": {
+          "beginner": "Beginner",
+          "intermediate": "Intermediate",
+          "advanced": "Advanced",
+          "expert": "Expert"
+        }
+      },
+      "curriculum": {
+        "title": "Build Your Curriculum",
+        "description": "Organize your course content into modules and lessons.",
+        "modules": "Modules",
+        "addNewModule": "Add New Module",
+        "addContent": "Add Content",
+        "dropContentHere": "Drop content here",
+        "lesson": "Lesson",
+        "quiz": "Quiz",
+        "assignment": "Assignment",
+        "video": "Video",
+        "article": "Article",
+        "published": "Published",
+        "draft": "Draft",
+        "questions": "Questions",
+        "minRead": "min read",
+        "dueDate": "Due"
+      },
+      "pricing": {
+        "title": "Pricing & Access Settings",
+        "description": "Define how students will enroll and access your course content.",
+        "enrollmentType": "Enrollment Type",
+        "enrollmentTypeDescription": "How will students enroll in this course?",
+        "free": "Free",
+        "subscription": "Subscription",
+        "oneTimePurchase": "One-time Purchase",
+        "pricingSection": "Pricing",
+        "priceDescription": "Set the price for your course. This will be a single payment for lifetime access.",
+        "coursePrice": "Course Price",
+        "accessRestrictions": "Access Restrictions",
+        "accessRestrictionsDescription": "Control who can enroll and when.",
+        "privateCourse": "Private Course",
+        "privateCourseDescription": "Only students with a password can enroll.",
+        "enrollmentCap": "Set Enrollment Cap",
+        "enrollmentCapDescription": "Limit the number of students that can enroll.",
+        "maxStudents": "Maximum Students",
+        "enrollmentStartDate": "Enrollment Start Date",
+        "enrollmentEndDate": "Enrollment End Date"
+      },
+      "media": {
+        "title": "Course Media & Branding",
+        "description": "Upload your course thumbnail and promotional video.",
+        "courseThumbnail": "Course Thumbnail",
+        "thumbnailRecommendation": "Recommended: 1920x1080px (16:9 ratio). Supported formats: JPG, PNG.",
+        "dragDropImage": "Drag & drop image here, or",
+        "clickToBrowse": "click to browse",
+        "promotionalVideo": "Promotional Video",
+        "videoRecommendation": "Recommended: Max 5 minutes, MP4 format, under 500MB.",
+        "dragDropVideo": "Drag & drop video file, or",
+        "or": "OR",
+        "pasteVideoUrl": "Paste video URL",
+        "videoUrlPlaceholder": "e.g., https://vimeo.com/12345678",
+        "branding": "Branding",
+        "brandingDescription": "Select a primary color to be used on the course player and landing page.",
+        "primaryBrandColor": "Primary Brand Color"
+      },
+      "review": {
+        "title": "Review & Publish",
+        "description": "Review all your course details before publishing.",
+        "allChecksPassed": "All checks passed. Your course is ready to be published.",
+        "basicInformation": "Basic Information",
+        "curriculum": "Curriculum",
+        "courseMedia": "Course Media",
+        "pricingAndPromotions": "Pricing & Promotions",
+        "readinessChecklist": "Readiness Checklist",
+        "basicInfoComplete": "Basic Information",
+        "curriculumAdded": "Curriculum Added",
+        "mediaUploaded": "Course Media",
+        "pricingSet": "Pricing Set",
+        "publishCourse": "Publish Course",
+        "backToPricing": "Back to Pricing",
+        "subtitle": "Subtitle",
+        "category": "Category",
+        "language": "Language",
+        "sections": "Sections",
+        "lectures": "Lectures",
+        "priceTier": "Price Tier",
+        "promotions": "Promotions",
+        "noActivePromotions": "No active promotions"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "saveDraft": "Save Draft",
+        "next": "Next",
+        "back": "Back",
+        "nextAddContent": "Next: Add Content",
+        "nextSettings": "Next: Settings",
+        "nextPublish": "Next: Publish Course",
+        "saveAndContinue": "Save & Continue",
+        "edit": "Edit"
+      },
+      "progress": {
+        "stepOf": "Step {current} of {total}"
+      }
     }
   }
 }
+

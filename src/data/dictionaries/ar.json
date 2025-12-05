@@ -402,6 +402,128 @@
       "browseCourses": "تصفح الدورات",
       "hours": "ساعات",
       "students": "طلاب"
+    },
+    "createCourse": {
+      "createNewCourse": "إنشاء دورة جديدة",
+      "steps": {
+        "basicInfo": "المعلومات الأساسية",
+        "curriculum": "محتوى الدورة",
+        "pricing": "التسعير",
+        "media": "الوسائط",
+        "review": "النشر"
+      },
+      "basicInfo": {
+        "title": "إنشاء دورة جديدة",
+        "description": "ابدأ بتوفير التفاصيل الأساسية لدورتك الجديدة.",
+        "courseTitle": "عنوان الدورة",
+        "courseTitlePlaceholder": "مثال: مقدمة في برمجة بايثون",
+        "courseDescription": "وصف الدورة",
+        "courseDescriptionPlaceholder": "قدم ملخصاً مفصلاً وأهداف التعلم وأي متطلبات مسبقة لدورتك.",
+        "courseCategories": "فئات الدورة",
+        "categoriesPlaceholder": "أضف فئة...",
+        "targetAudience": "الجمهور المستهدف",
+        "audienceLevels": {
+          "beginner": "مبتدئ",
+          "intermediate": "متوسط",
+          "advanced": "متقدم",
+          "expert": "خبير"
+        }
+      },
+      "curriculum": {
+        "title": "بناء المنهج الدراسي",
+        "description": "نظم محتوى دورتك في وحدات ودروس.",
+        "modules": "الوحدات",
+        "addNewModule": "إضافة وحدة جديدة",
+        "addContent": "إضافة محتوى",
+        "dropContentHere": "أسقط المحتوى هنا",
+        "lesson": "درس",
+        "quiz": "اختبار",
+        "assignment": "مهمة",
+        "video": "فيديو",
+        "article": "مقال",
+        "published": "منشور",
+        "draft": "مسودة",
+        "questions": "أسئلة",
+        "minRead": "دقيقة قراءة",
+        "dueDate": "تاريخ الاستحقاق"
+      },
+      "pricing": {
+        "title": "إعدادات التسعير والوصول",
+        "description": "حدد كيفية تسجيل الطلاب والوصول إلى محتوى دورتك.",
+        "enrollmentType": "نوع التسجيل",
+        "enrollmentTypeDescription": "كيف سيسجل الطلاب في هذه الدورة؟",
+        "free": "مجاني",
+        "subscription": "اشتراك",
+        "oneTimePurchase": "شراء لمرة واحدة",
+        "pricingSection": "التسعير",
+        "priceDescription": "حدد سعر دورتك. سيكون هذا دفعة واحدة للوصول مدى الحياة.",
+        "coursePrice": "سعر الدورة",
+        "accessRestrictions": "قيود الوصول",
+        "accessRestrictionsDescription": "تحكم في من يمكنه التسجيل ومتى.",
+        "privateCourse": "دورة خاصة",
+        "privateCourseDescription": "فقط الطلاب الذين لديهم كلمة مرور يمكنهم التسجيل.",
+        "enrollmentCap": "تعيين حد التسجيل",
+        "enrollmentCapDescription": "حدد عدد الطلاب الذين يمكنهم التسجيل.",
+        "maxStudents": "الحد الأقصى للطلاب",
+        "enrollmentStartDate": "تاريخ بدء التسجيل",
+        "enrollmentEndDate": "تاريخ انتهاء التسجيل"
+      },
+      "media": {
+        "title": "وسائط الدورة والعلامة التجارية",
+        "description": "ارفع صورة مصغرة وفيديو ترويجي لدورتك.",
+        "courseThumbnail": "صورة الدورة المصغرة",
+        "thumbnailRecommendation": "موصى به: 1920×1080 بكسل (نسبة 16:9). الصيغ المدعومة: JPG، PNG.",
+        "dragDropImage": "اسحب وأفلت الصورة هنا، أو",
+        "clickToBrowse": "انقر للتصفح",
+        "promotionalVideo": "فيديو ترويجي",
+        "videoRecommendation": "موصى به: 5 دقائق كحد أقصى، صيغة MP4، أقل من 500 ميجابايت.",
+        "dragDropVideo": "اسحب وأفلت ملف الفيديو، أو",
+        "or": "أو",
+        "pasteVideoUrl": "الصق رابط الفيديو",
+        "videoUrlPlaceholder": "مثال: https://vimeo.com/12345678",
+        "branding": "العلامة التجارية",
+        "brandingDescription": "اختر لوناً أساسياً لاستخدامه في مشغل الدورة وصفحة الهبوط.",
+        "primaryBrandColor": "اللون الأساسي للعلامة التجارية"
+      },
+      "review": {
+        "title": "مراجعة ونشر",
+        "description": "راجع جميع تفاصيل دورتك قبل النشر.",
+        "allChecksPassed": "اجتازت جميع الفحوصات. دورتك جاهزة للنشر.",
+        "basicInformation": "المعلومات الأساسية",
+        "curriculum": "المنهج الدراسي",
+        "courseMedia": "وسائط الدورة",
+        "pricingAndPromotions": "التسعير والعروض الترويجية",
+        "readinessChecklist": "قائمة الجاهزية",
+        "basicInfoComplete": "المعلومات الأساسية",
+        "curriculumAdded": "تمت إضافة المنهج",
+        "mediaUploaded": "وسائط الدورة",
+        "pricingSet": "تم تحديد التسعير",
+        "publishCourse": "نشر الدورة",
+        "backToPricing": "العودة إلى التسعير",
+        "subtitle": "العنوان الفرعي",
+        "category": "الفئة",
+        "language": "اللغة",
+        "sections": "أقسام",
+        "lectures": "محاضرات",
+        "priceTier": "مستوى السعر",
+        "promotions": "العروض الترويجية",
+        "noActivePromotions": "لا توجد عروض ترويجية نشطة"
+      },
+      "actions": {
+        "cancel": "إلغاء",
+        "saveDraft": "حفظ كمسودة",
+        "next": "التالي",
+        "back": "رجوع",
+        "nextAddContent": "التالي: إضافة المحتوى",
+        "nextSettings": "التالي: الإعدادات",
+        "nextPublish": "التالي: نشر الدورة",
+        "saveAndContinue": "حفظ ومتابعة",
+        "edit": "تعديل"
+      },
+      "progress": {
+        "stepOf": "الخطوة {current} من {total}"
+      }
     }
   }
 }
+
