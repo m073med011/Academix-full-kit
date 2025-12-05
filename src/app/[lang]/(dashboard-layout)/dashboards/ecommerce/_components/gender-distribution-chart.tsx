@@ -25,9 +25,10 @@ const getNormalizedSize = (value: number, min: number, max: number) => {
 function ModifiedChartTooltipContent(
   props: ComponentProps<typeof ChartTooltipContent>
 ) {
-  if (!props.payload || props.payload.length === 0) return null
+  const propsWithPayload = props as any
+  if (!propsWithPayload.payload || propsWithPayload.payload.length === 0) return null
 
-  const item = props.payload[0]
+  const item = propsWithPayload.payload[0]
 
   return (
     <ChartTooltipContent

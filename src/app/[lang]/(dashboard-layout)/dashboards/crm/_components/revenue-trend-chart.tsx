@@ -25,12 +25,13 @@ const chartConfig = {
 function ModifiedChartTooltipContent(
   props: ComponentProps<typeof ChartTooltipContent>
 ) {
-  if (!props.payload || props.payload.length === 0) return null
+  const propsWithPayload = props as any
+  if (!propsWithPayload.payload || propsWithPayload.payload.length === 0) return null
 
   return (
     <ChartTooltipContent
       {...props}
-      payload={props.payload.map((item) => ({
+      payload={propsWithPayload.payload.map((item) => ({
         ...item,
         value: formatCurrency(Number(item.value)),
       }))}

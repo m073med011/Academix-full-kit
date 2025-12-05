@@ -19,17 +19,18 @@ import {
 function ModifiedChartTooltipContent(
   props: ComponentProps<typeof ChartTooltipContent>
 ) {
-  if (!props.payload || props.payload.length === 0) return null
+  const propsWithPayload = props as any
+  if (!propsWithPayload.payload || propsWithPayload.payload.length === 0) return null
 
-  return (
-    <ChartTooltipContent
-      {...props}
-      payload={props.payload.map((item) => ({
-        ...item,
-        value: formatDuration(Number(item.value)),
-      }))}
-    />
-  )
+  const modifiedProps = {
+    ...props,
+    payload: propsWithPayload.payload.map((item: any) => ({
+      ...item,
+      value: formatDuration(Number(item.value)),
+    })),
+  }
+
+  return <ChartTooltipContent {...(modifiedProps as any)} />
 }
 
 const chartConfig = {
