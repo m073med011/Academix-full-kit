@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { Check, ImageIcon, LinkIcon, Palette, Type, Unlink } from "lucide-react"
+import { Check, ImageIcon, LinkIcon, Type, Unlink } from "lucide-react"
 
 import type { DynamicIconNameType } from "@/types"
 import type { ChainedCommands, Editor } from "@tiptap/react"
@@ -301,38 +301,6 @@ function LinkHandler({ editor }: { editor: Editor }) {
   )
 }
 
-function ColorHandler({ editor }: { editor: Editor }) {
-  const selectedColor = editor.getAttributes("textStyle").color
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  return (
-    <Button
-      type="button"
-      variant="ghost"
-      size="icon"
-      className="relative overflow-hidden"
-      onClick={() => inputRef.current?.click()}
-      aria-label="Select text color"
-    >
-      <Palette style={{ color: selectedColor }} className="size-4" />
-      <Input
-        ref={inputRef}
-        type="color"
-        value={selectedColor}
-        onChange={(e) =>
-          editor
-            .chain()
-            .focus()
-            .setColor(e.target.value as string)
-            .run()
-        }
-        className="sr-only"
-        tabIndex={-1}
-      />
-    </Button>
-  )
-}
-
 export function EditorMenuBar({ editor }: { editor: Editor }) {
   return (
     <div
@@ -340,7 +308,6 @@ export function EditorMenuBar({ editor }: { editor: Editor }) {
       aria-label="Editor Menu Bar"
     >
       <SizeHandler editor={editor} />
-      <ColorHandler editor={editor} />
 
       <Separator orientation="vertical" className="h-4" />
 

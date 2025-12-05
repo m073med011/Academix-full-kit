@@ -19,7 +19,7 @@ export const RegisterSchema = z
       .toLowerCase()
       .trim(),
     role: z.enum(["student", "instructor", "freelancer", "organizer"], {
-      errorMap: () => ({ message: "Please select a valid role" }),
+      message: "Please select a valid role",
     }),
     password: z
       .string()
