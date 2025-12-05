@@ -1,5 +1,0 @@
-﻿
-> Academix-nextjs-full-kit@1.0.0 lint D:\Programming\training\shadboard\client
-> next lint
-
-ظëELIFECYCLEظë Command failed with exit code 1.

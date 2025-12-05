@@ -1,2 +1,0 @@
-﻿src/app/[lang]/(dashboard-layout)/pages/account/profile/_components/tabs/purchased-courses.tsx(69,22): error TS18048: 'course.rating' is possibly 'undefined'.
-src/app/[lang]/(dashboard-layout)/payment/callback/page.tsx(211,18): error TS18048: 'paymentDetails.discountAmount' is possibly 'undefined'.
