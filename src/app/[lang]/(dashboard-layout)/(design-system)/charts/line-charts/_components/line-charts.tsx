@@ -214,6 +214,8 @@ export function LineCharts() {
                 dot={(props) => {
                   const { cx, cy, value } = props
 
+                  if (!cx || !cy) return null
+
                   if (value > 2500) {
                     return (
                       <svg
