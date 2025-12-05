@@ -7,9 +7,9 @@ import { Layout } from "./_components/layout"
 
 export default async function LandingLayout(props: {
   children: ReactNode
-  params: Promise<{ lang: LocaleType }>
+  params: Promise<{ lang: string }>
 }) {
-  const params = await props.params
+  const params = await props.params as { lang: LocaleType }
 
   const { children } = props
 
