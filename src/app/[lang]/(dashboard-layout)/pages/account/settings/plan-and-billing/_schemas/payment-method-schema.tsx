@@ -2,7 +2,7 @@ import { z } from "zod"
 
 const BankSchema = z.object({
   paymentType: z.enum(["bank", "card"], {
-    required_error: "You need to select a payment type.",
+    message: "You need to select a payment type.",
   }),
   accountNumber: z
     .string()
@@ -18,7 +18,7 @@ const BankSchema = z.object({
 
 const CardSchema = z.object({
   paymentType: z.enum(["bank", "card"], {
-    required_error: "You need to select a payment type.",
+    message: "You need to select a payment type.",
   }),
   cardNumber: z
     .string()
