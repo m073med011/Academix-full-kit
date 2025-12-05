@@ -44,9 +44,9 @@ const cairoFont = Cairo({
 
 export default async function RootLayout(props: {
   children: ReactNode
-  params: Promise<{ lang: LocaleType }>
+  params: Promise<{ lang: string }>
 }) {
-  const params = await props.params
+  const params = await props.params as { lang: LocaleType }
 
   const { children } = props
 
