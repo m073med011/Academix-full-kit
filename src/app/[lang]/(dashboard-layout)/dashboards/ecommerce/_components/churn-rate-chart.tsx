@@ -90,8 +90,8 @@ export function ChurnRateChart({ data }: { data: ChurnRateType["months"] }) {
           <LabelList
             position="top"
             dataKey="churnRate"
-            formatter={(value: number | string | undefined) =>
-              value != null ? formatPercent(Number(value)) : ''
+            formatter={(value) =>
+              value != null && value !== false ? formatPercent(Number(value)) : ''
             }
             fontWeight={700}
           />
