@@ -67,7 +67,7 @@ function OrderConfirmationContent() {
     )
   }
 
-  const isSuccess = payment.status === "COMPLETED"
+  const isSuccess = payment.status === "success"
 
   return (
     <div className="container max-w-2xl py-10">
@@ -108,7 +108,7 @@ function OrderConfirmationContent() {
               className={`font-medium capitalize ${
                 isSuccess
                   ? "text-green-600"
-                  : payment.status === "PENDING"
+                  : payment.status === "pending"
                     ? "text-orange-600"
                     : "text-red-600"
               }`}
