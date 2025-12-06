@@ -16,7 +16,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     Array.from(bodyElement.classList)
       .filter(
         (className) =>
-          className.startsWith("theme-") || className.startsWith("radius-")
+          className.startsWith("theme-") ||
+          className.startsWith("radius-") ||
+          className === "dark"
       )
       .forEach((className) => {
         bodyElement.classList.remove(className)
@@ -24,7 +26,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     bodyElement.classList.add(`theme-${settings.theme}`)
     bodyElement.classList.add(`radius-${settings.radius ?? 0.5}`)
-  }, [settings.theme, settings.radius])
+
+    // Add dark class based on mode setting
+    const isDark =
+      settings.mode === "dark" ||
+      (settings.mode === "system" &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches)
+
+    if (isDark) {
+      bodyElement.classList.add("dark")
+    }
+  }, [settings.theme, settings.radius, settings.mode])
 
   return <>{children}</>
 }
