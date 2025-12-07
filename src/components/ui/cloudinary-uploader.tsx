@@ -12,6 +12,7 @@ import type {
 import type { ComponentProps } from "react"
 
 import { cn, formatFileSize } from "@/lib/utils"
+import type { DictionaryType } from "@/lib/get-dictionary"
 
 import { useCloudinaryUpload } from "@/hooks/use-cloudinary-upload"
 import { Button, ButtonLoading } from "@/components/ui/button"
@@ -38,13 +39,14 @@ export interface CloudinaryUploaderProps {
   showTypeSelector?: boolean
   defaultResourceType?: ResourceType
   showUploadedUrl?: boolean // Show URL input after upload (default: false)
+  dictionary?: DictionaryType
 }
 
-const FILE_TYPE_OPTIONS: { value: ResourceType; label: string }[] = [
-  { value: "auto", label: "Auto Detect" },
-  { value: "image", label: "Image" },
-  { value: "video", label: "Video" },
-  { value: "raw", label: "Document/Other" },
+const getFileTypeOptions = (t: DictionaryType["cloudinary"]) => [
+  { value: "auto" as ResourceType, label: t.autoDetect },
+  { value: "image" as ResourceType, label: t.image },
+  { value: "video" as ResourceType, label: t.video },
+  { value: "raw" as ResourceType, label: t.document },
 ]
 
 export function CloudinaryUploader({
@@ -59,6 +61,7 @@ export function CloudinaryUploader({
   showTypeSelector = true,
   defaultResourceType = "auto",
   showUploadedUrl = false,
+  dictionary,
 }: CloudinaryUploaderProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -67,11 +70,51 @@ export function CloudinaryUploader({
   const [copied, setCopied] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const { upload, isUploading, progress, error, result, reset } =
-    useCloudinaryUpload()
+  const {
+    upload,
+    deleteUpload,
+    isUploading,
+    isDeleting,
+    progress,
+    error,
+    result,
+    reset,
+  } = useCloudinaryUpload()
 
   // Check if we should show the dropzone UI (for images)
   const showDropzone = resourceType === "image"
+
+  // Default English dictionary fallback
+  const defaultDict: DictionaryType["cloudinary"] = {
+    upload: "Upload",
+    uploading: "Uploading...",
+    uploadAnother: "Upload Another File",
+    removeOld: "Removing old file...",
+    fileType: "File Type",
+    selectFileType: "Select file type",
+    autoDetect: "Auto Detect",
+    image: "Image",
+    video: "Video",
+    document: "Document/Other",
+    dragDropImage: "Drag and drop an image here, or click to select",
+    supports: "Supports: JPG, PNG, GIF, WebP, SVG",
+    file: "File",
+    chooseFile: "Choose File",
+    noFileChosen: "No file chosen",
+    tryAgain: "Try Again",
+    uploadSuccessful: "Upload successful!",
+    uploadedUrl: "Uploaded URL",
+    copyUrl: "Copy URL",
+    copied: "Copied!",
+    error: {
+      fileSize: "File size exceeds maximum allowed ({size})",
+      uploadFailed: "Upload failed",
+      deleteFailed: "Failed to delete old file from Cloudinary",
+    },
+  }
+
+  const t = dictionary?.cloudinary || defaultDict
+  const fileTypeOptions = getFileTypeOptions(t)
 
   // Cleanup preview URL when component unmounts or file changes
   useEffect(() => {
@@ -92,7 +135,9 @@ export function CloudinaryUploader({
     (file: File) => {
       // Check file size if maxSize is specified
       if (maxSize && file.size > maxSize) {
-        onError?.(`File size exceeds maximum allowed (${formatBytes(maxSize)})`)
+        onError?.(
+          t.error.fileSize.replace("{size}", formatBytes(maxSize))
+        )
         return
       }
 
@@ -141,7 +186,7 @@ export function CloudinaryUploader({
       const uploadResult = await upload(selectedFile, resourceType)
       onUploadComplete?.(uploadResult)
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Upload failed"
+      const errorMessage = err instanceof Error ? err.message : t.error.uploadFailed
       onError?.(errorMessage)
     }
   }
@@ -167,6 +212,17 @@ export function CloudinaryUploader({
     }
   }
 
+  const handleUploadAnother = async () => {
+    // Delete the old file from Cloudinary first
+    try {
+      await deleteUpload()
+    } catch {
+      // If deletion fails, still allow reset so user can try again
+      console.error(t.error.deleteFailed)
+    }
+    handleReset()
+  }
+
   const handleChooseFile = () => {
     inputRef.current?.click()
   }
@@ -180,25 +236,25 @@ export function CloudinaryUploader({
     <div className={cn("space-y-4", className)}>
       {/* Type Selector */}
       {showTypeSelector && (
-        <div className="space-y-2">
-          <label className="text-sm font-medium">File Type</label>
-          <Select
-            value={resourceType}
-            onValueChange={(value) => setResourceType(value as ResourceType)}
-            disabled={isUploading}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select file type" />
-            </SelectTrigger>
-            <SelectContent>
-              {FILE_TYPE_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">{t.fileType}</label>
+              <Select
+                value={resourceType}
+                onValueChange={(value) => setResourceType(value as ResourceType)}
+                disabled={isUploading}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={t.selectFileType} />
+                </SelectTrigger>
+                <SelectContent>
+                  {fileTypeOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
       )}
 
       {/* Conditional File Input UI */}
@@ -259,10 +315,10 @@ export function CloudinaryUploader({
             <div className="flex flex-col justify-center items-center gap-2 text-center p-6">
               <UploadCloud className="h-10 w-10 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
-                Drag and drop an image here, or click to select
+                {t.dragDropImage}
               </p>
               <p className="text-xs text-muted-foreground">
-                Supports: JPG, PNG, GIF, WebP, SVG
+                {t.supports}
               </p>
             </div>
           )}
@@ -271,7 +327,7 @@ export function CloudinaryUploader({
         /* Regular File Input UI */
         <>
           <div className="space-y-2">
-            <label className="text-sm font-medium">File</label>
+            <label className="text-sm font-medium">{t.file}</label>
             <div className="flex gap-2">
               <div className="flex-1 flex h-9 rounded-md border border-input bg-transparent text-sm">
                 <Button
@@ -281,11 +337,11 @@ export function CloudinaryUploader({
                   onClick={handleChooseFile}
                   disabled={isUploading}
                 >
-                  {buttonLabel}
+                  {buttonLabel === "Choose File" ? t.chooseFile : buttonLabel}
                 </Button>
                 <div className="flex-1 flex items-center text-muted-foreground px-3">
                   <span className="w-0 flex-1 truncate">
-                    {selectedFile?.name ?? placeholder}
+                    {selectedFile?.name ?? (placeholder === "No file chosen" ? t.noFileChosen : placeholder)}
                   </span>
                 </div>
               </div>
@@ -346,14 +402,14 @@ export function CloudinaryUploader({
         icon={Upload}
         className="w-full"
       >
-        {isUploading ? `Uploading... ${progress}%` : "Upload to Cloudinary"}
+        {isUploading ? `${t.uploading} ${progress}%` : t.upload}
       </ButtonLoading>
 
       {/* Progress Bar */}
       {isUploading && (
         <div className="space-y-2">
           <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Uploading...</span>
+            <span>{t.uploading}</span>
             <span className="font-medium">{progress}%</span>
           </div>
           <Progress value={progress} className="h-2" />
@@ -371,7 +427,7 @@ export function CloudinaryUploader({
             onClick={handleReset}
             className="ms-auto"
           >
-            Try Again
+            {t.tryAgain}
           </Button>
         </div>
       )}
@@ -381,11 +437,11 @@ export function CloudinaryUploader({
         <div className="space-y-2">
           <div className="flex items-center gap-2 p-3 rounded-md bg-primary/10 text-primary text-sm">
             <Check className="h-4 w-4 shrink-0" />
-            <span>Upload successful!</span>
+            <span>{t.uploadSuccessful}</span>
           </div>
           {showUploadedUrl && (
             <div className="space-y-2">
-              <label className="text-sm font-medium">Uploaded URL</label>
+              <label className="text-sm font-medium">{t.uploadedUrl}</label>
               <div className="flex gap-2">
                 <Input
                   value={result.secureUrl}
@@ -396,7 +452,7 @@ export function CloudinaryUploader({
                   variant="outline"
                   size="icon"
                   onClick={handleCopyUrl}
-                  title={copied ? "Copied!" : "Copy URL"}
+                  title={copied ? t.copied : t.copyUrl}
                 >
                   {copied ? (
                     <Check className="h-4 w-4 text-primary" />
@@ -410,10 +466,18 @@ export function CloudinaryUploader({
           <Button
             variant="outline"
             size="sm"
-            onClick={handleReset}
+            onClick={handleUploadAnother}
+            disabled={isDeleting}
             className="w-full"
           >
-            Upload Another File
+            {isDeleting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin me-2" />
+                {t.removeOld}
+              </>
+            ) : (
+              t.uploadAnother
+            )}
           </Button>
         </div>
       )}
@@ -429,5 +493,3 @@ function formatBytes(bytes: number): string {
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
 }
-
-

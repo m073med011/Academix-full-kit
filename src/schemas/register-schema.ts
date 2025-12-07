@@ -33,6 +33,7 @@ export const RegisterSchema = z
     confirmPassword: z
       .string()
       .min(1, { message: "Confirm Password is required" }),
+    imageProfileUrl: z.string().url().optional().or(z.literal("")),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",

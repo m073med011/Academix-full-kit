@@ -1,10 +1,16 @@
 "use client"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
+
 import { toast } from "@/hooks/use-toast"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CloudinaryUploader } from "@/components/ui/cloudinary-uploader"
 
-export function CloudinaryUploadDemo() {
+export function CloudinaryUploadDemo({
+  dictionary,
+}: {
+  dictionary: DictionaryType
+}) {
   return (
     <Card>
       <CardHeader>
@@ -13,6 +19,7 @@ export function CloudinaryUploadDemo() {
       <CardContent>
         <CloudinaryUploader
           showUploadedUrl={true}
+          dictionary={dictionary}
           onUploadComplete={(result) => {
             toast({
               title: "Upload Successful",

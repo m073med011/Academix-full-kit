@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react"
 import {
+  deleteFromCloudinary,
   getResourceTypeFromFile,
   uploadToCloudinary,
 } from "@/services/cloudinary-service"
@@ -17,7 +18,9 @@ export interface UseCloudinaryUploadReturn {
     file: File,
     resourceType?: ResourceType
   ) => Promise<CloudinaryUploadResult>
+  deleteUpload: () => Promise<void>
   isUploading: boolean
+  isDeleting: boolean
   progress: number
   error: string | null
   result: CloudinaryUploadResult | null
@@ -29,7 +32,7 @@ export interface UseCloudinaryUploadReturn {
  *
  * @example
  * ```tsx
- * const { upload, isUploading, progress, error, result, reset } = useCloudinaryUpload()
+ * const { upload, deleteUpload, isUploading, isDeleting, progress, error, result, reset } = useCloudinaryUpload()
  *
  * const handleUpload = async (file: File) => {
  *   try {
@@ -39,10 +42,20 @@ export interface UseCloudinaryUploadReturn {
  *     console.error("Upload failed", err)
  *   }
  * }
+ *
+ * const handleDelete = async () => {
+ *   try {
+ *     await deleteUpload()
+ *     console.log("Deleted!")
+ *   } catch (err) {
+ *     console.error("Delete failed", err)
+ *   }
+ * }
  * ```
  */
 export function useCloudinaryUpload(): UseCloudinaryUploadReturn {
   const [isUploading, setIsUploading] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<CloudinaryUploadResult | null>(null)
@@ -87,8 +100,31 @@ export function useCloudinaryUpload(): UseCloudinaryUploadReturn {
     [handleProgress]
   )
 
+  const deleteUpload = useCallback(async (): Promise<void> => {
+    if (!result) return
+
+    setIsDeleting(true)
+    setError(null)
+
+    try {
+      await deleteFromCloudinary(
+        result.publicId,
+        result.resourceType as ResourceType
+      )
+      setResult(null)
+      setProgress(0)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Delete failed"
+      setError(errorMessage)
+      throw err
+    } finally {
+      setIsDeleting(false)
+    }
+  }, [result])
+
   const reset = useCallback(() => {
     setIsUploading(false)
+    setIsDeleting(false)
     setProgress(0)
     setError(null)
     setResult(null)
@@ -96,7 +132,9 @@ export function useCloudinaryUpload(): UseCloudinaryUploadReturn {
 
   return {
     upload,
+    deleteUpload,
     isUploading,
+    isDeleting,
     progress,
     error,
     result,

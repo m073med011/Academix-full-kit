@@ -131,7 +131,36 @@ export function getResourceTypeFromFile(file: File): ResourceType {
   return "raw"
 }
 
+/**
+ * Delete a file from Cloudinary
+ * Note: This requires a backend API endpoint since deletion requires a signed request
+ * @param publicId - The public ID of the file to delete
+ * @param resourceType - The type of resource (image, video, raw)
+ * @returns Promise that resolves when deletion is complete
+ */
+export async function deleteFromCloudinary(
+  publicId: string,
+  resourceType: ResourceType = "image"
+): Promise<void> {
+  const response = await fetch("/api/cloudinary/delete", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      publicId,
+      resourceType,
+    }),
+  })
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}))
+    throw new Error(errorData.error || "Failed to delete file from Cloudinary")
+  }
+}
+
 export const cloudinaryService = {
   uploadToCloudinary,
   getResourceTypeFromFile,
+  deleteFromCloudinary,
 }
