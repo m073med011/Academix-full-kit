@@ -337,7 +337,9 @@
         "advanced": "Advanced"
       },
       "stars": "stars",
-      "up": "& Up"
+      "up": "& Up",
+      "search": "Search",
+      "searchPlaceholder": "Search courses..."
     },
     "sort": {
       "label": "Sort by:",
@@ -355,12 +357,207 @@
       "addToCart": "Add to Cart",
       "bestseller": "BESTSELLER",
       "new": "NEW"
+    },
+    "cart": {
+      "title": "Shopping Cart",
+      "item": "item",
+      "items": "items",
+      "reviewCourses": "Review your courses before checkout",
+      "emptyTitle": "Your cart is empty",
+      "emptyDescription": "Start adding courses to your cart",
+      "browseCourses": "Browse Courses",
+      "total": "Total",
+      "goToCart": "Go to Cart",
+      "taxesShipping": "Taxes and shipping calculated at checkout",
+      "remove": "Remove"
+    },
+    "noResults": {
+      "title": "No courses found",
+      "description": "Try adjusting your filters or search criteria"
+    },
+    "error": {
+      "title": "Error"
+    },
+    "free": "FREE"
+  },
+  "cartPage": {
+    "title": "Shopping Cart",
+    "clearCart": "Clear Cart",
+    "clearCartConfirm": "Are you sure you want to clear your cart?",
+    "loading": "Loading your cart...",
+    "empty": {
+      "title": "Your cart is empty",
+      "description": "Start adding courses to your cart to begin learning",
+      "browseCourses": "Browse Courses"
+    },
+    "orderSummary": {
+      "title": "Order Summary",
+      "items": "Items",
+      "discountCode": "Discount Code",
+      "enterCode": "Enter code",
+      "apply": "Apply",
+      "saved": "saved",
+      "discount": "Discount",
+      "total": "Total"
+    },
+    "checkout": {
+      "button": "Proceed to Checkout",
+      "terms": "By proceeding, you agree to our Terms of Service and Privacy Policy"
+    },
+    "item": {
+      "hours": "hours",
+      "removeFromCart": "Remove from cart"
+    }
+  },
+  "checkoutPage": {
+    "backToCart": "Back to Cart",
+    "title": "Checkout",
+    "paymentMethod": {
+      "title": "Payment Method",
+      "card": {
+        "title": "Credit / Debit Card",
+        "description": "Pay securely with your card"
+      },
+      "wallet": {
+        "title": "Mobile Wallet",
+        "description": "Pay with Vodafone Cash, Orange Cash, etc."
+      },
+      "cash": {
+        "title": "Cash on Delivery",
+        "description": "Pay when you receive access"
+      }
+    },
+    "billingInfo": {
+      "title": "Billing Information",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "John",
+      "firstNameError": "First name must be at least 2 characters",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Doe",
+      "lastNameError": "Last name must be at least 2 characters",
+      "email": "Email",
+      "emailPlaceholder": "john.doe@example.com",
+      "emailError": "Invalid email address",
+      "phone": "Phone",
+      "phonePlaceholder": "+1234567890",
+      "phoneError": "Phone number must be at least 10 digits",
+      "address": "Address",
+      "addressPlaceholder": "123 Main Street",
+      "addressError": "Address must be at least 5 characters",
+      "city": "City",
+      "cityPlaceholder": "New York",
+      "cityError": "City must be at least 2 characters",
+      "country": "Country",
+      "countryPlaceholder": "Select country",
+      "countryError": "Country is required",
+      "postalCode": "Postal Code",
+      "postalCodePlaceholder": "10001",
+      "postalCodeError": "Postal code must be at least 3 characters",
+      "processing": "Processing...",
+      "continueToPayment": "Continue to Payment"
+    },
+    "countries": {
+      "EG": "Egypt",
+      "US": "United States",
+      "GB": "United Kingdom",
+      "CA": "Canada",
+      "AU": "Australia",
+      "DE": "Germany",
+      "FR": "France",
+      "SA": "Saudi Arabia",
+      "AE": "United Arab Emirates"
+    },
+    "orderSummary": {
+      "title": "Order Summary",
+      "items": "Items",
+      "total": "Total",
+      "coursesInOrder": "Courses in your order:"
+    }
+  },
+  "footer": {
+    "copyright": "©",
+    "designedBy": "Designed & Developed by"
+  },
+  "paymentCallbackPage": {
+    "loading": {
+      "title": "Processing Payment",
+      "description": "Please wait while we verify your payment...",
+      "note": "This may take a few moments"
+    },
+    "success": {
+      "title": "Payment Successful!",
+      "description": "Your courses have been activated.",
+      "paymentId": "Payment ID",
+      "originalAmount": "Original Amount",
+      "discount": "Discount",
+      "amountPaid": "Amount Paid",
+      "courses": "Courses",
+      "viewMyCourses": "View My Courses",
+      "browseMoreCourses": "Browse More Courses"
+    },
+    "failed": {
+      "title": "Payment Failed",
+      "description": "Something went wrong with your payment. Please try again.",
+      "paymentId": "Payment ID",
+      "status": "Status",
+      "returnToCheckout": "Return to Checkout",
+      "viewCart": "View Cart"
     }
   },
   "search": {
     "search": "Search...",
     "noResults": "No results found.",
     "typeCommand": "Type a command or search..."
+  },
+  "toast": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info",
+    "loading": "Loading...",
+    "cart": {
+      "addedToCart": "Course added to cart",
+      "removedFromCart": "Course removed from cart",
+      "cartCleared": "Cart cleared",
+      "failedToAdd": "Failed to add to cart",
+      "failedToRemove": "Failed to remove from cart",
+      "failedToClear": "Failed to clear cart",
+      "cartIsEmpty": "Cart is empty",
+      "discountApplied": "Discount applied: {code}",
+      "invalidDiscount": "Invalid discount code",
+      "failedToApplyDiscount": "Failed to apply discount",
+      "discountRemoved": "Discount removed"
+    },
+    "courses": {
+      "failedToRefresh": "Failed to refresh purchased courses"
+    },
+    "course": {
+      "error": "Error",
+      "failedToAdd": "Failed to add course to cart",
+      "linkCopied": "Link copied",
+      "linkCopiedDesc": "Course link has been copied to clipboard",
+      "removedFromWishlist": "Removed from wishlist",
+      "addedToWishlist": "Added to wishlist",
+      "wishlistDescRemoved": "{title} has been removed from your wishlist",
+      "wishlistDescAdded": "{title} has been added to your wishlist",
+      "previewNotAvailable": "Preview not available",
+      "previewNotAvailableDesc": "Course preview will be available soon"
+    },
+    "payment": {
+      "initiationFailed": "Payment initiation failed. Please try again.",
+      "processingFailed": "Payment processing failed. Please try again.",
+      "success": "Payment completed successfully",
+      "cancelled": "Payment was cancelled",
+      "pending": "Payment is being processed",
+      "invalidInformation": "Invalid payment information",
+      "verificationFailed": "Payment verification failed",
+      "verificationTimeout": "Payment verification timed out. Please contact support.",
+      "processingTakingLong": "Payment verification is taking longer than expected. Please check back later or contact support.",
+      "enrollmentFailed": "Payment succeeded but enrollment processing failed. Please contact our help center for assistance.",
+      "successful": "Payment successful! You can now access your courses.",
+      "processed": "Payment processed! Your courses will be available shortly.",
+      "failed": "Payment failed. Please try again."
+    }
   },
   "profilePage": {
     "header": {
@@ -523,6 +720,83 @@
       "progress": {
         "stepOf": "Step {current} of {total}"
       }
+    }
+  },
+  "courseDetailsPage": {
+    "navigation": {
+      "back": "Back",
+      "catalog": "Catalog"
+    },
+    "students": "students",
+    "hours": "hours",
+    "instructorLabel": "Instructor",
+    "tabs": {
+      "overview": "Overview",
+      "curriculum": "Curriculum",
+      "instructor": "Instructor",
+      "reviews": "Reviews"
+    },
+    "overview": {
+      "whatYouLearn": "What you'll learn",
+      "prerequisitesTitle": "Prerequisites",
+      "descriptionTitle": "Course Description",
+      "learningPoints": {
+        "p1": "Foundational principles of the subject",
+        "p2": "Hands-on practical exercises and projects",
+        "p3": "Industry best practices and standards",
+        "p4": "Real-world application techniques",
+        "p5": "Advanced concepts and methodologies",
+        "p6": "Tools and technologies used by professionals"
+      },
+      "prerequisites": {
+        "p1": "Basic understanding of fundamental concepts",
+        "p2": "Access to a computer with internet connection",
+        "p3": "Willingness to learn and practice regularly"
+      }
+    },
+    "curriculum": {
+      "title": "Course Content",
+      "sections": "sections",
+      "totalLength": "hours total length",
+      "sectionPrefix": "Section",
+      "moduleTitle": "Module Title",
+      "lessonPrefix": "Lesson",
+      "topicName": "Topic Name",
+      "hours": "hours",
+      "reading": "Reading"
+    },
+    "instructor": {
+      "title": "About the Instructor",
+      "studentsLabel": "Students",
+      "ratingLabel": "Rating",
+      "coursesLabel": "Courses"
+    },
+    "reviews": {
+      "title": "Student Reviews",
+      "ratings": "ratings",
+      "studentName": "Student Name",
+      "weeksAgo": "{count} weeks ago"
+    },
+    "purchaseCard": {
+      "previewCourse": "Preview Course",
+      "youOwnCourse": "You own this course",
+      "goToCourse": "Go to Course",
+      "alreadyInCart": "Already in your cart",
+      "goToCart": "Go to Cart",
+      "checkoutNow": "Checkout Now",
+      "enrollNow": "Enroll Now",
+      "addToCart": "Add to Cart",
+      "moneyBackGuarantee": "30-Day Money-Back Guarantee",
+      "courseIncludes": "This course includes:",
+      "hoursVideo": "hours on-demand video",
+      "articlesResources": "articles & resources",
+      "downloadableResources": "Downloadable resources",
+      "lifetimeAccess": "Full lifetime access",
+      "mobileAccess": "Access on mobile and TV",
+      "certificate": "Certificate of completion",
+      "share": "Share",
+      "wishlisted": "Wishlisted",
+      "addToWishlist": "Add to Wishlist"
     }
   }
 }

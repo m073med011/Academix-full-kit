@@ -1,9 +1,10 @@
 import { cartService } from "@/services/cart-service"
 import { paymentService } from "@/services/payment-service"
-import { toast } from "sonner"
+import { toast } from "@/components/ui/sonner"
 import { create } from "zustand"
 
 import type { CartWithCourses } from "@/types/api"
+import type { DictionaryType } from "@/lib/get-dictionary"
 
 interface CartStore {
   cart: CartWithCourses | null
@@ -12,8 +13,10 @@ interface CartStore {
   discountCode: string | null
   discountAmount: number
   discountError: string | null
+  dictionary: DictionaryType | null
 
   // Actions
+  setDictionary: (dictionary: DictionaryType) => void
   initializeCart: () => Promise<void>
   addToCart: (courseId: string) => Promise<void>
   removeFromCart: (courseId: string) => Promise<void>
@@ -64,6 +67,9 @@ export const useCartStore = create<CartStore>((set, get) => ({
   discountCode: null,
   discountAmount: 0,
   discountError: null,
+  dictionary: null,
+
+  setDictionary: (dictionary) => set({ dictionary }),
 
   initializeCart: async () => {
     if (get().isInitialized) return
@@ -104,12 +110,20 @@ export const useCartStore = create<CartStore>((set, get) => ({
       await cartService.addToCart(courseId)
       await get().refreshCart()
       console.log("Cart after add:", get().cart)
-      toast.success("Course added to cart")
+      const { dictionary } = get()
+      if (dictionary) {
+        toast.success({ key: "toast.cart.addedToCart", dictionary })
+      } else {
+        toast.success("Course added to cart")
+      }
     } catch (error) {
       console.error("Add to cart error:", error)
+      const { dictionary } = get()
       // Display the actual error message from the backend
       const errorMessage =
-        error instanceof Error ? error.message : "Failed to add to cart"
+        error instanceof Error ? error.message : dictionary
+          ? { key: "toast.cart.failedToAdd", dictionary }
+          : "Failed to add to cart"
       toast.error(errorMessage)
       set({ isLoading: false })
       throw error
@@ -121,9 +135,19 @@ export const useCartStore = create<CartStore>((set, get) => ({
       set({ isLoading: true })
       await cartService.removeFromCart(courseId)
       await get().refreshCart()
-      toast.success("Course removed from cart")
+      const { dictionary } = get()
+      if (dictionary) {
+        toast.success({ key: "toast.cart.removedFromCart", dictionary })
+      } else {
+        toast.success("Course removed from cart")
+      }
     } catch (error) {
-      toast.error("Failed to remove from cart")
+      const { dictionary } = get()
+      if (dictionary) {
+        toast.error({ key: "toast.cart.failedToRemove", dictionary })
+      } else {
+        toast.error("Failed to remove from cart")
+      }
       set({ isLoading: false })
       throw error
     }
@@ -134,9 +158,19 @@ export const useCartStore = create<CartStore>((set, get) => ({
       set({ isLoading: true })
       await cartService.clearCart()
       await get().refreshCart()
-      toast.success("Cart cleared")
+      const { dictionary } = get()
+      if (dictionary) {
+        toast.success({ key: "toast.cart.cartCleared", dictionary })
+      } else {
+        toast.success("Cart cleared")
+      }
     } catch (error) {
-      toast.error("Failed to clear cart")
+      const { dictionary } = get()
+      if (dictionary) {
+        toast.error({ key: "toast.cart.failedToClear", dictionary })
+      } else {
+        toast.error("Failed to clear cart")
+      }
       set({ isLoading: false })
       throw error
     }
@@ -154,9 +188,13 @@ export const useCartStore = create<CartStore>((set, get) => ({
 
   applyDiscount: async (code: string) => {
     const cart = get().cart
+    const { dictionary } = get()
     if (!cart || cart.items.length === 0) {
+      const errorMsg = dictionary
+        ? { key: "toast.cart.cartIsEmpty", dictionary }
+        : "Cart is empty"
       set({ discountError: "Cart is empty" })
-      toast.error("Cart is empty")
+      toast.error(errorMsg)
       return
     }
 
@@ -174,6 +212,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
           discountAmount: result.discountAmount,
           discountError: null,
         })
+        // Note: This message includes dynamic content (code), so we keep it as plain text
         toast.success(`Discount applied: ${code}`)
       } else {
         set({
@@ -181,7 +220,10 @@ export const useCartStore = create<CartStore>((set, get) => ({
           discountAmount: 0,
           discountError: result.message || "Invalid discount code",
         })
-        toast.error(result.message || "Invalid discount code")
+        const errorMsg = result.message || (dictionary
+          ? { key: "toast.cart.invalidDiscount", dictionary }
+          : "Invalid discount code")
+        toast.error(errorMsg)
       }
     } catch (_error) {
       set({
@@ -189,18 +231,25 @@ export const useCartStore = create<CartStore>((set, get) => ({
         discountAmount: 0,
         discountError: "Failed to apply discount",
       })
-      toast.error("Failed to apply discount")
+      const errorMsg = dictionary
+        ? { key: "toast.cart.failedToApplyDiscount", dictionary }
+        : "Failed to apply discount"
+      toast.error(errorMsg)
     } finally {
       set({ isLoading: false })
     }
   },
 
   removeDiscount: () => {
+    const { dictionary } = get()
     set({
       discountCode: null,
       discountAmount: 0,
       discountError: null,
     })
-    toast.success("Discount removed")
+    const successMsg = dictionary
+      ? { key: "toast.cart.discountRemoved", dictionary }
+      : "Discount removed"
+    toast.success(successMsg)
   },
 }))

@@ -5,6 +5,8 @@ import { Filter } from "lucide-react"
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { CourseFilterParams, CourseLevel } from "@/types/api"
 
+import { typography } from "@/lib/typography"
+
 import {
   Accordion,
   AccordionContent,
@@ -76,7 +78,7 @@ export function StoreFilters({
       <aside className="hidden lg:block w-full lg:w-1/4">
         <div className="sticky top-8 border rounded-lg bg-card p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold">{t.title}</h2>
+            <h2 className={typography.h4}>{t.title}</h2>
             <Button
               variant="link"
               className="text-primary h-auto p-0 text-sm hover:no-underline"
@@ -125,13 +127,13 @@ function FiltersContent({
     <div className="space-y-6">
       {/* Search Input */}
       <div className="space-y-2">
-        <Label htmlFor="search" className="text-sm font-semibold">
-          Search
+        <Label htmlFor="search" className={typography.large}>
+          {t.search || "Search"}
         </Label>
         <Input
           id="search"
           type="text"
-          placeholder="Search courses..."
+          placeholder={t.searchPlaceholder || "Search courses..."}
           value={currentFilters.search || ""}
           onChange={(e) => handleSearchChange(e.target.value)}
           className="w-full"
@@ -141,7 +143,9 @@ function FiltersContent({
       <Accordion type="multiple" defaultValue={["category"]} className="w-full">
         {/* Category Section */}
         <AccordionItem value="category">
-          <AccordionTrigger className="text-sm font-semibold hover:no-underline">
+          <AccordionTrigger
+            className={`${typography.large} hover:no-underline`}
+          >
             {t.category}
           </AccordionTrigger>
           <AccordionContent>
@@ -160,7 +164,7 @@ function FiltersContent({
                   />
                   <Label
                     htmlFor={`category-${key}`}
-                    className="font-normal cursor-pointer flex-1"
+                    className={`${typography.normal} cursor-pointer flex-1`}
                   >
                     {label}
                   </Label>
@@ -172,7 +176,9 @@ function FiltersContent({
 
         {/* Experience Level Section */}
         <AccordionItem value="level">
-          <AccordionTrigger className="text-sm font-semibold hover:no-underline">
+          <AccordionTrigger
+            className={`${typography.large} hover:no-underline`}
+          >
             {t.level}
           </AccordionTrigger>
           <AccordionContent>
@@ -191,7 +197,7 @@ function FiltersContent({
                   />
                   <Label
                     htmlFor={`level-${key}`}
-                    className="font-normal cursor-pointer"
+                    className={`${typography.normal} cursor-pointer`}
                   >
                     {label}
                   </Label>

@@ -29,7 +29,7 @@ export function VerticalLayoutHeader({
         <ToggleMobileSidebar />
         <div className="grow flex justify-end gap-2">
           <SidebarTrigger className="hidden lg:flex lg:me-auto" />
-          <CartIcon />
+          <CartIcon dictionary={dictionary} />
           <NotificationDropdown dictionary={dictionary} />
           <FullscreenToggle />
           <ModeDropdown dictionary={dictionary} />

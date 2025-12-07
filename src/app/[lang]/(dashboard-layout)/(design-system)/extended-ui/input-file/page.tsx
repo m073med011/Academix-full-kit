@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 
 import { BasicInputFile } from "./_components/basic-input-file"
+import { CloudinaryUploadDemo } from "./_components/cloudinary-upload-demo"
 import { InputFileButtonLabel } from "./_components/input-file-button-label"
 import { InputFileButtonVariants } from "./_components/input-file-button-varaints"
 import { InputFilePlaceholder } from "./_components/input-file-placeholder"
@@ -19,7 +20,10 @@ export default function InputFilePage() {
         <InputFileButtonLabel />
         <InputFilePlaceholder />
       </div>
-      <InputFileButtonVariants />
+      <div className="grid gap-4">
+        <InputFileButtonVariants />
+        <CloudinaryUploadDemo />
+      </div>
     </section>
   )
 }

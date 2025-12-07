@@ -337,7 +337,9 @@
         "advanced": "متقدم"
       },
       "stars": "نجوم",
-      "up": "فأكثر"
+      "up": "فأكثر",
+      "search": "بحث",
+      "searchPlaceholder": "ابحث عن دورات..."
     },
     "sort": {
       "label": "ترتيب حسب:",
@@ -355,12 +357,207 @@
       "addToCart": "أضف إلى السلة",
       "bestseller": "الأكثر مبيعاً",
       "new": "جديد"
+    },
+    "cart": {
+      "title": "سلة التسوق",
+      "item": "عنصر",
+      "items": "عناصر",
+      "reviewCourses": "راجع الدورات قبل الدفع",
+      "emptyTitle": "سلتك فارغة",
+      "emptyDescription": "ابدأ بإضافة الدورات إلى سلتك",
+      "browseCourses": "تصفح الدورات",
+      "total": "الإجمالي",
+      "goToCart": "الذهاب إلى السلة",
+      "taxesShipping": "سيتم حساب الضرائب والشحن عند الدفع",
+      "remove": "إزالة"
+    },
+    "noResults": {
+      "title": "لم يتم العثور على دورات",
+      "description": "حاول تعديل الفلاتر أو معايير البحث"
+    },
+    "error": {
+      "title": "خطأ"
+    },
+    "free": "مجاني"
+  },
+  "cartPage": {
+    "title": "سلة التسوق",
+    "clearCart": "إفراغ السلة",
+    "clearCartConfirm": "هل أنت متأكد أنك تريد إفراغ سلتك؟",
+    "loading": "جاري تحميل سلتك...",
+    "empty": {
+      "title": "سلتك فارغة",
+      "description": "ابدأ بإضافة الدورات إلى سلتك لبدء التعلم",
+      "browseCourses": "تصفح الدورات"
+    },
+    "orderSummary": {
+      "title": "ملخص الطلب",
+      "items": "العناصر",
+      "discountCode": "رمز الخصم",
+      "enterCode": "أدخل الرمز",
+      "apply": "تطبيق",
+      "saved": "تم توفير",
+      "discount": "الخصم",
+      "total": "الإجمالي"
+    },
+    "checkout": {
+      "button": "المتابعة للدفع",
+      "terms": "بالمتابعة، فإنك توافق على شروط الخدمة وسياسة الخصوصية"
+    },
+    "item": {
+      "hours": "ساعات",
+      "removeFromCart": "إزالة من السلة"
+    }
+  },
+  "checkoutPage": {
+    "backToCart": "العودة إلى السلة",
+    "title": "إتمام الطلب",
+    "paymentMethod": {
+      "title": "طريقة الدفع",
+      "card": {
+        "title": "بطاقة ائتمان / خصم",
+        "description": "ادفع بأمان باستخدام بطاقتك"
+      },
+      "wallet": {
+        "title": "المحفظة الإلكترونية",
+        "description": "ادفع باستخدام فودافون كاش، أورانج كاش، إلخ."
+      },
+      "cash": {
+        "title": "الدفع عند الاستلام",
+        "description": "ادفع عند الحصول على الوصول"
+      }
+    },
+    "billingInfo": {
+      "title": "معلومات الفواتير",
+      "firstName": "الاسم الأول",
+      "firstNamePlaceholder": "أحمد",
+      "firstNameError": "يجب أن يكون الاسم الأول على الأقل حرفين",
+      "lastName": "اسم العائلة",
+      "lastNamePlaceholder": "محمد",
+      "lastNameError": "يجب أن يكون اسم العائلة على الأقل حرفين",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "name@example.com",
+      "emailError": "عنوان بريد إلكتروني غير صالح",
+      "phone": "الهاتف",
+      "phonePlaceholder": "+201234567890",
+      "phoneError": "يجب أن يكون رقم الهاتف على الأقل 10 أرقام",
+      "address": "العنوان",
+      "addressPlaceholder": "123 شارع الرئيسي",
+      "addressError": "يجب أن يكون العنوان على الأقل 5 أحرف",
+      "city": "المدينة",
+      "cityPlaceholder": "القاهرة",
+      "cityError": "يجب أن تكون المدينة على الأقل حرفين",
+      "country": "الدولة",
+      "countryPlaceholder": "اختر الدولة",
+      "countryError": "الدولة مطلوبة",
+      "postalCode": "الرمز البريدي",
+      "postalCodePlaceholder": "12345",
+      "postalCodeError": "يجب أن يكون الرمز البريدي على الأقل 3 أحرف",
+      "processing": "جاري المعالجة...",
+      "continueToPayment": "المتابعة للدفع"
+    },
+    "countries": {
+      "EG": "مصر",
+      "US": "الولايات المتحدة",
+      "GB": "المملكة المتحدة",
+      "CA": "كندا",
+      "AU": "أستراليا",
+      "DE": "ألمانيا",
+      "FR": "فرنسا",
+      "SA": "المملكة العربية السعودية",
+      "AE": "الإمارات العربية المتحدة"
+    },
+    "orderSummary": {
+      "title": "ملخص الطلب",
+      "items": "العناصر",
+      "total": "الإجمالي",
+      "coursesInOrder": "الدورات في طلبك:"
+    }
+  },
+  "footer": {
+    "copyright": "©",
+    "designedBy": "تصميم وتطوير"
+  },
+  "paymentCallbackPage": {
+    "loading": {
+      "title": "جاري معالجة الدفع",
+      "description": "يرجى الانتظار بينما نتحقق من دفعتك...",
+      "note": "قد يستغرق هذا بضع لحظات"
+    },
+    "success": {
+      "title": "تم الدفع بنجاح!",
+      "description": "تم تفعيل دوراتك.",
+      "paymentId": "رقم الدفع",
+      "originalAmount": "المبلغ الأصلي",
+      "discount": "الخصم",
+      "amountPaid": "المبلغ المدفوع",
+      "courses": "الدورات",
+      "viewMyCourses": "عرض دوراتي",
+      "browseMoreCourses": "تصفح المزيد من الدورات"
+    },
+    "failed": {
+      "title": "فشل الدفع",
+      "description": "حدث خطأ في عملية الدفع. يرجى المحاولة مرة أخرى.",
+      "paymentId": "رقم الدفع",
+      "status": "الحالة",
+      "returnToCheckout": "العودة إلى إتمام الطلب",
+      "viewCart": "عرض السلة"
     }
   },
   "search": {
     "search": "بحث...",
     "noResults": "لم يتم العثور على نتائج.",
     "typeCommand": "اكتب أمراً أو ابحث..."
+  },
+  "toast": {
+    "success": "نجح",
+    "error": "خطأ",
+    "warning": "تحذير",
+    "info": "معلومات",
+    "loading": "جاري التحميل...",
+    "cart": {
+      "addedToCart": "تمت إضافة الدورة إلى السلة",
+      "removedFromCart": "تمت إزالة الدورة من السلة",
+      "cartCleared": "تم إفراغ السلة",
+      "failedToAdd": "فشل في إضافة الدورة إلى السلة",
+      "failedToRemove": "فشل في إزالة الدورة من السلة",
+      "failedToClear": "فشل في إفراغ السلة",
+      "cartIsEmpty": "السلة فارغة",
+      "discountApplied": "تم تطبيق الخصم: {code}",
+      "invalidDiscount": "رمز الخصم غير صالح",
+      "failedToApplyDiscount": "فشل في تطبيق الخصم",
+      "discountRemoved": "تمت إزالة الخصم"
+    },
+    "courses": {
+      "failedToRefresh": "فشل في تحديث الدورات المشتراة"
+    },
+    "course": {
+      "error": "خطأ",
+      "failedToAdd": "فشل في إضافة الدورة إلى السلة",
+      "linkCopied": "تم نسخ الرابط",
+      "linkCopiedDesc": "تم نسخ رابط الدورة إلى الحافظة",
+      "removedFromWishlist": "تمت الإزالة من قائمة الرغبات",
+      "addedToWishlist": "تمت الإضافة إلى قائمة الرغبات",
+      "wishlistDescRemoved": "تمت إزالة {title} من قائمة الرغبات",
+      "wishlistDescAdded": "تمت إضافة {title} إلى قائمة الرغبات",
+      "previewNotAvailable": "المعاينة غير متاحة",
+      "previewNotAvailableDesc": "ستكون معاينة الدورة متاحة قريباً"
+    },
+    "payment": {
+      "initiationFailed": "فشل بدء الدفع. يرجى المحاولة مرة أخرى.",
+      "processingFailed": "فشلت معالجة الدفع. يرجى المحاولة مرة أخرى.",
+      "success": "تمت عملية الدفع بنجاح",
+      "cancelled": "تم إلغاء عملية الدفع",
+      "pending": "جاري معالجة الدفع",
+      "invalidInformation": "معلومات الدفع غير صالحة",
+      "verificationFailed": "فشل التحقق من الدفع",
+      "verificationTimeout": "انتهت مهلة التحقق من الدفع. يرجى الاتصال بالدعم.",
+      "processingTakingLong": "التحقق من الدفع يستغرق وقتاً أطول من المتوقع. يرجى المحاولة لاحقاً أو الاتصال بالدعم.",
+      "enrollmentFailed": "نجحت عملية الدفع ولكن فشلت معالجة التسجيل. يرجى الاتصال بمركز المساعدة للحصول على المساعدة.",
+      "successful": "نجحت عملية الدفع! يمكنك الآن الوصول إلى دوراتك.",
+      "processed": "تمت معالجة الدفع! ستكون دوراتك متاحة قريباً.",
+      "failed": "فشلت عملية الدفع. يرجى المحاولة مرة أخرى."
+    }
   },
   "profilePage": {
     "header": {
@@ -523,6 +720,83 @@
       "progress": {
         "stepOf": "الخطوة {current} من {total}"
       }
+    }
+  },
+  "courseDetailsPage": {
+    "navigation": {
+      "back": "رجوع",
+      "catalog": "الكتالوج"
+    },
+    "students": "طلاب",
+    "hours": "ساعات",
+    "instructorLabel": "المدرب",
+    "tabs": {
+      "overview": "نظرة عامة",
+      "curriculum": "المنهج",
+      "instructor": "المدرب",
+      "reviews": "المراجعات"
+    },
+    "overview": {
+      "whatYouLearn": "ما ستتعلمه",
+      "prerequisitesTitle": "المتطلبات المسبقة",
+      "descriptionTitle": "وصف الدورة",
+      "learningPoints": {
+        "p1": "المبادئ الأساسية للموضوع",
+        "p2": "تمارين ومشاريع عملية",
+        "p3": "أفضل الممارسات والمعايير في الصناعة",
+        "p4": "تقنيات التطبيق العملي",
+        "p5": "المفاهيم والمنهجيات المتقدمة",
+        "p6": "الأدوات والتقنيات المستخدمة من قبل المحترفين"
+      },
+      "prerequisites": {
+        "p1": "فهم أساسي للمفاهيم الأساسية",
+        "p2": "الوصول إلى جهاز كمبيوتر متصل بالإنترنت",
+        "p3": "الرغبة في التعلم والتدرب بانتظام"
+      }
+    },
+    "curriculum": {
+      "title": "محتوى الدورة",
+      "sections": "أقسام",
+      "totalLength": "ساعات إجمالية",
+      "sectionPrefix": "القسم",
+      "moduleTitle": "عنوان الوحدة",
+      "lessonPrefix": "الدرس",
+      "topicName": "اسم الموضوع",
+      "hours": "ساعات",
+      "reading": "قراءة"
+    },
+    "instructor": {
+      "title": "عن المدرب",
+      "studentsLabel": "طلاب",
+      "ratingLabel": "التقييم",
+      "coursesLabel": "دورات"
+    },
+    "reviews": {
+      "title": "مراجعات الطلاب",
+      "ratings": "تقييمات",
+      "studentName": "اسم الطالب",
+      "weeksAgo": "منذ {count} أسابيع"
+    },
+    "purchaseCard": {
+      "previewCourse": "معاينة الدورة",
+      "youOwnCourse": "أنت تملك هذه الدورة",
+      "goToCourse": "الذهاب إلى الدورة",
+      "alreadyInCart": "موجود في سلتك",
+      "goToCart": "الذهاب إلى السلة",
+      "checkoutNow": "الدفع الآن",
+      "enrollNow": "التسجيل الآن",
+      "addToCart": "أضف إلى السلة",
+      "moneyBackGuarantee": "ضمان استرداد الأموال لمدة 30 يوماً",
+      "courseIncludes": "تتضمن هذه الدورة:",
+      "hoursVideo": "ساعات فيديو حسب الطلب",
+      "articlesResources": "مقالات وموارد",
+      "downloadableResources": "موارد قابلة للتنزيل",
+      "lifetimeAccess": "وصول كامل مدى الحياة",
+      "mobileAccess": "الوصول عبر الجوال والتلفزيون",
+      "certificate": "شهادة إتمام",
+      "share": "مشاركة",
+      "wishlisted": "في قائمة الرغبات",
+      "addToWishlist": "أضف إلى قائمة الرغبات"
     }
   }
 }

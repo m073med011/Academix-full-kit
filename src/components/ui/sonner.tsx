@@ -1,8 +1,10 @@
 "use client"
 
-import { Toaster as Sonner } from "sonner"
+import { Toaster as Sonner, toast as sonnerToast } from "sonner"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
 import type { ComponentProps } from "react"
+import type { ExternalToast } from "sonner"
 
 import { useSettings } from "@/hooks/use-settings"
 
@@ -12,11 +14,17 @@ export function Toaster({ ...props }: ToasterProps) {
   const { settings } = useSettings()
 
   const mode = settings.mode
+  const isRtl = settings.locale === "ar"
+  const direction = !isRtl ? "rtl" : "ltr"
+  const position = !isRtl ? "top-left" : "top-right"
 
   return (
     <Sonner
       theme={mode as ToasterProps["theme"]}
       className="toaster group"
+      position={position}
+      dir={direction}
+      closeButton
       toastOptions={{
         classNames: {
           toast:
@@ -31,4 +39,56 @@ export function Toaster({ ...props }: ToasterProps) {
       {...props}
     />
   )
+}
+
+// Helper to get nested value from dictionary
+const getNestedValue = (obj: any, path: string): string | undefined => {
+  const keys = path.split(".")
+  let value = obj
+
+  for (const key of keys) {
+    if (value && typeof value === "object" && key in value) {
+      value = value[key]
+    } else {
+      return undefined
+    }
+  }
+
+  return typeof value === "string" ? value : undefined
+}
+
+// Translation function type
+type TranslationData = {
+  key: string
+  dictionary: DictionaryType
+}
+
+// Resolve message - either use plain string or translate from dictionary
+const resolveMessage = (message: string | TranslationData): string => {
+  if (typeof message === "string") {
+    return message
+  }
+
+  const translated = getNestedValue(message.dictionary, message.key)
+  return translated || message.key
+}
+
+// Enhanced toast interface
+interface ToastWithTranslation {
+  success: (message: string | TranslationData, data?: ExternalToast) => void
+  error: (message: string | TranslationData, data?: ExternalToast) => void
+  info: (message: string | TranslationData, data?: ExternalToast) => void
+  warning: (message: string | TranslationData, data?: ExternalToast) => void
+  message: (message: string | TranslationData, data?: ExternalToast) => void
+}
+
+export const toast: ToastWithTranslation = {
+  success: (message, data) =>
+    sonnerToast.success(resolveMessage(message), data),
+  error: (message, data) => sonnerToast.error(resolveMessage(message), data),
+  info: (message, data) => sonnerToast.info(resolveMessage(message), data),
+  warning: (message, data) =>
+    sonnerToast.warning(resolveMessage(message), data),
+  message: (message, data) =>
+    sonnerToast.message(resolveMessage(message), data),
 }

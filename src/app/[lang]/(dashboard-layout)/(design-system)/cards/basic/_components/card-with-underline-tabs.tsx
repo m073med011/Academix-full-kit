@@ -39,7 +39,7 @@ export function CardWithUnderlineTabs({
                 key={tab.value}
                 value={tab.value}
                 disabled={tab.disabled}
-                className="relative h-12 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground"
+                className="relative -mb-[5px] text-sm font-normal data-[state=active]:border-b-2 data-[state=active]:border-b-primary data-[state=active]:pb-[5px] h-12 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 text-muted-foreground shadow-none transition-none data-[state=active]:text-foreground"
               >
                 {tab.label}
               </TabsTrigger>

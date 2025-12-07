@@ -4,6 +4,8 @@ import { Search } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
 
+import { typography } from "@/lib/typography"
+
 import { Input } from "@/components/ui/input"
 
 interface StoreHeroProps {
@@ -17,10 +19,12 @@ export function StoreHero({ dictionary }: StoreHeroProps) {
     <div className="w-full bg-card py-16 sm:py-24 lg:py-28 border-b">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="flex flex-col gap-4">
-          <h1 className="text-foreground text-4xl font-black leading-tight tracking-tight sm:text-5xl md:text-6xl">
+          <h1
+            className={`text-foreground ${typography.h1} leading-tight tracking-tight sm:text-5xl md:text-6xl`}
+          >
             {t.hero.title}
           </h1>
-          <p className="text-muted-foreground text-lg font-normal leading-normal sm:text-xl">
+          <p className={`${typography.lead} leading-normal sm:text-xl`}>
             {t.hero.description}
           </p>
         </div>

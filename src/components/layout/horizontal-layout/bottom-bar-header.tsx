@@ -42,7 +42,7 @@ export function BottomBarHeader({
         <span>Academix</span>
       </Link>
       <div className="flex gap-2">
-        <CartIcon />
+        <CartIcon dictionary={dictionary} />
         <NotificationDropdown dictionary={dictionary} />
         <FullscreenToggle />
         <ModeDropdown dictionary={dictionary} />

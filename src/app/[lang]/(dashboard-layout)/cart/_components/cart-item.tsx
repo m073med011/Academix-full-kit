@@ -3,6 +3,7 @@
 import Image from "next/image"
 import { Trash2 } from "lucide-react"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
 import type { Course } from "@/types/api"
 
 import { Badge } from "@/components/ui/badge"
@@ -13,6 +14,7 @@ interface CartItemProps {
   courseId: string | Course
   addedDate: string
   onRemove: (courseId: string) => void
+  dictionary: DictionaryType
 }
 
 /**
@@ -23,7 +25,10 @@ export function CartItem({
   courseId,
   addedDate: _addedDate,
   onRemove,
+  dictionary,
 }: CartItemProps) {
+  const t = dictionary.cartPage.item
+
   // Handle both string ID and populated Course object
   const course = typeof courseId === "string" ? null : courseId
 
@@ -40,7 +45,7 @@ export function CartItem({
     <Card className="p-4">
       <div className="flex gap-4">
         {/* Course Thumbnail */}
-        <div className="relative w-24 h-24 flex-shrink-0 rounded-md overflow-hidden">
+        <div className="relative w-24 h-24 shrink-0 rounded-md overflow-hidden">
           <Image
             src={
               course.thumbnailUrl || "https://placehold.co/600x400?text=Course"
@@ -68,7 +73,7 @@ export function CartItem({
                 </Badge>
                 {course.duration && (
                   <span className="text-xs text-muted-foreground">
-                    {course.duration} hours
+                    {course.duration} {t.hours}
                   </span>
                 )}
               </div>
@@ -77,7 +82,7 @@ export function CartItem({
             {/* Price and Remove Button */}
             <div className="flex flex-col items-end gap-2">
               <div className="text-lg font-bold">
-                ${course.price.toFixed(2)}
+                EGP {course.price.toFixed(2)}
               </div>
               <Button
                 variant="ghost"
@@ -86,7 +91,7 @@ export function CartItem({
                 className="text-destructive hover:text-destructive"
               >
                 <Trash2 className="h-4 w-4" />
-                <span className="sr-only">Remove from cart</span>
+                <span className="sr-only">{t.removeFromCart}</span>
               </Button>
             </div>
           </div>

@@ -5,6 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
+
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -23,30 +25,46 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-export const billingFormSchema = z.object({
-  firstName: z.string().min(2, "First name must be at least 2 characters"),
-  lastName: z.string().min(2, "Last name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  phoneNumber: z.string().min(10, "Phone number must be at least 10 digits"),
-  address: z.string().min(5, "Address must be at least 5 characters"),
-  city: z.string().min(2, "City must be at least 2 characters"),
-  country: z.string().min(2, "Country is required"),
-  postalCode: z.string().min(3, "Postal code must be at least 3 characters"),
-})
+// Create dynamic schema with translations
+function createBillingFormSchema(
+  t: DictionaryType["checkoutPage"]["billingInfo"]
+) {
+  return z.object({
+    firstName: z.string().min(2, t.firstNameError),
+    lastName: z.string().min(2, t.lastNameError),
+    email: z.string().email(t.emailError),
+    phoneNumber: z.string().min(10, t.phoneError),
+    address: z.string().min(5, t.addressError),
+    city: z.string().min(2, t.cityError),
+    country: z.string().min(2, t.countryError),
+    postalCode: z.string().min(3, t.postalCodeError),
+  })
+}
 
-export type BillingFormValues = z.infer<typeof billingFormSchema>
+export type BillingFormValues = z.infer<
+  ReturnType<typeof createBillingFormSchema>
+>
 
 interface BillingFormProps {
   onSubmit: (data: BillingFormValues) => Promise<void>
   isLoading?: boolean
+  dictionary: DictionaryType
 }
 
 /**
  * Billing information form for checkout
  * Validates and collects user billing details
  */
-export function BillingForm({ onSubmit, isLoading = false }: BillingFormProps) {
+export function BillingForm({
+  onSubmit,
+  isLoading = false,
+  dictionary,
+}: BillingFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const t = dictionary.checkoutPage.billingInfo
+  const countries = dictionary.checkoutPage.countries
+
+  const billingFormSchema = createBillingFormSchema(t)
 
   const form = useForm<BillingFormValues>({
     resolver: zodResolver(billingFormSchema),
@@ -83,9 +101,13 @@ export function BillingForm({ onSubmit, isLoading = false }: BillingFormProps) {
             name="firstName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>First Name</FormLabel>
+                <FormLabel>{t.firstName}</FormLabel>
                 <FormControl>
-                  <Input placeholder="John" disabled={disabled} {...field} />
+                  <Input
+                    placeholder={t.firstNamePlaceholder}
+                    disabled={disabled}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -97,9 +119,13 @@ export function BillingForm({ onSubmit, isLoading = false }: BillingFormProps) {
             name="lastName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Last Name</FormLabel>
+                <FormLabel>{t.lastName}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Doe" disabled={disabled} {...field} />
+                  <Input
+                    placeholder={t.lastNamePlaceholder}
+                    disabled={disabled}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -114,11 +140,11 @@ export function BillingForm({ onSubmit, isLoading = false }: BillingFormProps) {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t.email}</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="john.doe@example.com"
+                    placeholder={t.emailPlaceholder}
                     disabled={disabled}
                     {...field}
                   />
@@ -133,11 +159,11 @@ export function BillingForm({ onSubmit, isLoading = false }: BillingFormProps) {
             name="phoneNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone</FormLabel>
+                <FormLabel>{t.phone}</FormLabel>
                 <FormControl>
                   <Input
                     type="tel"
-                    placeholder="+1234567890"
+                    placeholder={t.phonePlaceholder}
                     disabled={disabled}
                     {...field}
                   />
@@ -154,10 +180,10 @@ export function BillingForm({ onSubmit, isLoading = false }: BillingFormProps) {
           name="address"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Address</FormLabel>
+              <FormLabel>{t.address}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="123 Main Street"
+                  placeholder={t.addressPlaceholder}
                   disabled={disabled}
                   {...field}
                 />
@@ -174,10 +200,10 @@ export function BillingForm({ onSubmit, isLoading = false }: BillingFormProps) {
             name="city"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>City</FormLabel>
+                <FormLabel>{t.city}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="New York"
+                    placeholder={t.cityPlaceholder}
                     disabled={disabled}
                     {...field}
                   />
@@ -192,7 +218,7 @@ export function BillingForm({ onSubmit, isLoading = false }: BillingFormProps) {
             name="country"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Country</FormLabel>
+                <FormLabel>{t.country}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -200,19 +226,19 @@ export function BillingForm({ onSubmit, isLoading = false }: BillingFormProps) {
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select country" />
+                      <SelectValue placeholder={t.countryPlaceholder} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="EG">Egypt</SelectItem>
-                    <SelectItem value="US">United States</SelectItem>
-                    <SelectItem value="GB">United Kingdom</SelectItem>
-                    <SelectItem value="CA">Canada</SelectItem>
-                    <SelectItem value="AU">Australia</SelectItem>
-                    <SelectItem value="DE">Germany</SelectItem>
-                    <SelectItem value="FR">France</SelectItem>
-                    <SelectItem value="SA">Saudi Arabia</SelectItem>
-                    <SelectItem value="AE">United Arab Emirates</SelectItem>
+                    <SelectItem value="EG">{countries.EG}</SelectItem>
+                    <SelectItem value="US">{countries.US}</SelectItem>
+                    <SelectItem value="GB">{countries.GB}</SelectItem>
+                    <SelectItem value="CA">{countries.CA}</SelectItem>
+                    <SelectItem value="AU">{countries.AU}</SelectItem>
+                    <SelectItem value="DE">{countries.DE}</SelectItem>
+                    <SelectItem value="FR">{countries.FR}</SelectItem>
+                    <SelectItem value="SA">{countries.SA}</SelectItem>
+                    <SelectItem value="AE">{countries.AE}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -225,9 +251,13 @@ export function BillingForm({ onSubmit, isLoading = false }: BillingFormProps) {
             name="postalCode"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Postal Code</FormLabel>
+                <FormLabel>{t.postalCode}</FormLabel>
                 <FormControl>
-                  <Input placeholder="10001" disabled={disabled} {...field} />
+                  <Input
+                    placeholder={t.postalCodePlaceholder}
+                    disabled={disabled}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -236,7 +266,7 @@ export function BillingForm({ onSubmit, isLoading = false }: BillingFormProps) {
         </div>
 
         <Button type="submit" className="w-full" size="lg" disabled={disabled}>
-          {isSubmitting ? "Processing..." : "Continue to Payment"}
+          {isSubmitting ? t.processing : t.continueToPayment}
         </Button>
       </form>
     </Form>

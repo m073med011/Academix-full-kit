@@ -1,0 +1,8 @@
+export { CourseBreadcrumb } from "./course-breadcrumb"
+export { CourseCurriculumTab } from "./course-curriculum-tab"
+export { CourseHeader } from "./course-header"
+export { CourseInstructorTab } from "./course-instructor-tab"
+export { CourseOverviewTab } from "./course-overview-tab"
+export { CoursePurchaseCard } from "./course-purchase-card"
+export { CourseReviewsTab } from "./course-reviews-tab"
+export { CourseTabs } from "./course-tabs"

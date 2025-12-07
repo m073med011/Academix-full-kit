@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
+import type { LocaleType } from "@/types"
 
 import { CardWithUnderlineTabs } from "@/app/[lang]/(dashboard-layout)/(design-system)/cards/basic/_components/card-with-underline-tabs"
 import { Activity } from "./tabs/activity"
@@ -12,9 +13,10 @@ import { PurchasedCourses } from "./tabs/purchased-courses"
 
 interface ProfileTabsProps {
   dictionary: DictionaryType
+  locale: LocaleType
 }
 
-export function ProfileTabs({ dictionary }: ProfileTabsProps) {
+export function ProfileTabs({ dictionary, locale }: ProfileTabsProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const activeTab = searchParams.get("tab") || "created"
@@ -36,7 +38,7 @@ export function ProfileTabs({ dictionary }: ProfileTabsProps) {
     {
       value: "purchased",
       label: t.purchasedCourses,
-      content: <PurchasedCourses dictionary={dictionary} />,
+      content: <PurchasedCourses dictionary={dictionary} locale={locale} />,
     },
     {
       value: "personal",

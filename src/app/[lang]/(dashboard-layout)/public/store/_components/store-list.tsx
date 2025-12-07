@@ -9,6 +9,8 @@ import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType } from "@/types"
 import type { Course, CoursePagination, User } from "@/types/api"
 
+import { typography } from "@/lib/typography"
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -70,7 +72,7 @@ export function StoreList({
   return (
     <div className="w-full lg:w-3/4">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-        <p className="text-sm text-muted-foreground">
+        <p className={typography.muted}>
           {pagination
             ? t.results
                 .replace("{count}", courses.length.toString())
@@ -107,7 +109,7 @@ export function StoreList({
       {error && (
         <Alert variant="destructive" className="mb-8">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>{t.error?.title || "Error"}</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
@@ -122,9 +124,12 @@ export function StoreList({
       {/* Empty State */}
       {!loading && !error && courses.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <p className="text-lg font-semibold mb-2">No courses found</p>
-          <p className="text-sm text-muted-foreground">
-            Try adjusting your filters or search criteria
+          <p className={`${typography.h4} mb-2`}>
+            {t.noResults?.title || "No courses found"}
+          </p>
+          <p className={typography.muted}>
+            {t.noResults?.description ||
+              "Try adjusting your filters or search criteria"}
           </p>
         </div>
       )}
@@ -140,7 +145,7 @@ export function StoreList({
                 className="block"
               >
                 <Card className="group overflow-hidden border-border transition-all duration-300 hover:border-primary/50 hover:shadow-lg h-full">
-                  <div className="relative overflow-hidden aspect-[16/9]">
+                  <div className="relative overflow-hidden aspect-video">
                     <Image
                       width={600}
                       height={400}
@@ -153,28 +158,32 @@ export function StoreList({
                     />
                     {course.price === 0 && (
                       <div className="absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-full border bg-green-500/20 text-green-300 border-green-500/30 rtl:left-auto rtl:right-3">
-                        FREE
+                        {t.free || "FREE"}
                       </div>
                     )}
                   </div>
-                  <CardContent className="p-5 flex flex-col flex-grow">
-                    <p className="text-sm text-muted-foreground mb-2">
+                  <CardContent className="p-5 flex flex-col grow">
+                    <p className={`${typography.muted} mb-2`}>
                       {getInstructorName(course.instructor)}
                     </p>
-                    <h3 className="text-lg font-bold leading-tight mb-3 flex-grow line-clamp-2">
+                    <h3
+                      className={`${typography.h4} leading-tight mb-3 grow line-clamp-2`}
+                    >
                       {course.title}
                     </h3>
-                    <div className="flex items-center gap-1 text-sm mb-4">
+                    <div className="flex items-center gap-1 mb-4">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-bold text-foreground">
+                      <span className={`${typography.large} text-foreground`}>
                         {course.rating?.toFixed(1) || "0.0"}
                       </span>
-                      <span className="text-xs text-muted-foreground">
+                      <span
+                        className={`${typography.small} text-muted-foreground`}
+                      >
                         ({getStudentCount(course.students).toLocaleString()})
                       </span>
                     </div>
                     <div className="flex justify-between items-center mt-auto gap-2">
-                      <p className="text-xl font-bold text-primary">
+                      <p className={`${typography.h4} text-primary`}>
                         ${course.price.toFixed(2)}
                       </p>
                       <div onClick={(e) => e.preventDefault()}>

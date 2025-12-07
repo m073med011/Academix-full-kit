@@ -9,6 +9,7 @@ import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType } from "@/types"
 
 import { ensureLocalizedPathname } from "@/lib/i18n"
+import { typography } from "@/lib/typography"
 
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Badge } from "@/components/ui/badge"
@@ -83,10 +84,10 @@ export function CreatedCourses({ dictionary }: CreatedCoursesProps) {
     <div className="mt-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-semibold">
+          <h2 className={typography.h4}>
             {dictionary.profilePage.tabs.createdCourses}
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className={typography.muted}>
             {courses.length} {courses.length === 1 ? "course" : "courses"}
           </p>
         </div>

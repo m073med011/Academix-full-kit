@@ -2,6 +2,8 @@
 
 import type { DictionaryType } from "@/lib/get-dictionary"
 
+import { typography } from "@/lib/typography"
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -82,11 +84,9 @@ export function Activity({ dictionary }: ActivityProps) {
                       <Badge variant={activity.badgeVariant}>
                         {activity.typeLabel}
                       </Badge>
-                      <span className="text-sm text-muted-foreground">
-                        {activity.time}
-                      </span>
+                      <span className={typography.muted}>{activity.time}</span>
                     </div>
-                    <p className="text-base font-medium">{activity.title}</p>
+                    <p className={typography.large}>{activity.title}</p>
                   </div>
                 </div>
                 {index < activities.length - 1 && (

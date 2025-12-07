@@ -3,16 +3,22 @@
 import { useCartStore } from "@/stores/cart-store"
 import { ShoppingCart } from "lucide-react"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { CartSheet } from "./cart-sheet"
+
+interface CartIconProps {
+  dictionary: DictionaryType
+}
 
 /**
  * Cart icon with item count badge for header
  * Opens cart sidebar sheet when clicked
  * Automatically updates when cart changes
  */
-export function CartIcon() {
+export function CartIcon({ dictionary }: CartIconProps) {
   const cart = useCartStore((state) => state.cart)
   const isLoading = useCartStore((state) => state.isLoading)
 
@@ -20,7 +26,7 @@ export function CartIcon() {
   const itemCount = cart?.itemCount ?? 0
 
   return (
-    <CartSheet>
+    <CartSheet dictionary={dictionary}>
       <Button variant="ghost" size="icon" className="relative">
         <ShoppingCart className="h-5 w-5" />
         {!isLoading && itemCount > 0 && (

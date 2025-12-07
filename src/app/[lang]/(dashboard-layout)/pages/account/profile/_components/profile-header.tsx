@@ -10,6 +10,7 @@ import type { LocaleType } from "@/types"
 import { userData } from "@/data/user"
 
 import { ensureLocalizedPathname } from "@/lib/i18n"
+import { typography } from "@/lib/typography"
 import { cn, formatNumberToCompact, getInitials } from "@/lib/utils"
 
 import { AspectRatio } from "@/components/ui/aspect-ratio"
@@ -63,8 +64,8 @@ export function ProfileHeader({ locale, dictionary }: ProfileHeaderProps) {
         </Button>
         <div className="text-center md:text-start">
           <div>
-            <h1 className="text-2xl font-bold line-clamp-1">{userData.name}</h1>
-            <p className="text-muted-foreground line-clamp-1">
+            <h1 className={`${typography.h2} line-clamp-1`}>{userData.name}</h1>
+            <p className={`${typography.muted} line-clamp-1`}>
               {userData.state && userData.state + ", "}
               {userData.country}
             </p>

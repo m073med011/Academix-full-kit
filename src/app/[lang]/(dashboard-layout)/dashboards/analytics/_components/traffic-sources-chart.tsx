@@ -27,7 +27,7 @@ export function TrafficSourcesChart({
 
   return (
     <ChartContainer config={chartConfig} className="aspect-square h-52 mx-auto">
-      <RadialBarChart data={data} innerRadius={30} outerRadius={110}>
+      <RadialBarChart data={data} innerRadius={30} outerRadius={106}>
         <ChartTooltip
           cursor={false}
           content={<ChartTooltipContent hideLabel />}

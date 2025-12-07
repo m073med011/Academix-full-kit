@@ -2,6 +2,9 @@ import createMDX from "@next/mdx"
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Allow cross-origin requests from local network devices in development
+  allowedDevOrigins: ["192.168.100.2"],
+
   // Configure `pageExtensions` to include markdown and MDX files
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 

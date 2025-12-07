@@ -1,16 +1,19 @@
 import { courseService } from "@/services/course-service"
-import { toast } from "sonner"
+import { toast } from "@/components/ui/sonner"
 import { create } from "zustand"
 
 import type { Course } from "@/types/api"
+import type { DictionaryType } from "@/lib/get-dictionary"
 
 interface PurchasedCoursesStore {
   courses: Course[]
   isLoading: boolean
   isInitialized: boolean
   error: string | null
+  dictionary: DictionaryType | null
 
   // Actions
+  setDictionary: (dictionary: DictionaryType) => void
   initializePurchasedCourses: () => Promise<void>
   refreshPurchasedCourses: () => Promise<void>
   isPurchased: (courseId: string) => boolean
@@ -23,6 +26,9 @@ export const usePurchasedCoursesStore = create<PurchasedCoursesStore>(
     isLoading: false,
     isInitialized: false,
     error: null,
+    dictionary: null,
+
+    setDictionary: (dictionary) => set({ dictionary }),
 
     initializePurchasedCourses: async () => {
       if (get().isInitialized) return
@@ -53,7 +59,11 @@ export const usePurchasedCoursesStore = create<PurchasedCoursesStore>(
       } catch (error) {
         console.error("Failed to refresh purchased courses:", error)
         set({ error: "Failed to refresh purchased courses" })
-        toast.error("Failed to refresh purchased courses")
+        const { dictionary } = get()
+        const errorMsg = dictionary
+          ? { key: "toast.courses.failedToRefresh", dictionary }
+          : "Failed to refresh purchased courses"
+        toast.error(errorMsg)
       } finally {
         set({ isLoading: false })
       }

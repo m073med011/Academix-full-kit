@@ -21,7 +21,7 @@ export default async function ProfilePage(props: {
   return (
     <div className="container px-0">
       <ProfileHeader locale={params.lang} dictionary={dictionary} />
-      <ProfileTabs dictionary={dictionary} />
+      <ProfileTabs dictionary={dictionary} locale={params.lang} />
     </div>
   )
 }

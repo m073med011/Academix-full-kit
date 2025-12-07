@@ -1,17 +1,22 @@
 "use client"
 
 import { useEffect } from "react"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useCartStore } from "@/stores/cart-store"
 import { usePurchasedCoursesStore } from "@/stores/purchased-courses-store"
 import { Check, CheckCircle2, ShoppingCart } from "lucide-react"
 
 import type { ComponentProps } from "react"
 
+import { ApiClientError } from "@/lib/api-client"
+
+import { useSettings } from "@/hooks/use-settings"
 import { Button } from "@/components/ui/button"
 
-interface AddToCartButtonProps
-  extends Omit<ComponentProps<typeof Button>, "onClick"> {
+interface AddToCartButtonProps extends Omit<
+  ComponentProps<typeof Button>,
+  "onClick"
+> {
   courseId: string
 }
 
@@ -22,6 +27,8 @@ export function AddToCartButton({
   size = "default",
   ...props
 }: AddToCartButtonProps) {
+  const router = useRouter()
+  const { settings } = useSettings()
   const addToCart = useCartStore((state) => state.addToCart)
   const removeFromCart = useCartStore((state) => state.removeFromCart)
   const isInCart = useCartStore((state) => state.isInCart)
@@ -47,6 +54,12 @@ export function AddToCartButton({
         await addToCart(courseId)
       }
     } catch (error) {
+      // Redirect to login page if user is not authenticated
+      if (error instanceof ApiClientError && error.isUnauthorized()) {
+        const locale = settings.locale || "en"
+        router.push(`/${locale}/sign-in`)
+        return
+      }
       console.error("Cart operation failed:", error)
     }
   }
@@ -55,16 +68,14 @@ export function AddToCartButton({
   if (alreadyPurchased) {
     return (
       <Button
-        asChild
         variant="outline"
         size={size}
         className={className}
+        onClick={() => router.push("/pages/account/profile?tab=purchased")}
         {...props}
       >
-        <Link href="/pages/account/profile?tab=purchased">
-          <CheckCircle2 className="mr-2 h-4 w-4 text-green-600" />
-          Purchased
-        </Link>
+        <CheckCircle2 className="mr-2 h-4 w-4 text-green-600" />
+        Purchased
       </Button>
     )
   }

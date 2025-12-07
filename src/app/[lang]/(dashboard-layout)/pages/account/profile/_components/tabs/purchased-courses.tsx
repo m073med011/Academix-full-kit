@@ -7,6 +7,9 @@ import { usePurchasedCoursesStore } from "@/stores/purchased-courses-store"
 import { Loader2, Star } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
+import type { LocaleType } from "@/types"
+
+import { ensureLocalizedPathname } from "@/lib/i18n"
 
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Badge } from "@/components/ui/badge"
@@ -21,9 +24,10 @@ import {
 
 interface PurchasedCoursesProps {
   dictionary: DictionaryType
+  locale: LocaleType
 }
 
-export function PurchasedCourses({ dictionary }: PurchasedCoursesProps) {
+export function PurchasedCourses({ dictionary, locale }: PurchasedCoursesProps) {
   const t = dictionary.profilePage.purchasedCourses
   const { courses, isLoading, initializePurchasedCourses } =
     usePurchasedCoursesStore()
@@ -49,7 +53,7 @@ export function PurchasedCourses({ dictionary }: PurchasedCoursesProps) {
             {t.noCoursesDescription}
           </CardDescription>
           <Button asChild>
-            <Link href="/public/store">{t.browseCourses}</Link>
+            <Link href={ensureLocalizedPathname("/public/store", locale)}>{t.browseCourses}</Link>
           </Button>
         </CardContent>
       </Card>
@@ -65,7 +69,7 @@ export function PurchasedCourses({ dictionary }: PurchasedCoursesProps) {
             asChild
             className="overflow-hidden hover:shadow-md transition-shadow"
           >
-            <Link href={`/public/course/${course._id}`}>
+            <Link href={ensureLocalizedPathname(`/public/course/${course._id}`, locale)}>
               <CardContent className="p-0">
                 <AspectRatio ratio={16 / 9} className="bg-muted">
                   <Image
