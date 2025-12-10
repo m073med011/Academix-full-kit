@@ -106,14 +106,12 @@ export interface NavigationRootItemBasicType {
   iconName: DynamicIconNameType
 }
 
-export interface NavigationRootItemWithHrefType
-  extends NavigationRootItemBasicType {
+export interface NavigationRootItemWithHrefType extends NavigationRootItemBasicType {
   href: string
   items?: never
 }
 
-export interface NavigationRootItemWithItemsType
-  extends NavigationRootItemBasicType {
+export interface NavigationRootItemWithItemsType extends NavigationRootItemBasicType {
   items: (
     | NavigationNestedItemWithHrefType
     | NavigationNestedItemWithItemsType
@@ -124,16 +122,15 @@ export interface NavigationRootItemWithItemsType
 export interface NavigationNestedItemBasicType {
   title: string
   label?: string
+  iconName?: DynamicIconNameType
 }
 
-export interface NavigationNestedItemWithHrefType
-  extends NavigationNestedItemBasicType {
+export interface NavigationNestedItemWithHrefType extends NavigationNestedItemBasicType {
   href: string
   items?: never
 }
 
-export interface NavigationNestedItemWithItemsType
-  extends NavigationNestedItemBasicType {
+export interface NavigationNestedItemWithItemsType extends NavigationNestedItemBasicType {
   items: (
     | NavigationNestedItemWithHrefType
     | NavigationNestedItemWithItemsType
@@ -157,6 +154,7 @@ export interface FileType {
   size: number
   type: string
   url: string
+  file?: File
 }
 
 export type ForgotPasswordFormType = z.infer<typeof ForgotPasswordSchema>

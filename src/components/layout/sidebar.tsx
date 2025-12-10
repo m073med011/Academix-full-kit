@@ -25,6 +25,11 @@ import {
 import { useSettings } from "@/hooks/use-settings"
 import { Badge } from "@/components/ui/badge"
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
@@ -45,11 +50,22 @@ import {
 } from "@/components/ui/sidebar"
 import { DynamicIcon } from "@/components/dynamic-icon"
 import { CommandMenu } from "./command-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+} from "@/components/ui/dropdown-menu"
 
 export function Sidebar({ dictionary }: { dictionary: DictionaryType }) {
   const pathname = usePathname()
   const params = useParams()
-  const { openMobile, setOpenMobile, isMobile } = useSidebar()
+  const { openMobile, setOpenMobile, isMobile, state } = useSidebar()
   const { settings } = useSettings()
 
   const locale = params.lang as LocaleType
@@ -75,23 +91,99 @@ export function Sidebar({ dictionary }: { dictionary: DictionaryType }) {
     }
   }
 
+  const renderDropdownItem = (item: NavigationNestedItem) => {
+    const title = getDictionaryValue(
+      titleCaseToCamelCase(item.title),
+      dictionary.navigation
+    ) as string
+
+    if (item.items) {
+      return (
+        <DropdownMenuSub key={item.title}>
+          <DropdownMenuSubTrigger>
+            {item.iconName && (
+              <DynamicIcon name={item.iconName} className="me-2 h-4 w-4" />
+            )}
+            <span>{title}</span>
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            {item.items.map((subItem) => renderDropdownItem(subItem))}
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+      )
+    }
+
+    return (
+      <DropdownMenuItem key={item.title} asChild>
+        <Link href={ensureLocalizedPathname(item.href, locale)}>
+          {item.iconName && (
+            <DynamicIcon name={item.iconName} className="me-2 h-4 w-4" />
+          )}
+          <span>{title}</span>
+        </Link>
+      </DropdownMenuItem>
+    )
+  }
+
   const renderMenuItem = (item: NavigationRootItem | NavigationNestedItem) => {
     const title = getDictionaryValue(
       titleCaseToCamelCase(item.title),
       dictionary.navigation
-    )
+    ) as string
     const label =
       item.label &&
       getDictionaryValue(titleCaseToCamelCase(item.label), dictionary.label)
 
     // If the item has nested items, render it with a collapsible dropdown.
     if (item.items) {
+      if (state === "collapsed" && !isMobile) {
+        return (
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton
+                    className="w-full justify-between"
+                    tooltip={undefined}
+                    isActive={false}
+                  >
+                    <span className="flex items-center">
+                      {item.iconName && (
+                        <DynamicIcon
+                          name={item.iconName}
+                          className="me-2 h-4 w-4"
+                        />
+                      )}
+                      <span>{title}</span>
+                      {"label" in item && (
+                        <Badge variant="secondary" className="me-2">
+                          {label}
+                        </Badge>
+                      )}
+                    </span>
+                    <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" />
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="right">{title}</TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent side="right" align="start" sideOffset={4}>
+              <DropdownMenuLabel>{title}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <ScrollArea className="h-72">
+                {item.items.map((subItem) => renderDropdownItem(subItem))}
+              </ScrollArea>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      }
+
       return (
         <Collapsible className="group/collapsible">
           <CollapsibleTrigger asChild>
             <SidebarMenuButton className="w-full justify-between [&[data-state=open]>svg]:rotate-180">
               <span className="flex items-center">
-                {"iconName" in item && (
+                {item.iconName && (
                   <DynamicIcon name={item.iconName} className="me-2 h-4 w-4" />
                 )}
                 <span>{title}</span>
@@ -127,9 +219,10 @@ export function Sidebar({ dictionary }: { dictionary: DictionaryType }) {
           isActive={isActive}
           onClick={() => setOpenMobile(!openMobile)}
           asChild
+          tooltip={title}
         >
           <Link href={localizedPathname}>
-            {"iconName" in item && (
+            {item.iconName && (
               <DynamicIcon name={item.iconName} className="h-4 w-4" />
             )}
             <span>{title}</span>
@@ -148,14 +241,14 @@ export function Sidebar({ dictionary }: { dictionary: DictionaryType }) {
       <SidebarHeader>
         <Link
           href={ensureLocalizedPathname("/", locale)}
-          className="w-fit flex text-foreground font-black p-2 pb-0 mb-2"
+          className="w-fit flex items-center text-foreground font-black p-2 pb-0 mb-2"
           onClick={() => isMobile && setOpenMobile(!openMobile)}
         >
           <Image
-            src="/images/icons/Academix.svg"
-            alt=""
-            height={24}
-            width={24}
+            src="/images/logos/logo02.png"
+            alt="Academix"
+            height={26}
+            width={26}
             className="dark:invert"
           />
           <span className="group-data-[collapsible=icon]:hidden">Academix</span>

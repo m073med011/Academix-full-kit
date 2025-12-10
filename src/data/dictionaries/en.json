@@ -946,6 +946,22 @@
       "uploadFailed": "Upload failed",
       "deleteFailed": "Failed to delete old file from Cloudinary"
     }
+  },
+  "fileDropzone": {
+    "instructions": "Drag and drop some files here, or click to select files",
+    "remove": "Remove"
+  },
+  "fileDropzonesPage": {
+    "basic": "Basic File Dropzone",
+    "multiple": "File Dropzone Multiple",
+    "maxFiles": {
+      "title": "File Dropzone Max Files",
+      "description": "Set to max {count} files"
+    },
+    "maxSize": {
+      "title": "File Dropzone Max Size",
+      "description": "Set to max {size}"
+    }
   }
 }
 

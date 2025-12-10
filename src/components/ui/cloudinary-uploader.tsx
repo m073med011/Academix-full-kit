@@ -1,9 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import Image from "next/image"
-import { useDropzone } from "react-dropzone"
-import { Check, Copy, Loader2, Upload, UploadCloud, X } from "lucide-react"
+import { Check, Copy, Loader2, Upload, X } from "lucide-react"
 
 import type {
   CloudinaryUploadResult,
@@ -11,11 +9,13 @@ import type {
 } from "@/services/cloudinary-service"
 import type { ComponentProps } from "react"
 
-import { cn, formatFileSize } from "@/lib/utils"
+import { cn, formatBytes, formatFileSize } from "@/lib/utils"
 import type { DictionaryType } from "@/lib/get-dictionary"
+import type { FileType } from "@/types"
 
 import { useCloudinaryUpload } from "@/hooks/use-cloudinary-upload"
 import { Button, ButtonLoading } from "@/components/ui/button"
+import { FileDropzone } from "@/components/ui/file-dropzone"
 import { FileThumbnail } from "@/components/ui/file-thumbnail"
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
@@ -39,7 +39,7 @@ export interface CloudinaryUploaderProps {
   showTypeSelector?: boolean
   defaultResourceType?: ResourceType
   showUploadedUrl?: boolean // Show URL input after upload (default: false)
-  dictionary?: DictionaryType
+  dictionary: DictionaryType
 }
 
 const getFileTypeOptions = (t: DictionaryType["cloudinary"]) => [
@@ -84,36 +84,7 @@ export function CloudinaryUploader({
   // Check if we should show the dropzone UI (for images)
   const showDropzone = resourceType === "image"
 
-  // Default English dictionary fallback
-  const defaultDict: DictionaryType["cloudinary"] = {
-    upload: "Upload",
-    uploading: "Uploading...",
-    uploadAnother: "Upload Another File",
-    removeOld: "Removing old file...",
-    fileType: "File Type",
-    selectFileType: "Select file type",
-    autoDetect: "Auto Detect",
-    image: "Image",
-    video: "Video",
-    document: "Document/Other",
-    dragDropImage: "Drag and drop an image here, or click to select",
-    supports: "Supports: JPG, PNG, GIF, WebP, SVG",
-    file: "File",
-    chooseFile: "Choose File",
-    noFileChosen: "No file chosen",
-    tryAgain: "Try Again",
-    uploadSuccessful: "Upload successful!",
-    uploadedUrl: "Uploaded URL",
-    copyUrl: "Copy URL",
-    copied: "Copied!",
-    error: {
-      fileSize: "File size exceeds maximum allowed ({size})",
-      uploadFailed: "Upload failed",
-      deleteFailed: "Failed to delete old file from Cloudinary",
-    },
-  }
-
-  const t = dictionary?.cloudinary || defaultDict
+  const t = dictionary.cloudinary
   const fileTypeOptions = getFileTypeOptions(t)
 
   // Cleanup preview URL when component unmounts or file changes
@@ -155,22 +126,27 @@ export function CloudinaryUploader({
     [maxSize, onError, previewUrl, reset]
   )
 
-  // Dropzone callback for image upload
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      if (acceptedFiles.length > 0) {
-        processFile(acceptedFiles[0])
-      }
-    },
-    [processFile]
-  )
+  // Dropzone value and handler
+  const dropzoneValue: FileType[] = selectedFile
+    ? [
+        {
+          id: "selected-file",
+          name: selectedFile.name,
+          size: selectedFile.size,
+          type: selectedFile.type,
+          url: previewUrl || "",
+          file: selectedFile,
+        },
+      ]
+    : []
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: { "image/*": [] },
-    maxFiles: 1,
-    disabled: isUploading || !!selectedFile,
-  })
+  const handleDropzoneChange = (files: FileType[]) => {
+    if (files.length > 0 && files[0].file) {
+      processFile(files[0].file)
+    } else {
+      handleReset()
+    }
+  }
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
@@ -241,7 +217,7 @@ export function CloudinaryUploader({
               <Select
                 value={resourceType}
                 onValueChange={(value) => setResourceType(value as ResourceType)}
-                disabled={isUploading}
+                disabled={isUploading || isDeleting}
               >
                 <SelectTrigger>
                   <SelectValue placeholder={t.selectFileType} />
@@ -260,69 +236,16 @@ export function CloudinaryUploader({
       {/* Conditional File Input UI */}
       {showDropzone ? (
         /* Image Dropzone UI */
-        <div
-          {...getRootProps()}
-          className={cn(
-            "relative flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground cursor-pointer transition-colors hover:border-primary hover:bg-muted/50 min-h-48",
-            isDragActive && "border-primary bg-muted/50",
-            (isUploading || selectedFile) && "cursor-default",
-            selectedFile && "border-solid border-border"
-          )}
-        >
-          <input {...getInputProps()} />
-
-          {selectedFile && previewUrl ? (
-            /* Image Preview */
-            <div className="w-full p-4">
-              <div className="relative flex flex-col items-center gap-3">
-                <div className="relative h-32 w-32 rounded-md overflow-hidden border bg-background">
-                  <Image
-                    src={previewUrl}
-                    alt={selectedFile.name}
-                    fill
-                    className="object-contain"
-                    sizes="128px"
-                  />
-                  {isUploading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-background/50">
-                      <Loader2 className="h-8 w-8 text-primary animate-spin" />
-                    </div>
-                  )}
-                </div>
-                <div className="text-center space-y-1">
-                  <p className="text-sm font-medium truncate max-w-[200px]">
-                    {selectedFile.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {formatFileSize(selectedFile.size)}
-                  </p>
-                </div>
-                {!isUploading && !result && (
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    className="absolute end-0 top-0 h-6 w-6"
-                    onClick={handleRemoveFile}
-                    aria-label="Remove"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            </div>
-          ) : (
-            /* Dropzone Empty State */
-            <div className="flex flex-col justify-center items-center gap-2 text-center p-6">
-              <UploadCloud className="h-10 w-10 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">
-                {t.dragDropImage}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {t.supports}
-              </p>
-            </div>
-          )}
-        </div>
+        <FileDropzone
+          value={dropzoneValue}
+          onFilesChange={handleDropzoneChange}
+          maxFiles={1}
+          maxSize={maxSize}
+          accept={{ "image/*": [] }}
+          disabled={isUploading || isDeleting}
+          className={cn((isUploading || isDeleting) && "cursor-default")}
+          dictionary={dictionary}
+        />
       ) : (
         /* Regular File Input UI */
         <>
@@ -335,7 +258,7 @@ export function CloudinaryUploader({
                   variant={buttonVariant}
                   className="h-full w-28 rounded-e-none border-0 border-e border-input"
                   onClick={handleChooseFile}
-                  disabled={isUploading}
+                  disabled={isUploading || isDeleting}
                 >
                   {buttonLabel === "Choose File" ? t.chooseFile : buttonLabel}
                 </Button>
@@ -351,7 +274,7 @@ export function CloudinaryUploader({
                 accept={accept}
                 onChange={handleFileSelect}
                 className="hidden"
-                disabled={isUploading}
+                disabled={isUploading || isDeleting}
               />
             </div>
           </div>
@@ -377,7 +300,7 @@ export function CloudinaryUploader({
                     {selectedFile.type || "Unknown type"}
                   </p>
                 </div>
-                {!isUploading && (
+                {!isUploading && !isDeleting && (
                   <Button
                     variant="ghost"
                     size="icon"
@@ -397,7 +320,7 @@ export function CloudinaryUploader({
       {/* Upload Button */}
       <ButtonLoading
         onClick={handleUpload}
-        disabled={!selectedFile || isUploading}
+        disabled={!selectedFile || isUploading || isDeleting}
         isLoading={isUploading}
         icon={Upload}
         className="w-full"
@@ -485,11 +408,4 @@ export function CloudinaryUploader({
   )
 }
 
-// Helper function to format bytes
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return "0 Bytes"
-  const k = 1024
-  const sizes = ["Bytes", "KB", "MB", "GB"]
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
-}
+

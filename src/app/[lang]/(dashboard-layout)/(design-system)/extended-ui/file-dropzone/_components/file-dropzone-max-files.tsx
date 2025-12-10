@@ -9,15 +9,20 @@ import {
 } from "@/components/ui/card"
 import { FileDropzone } from "@/components/ui/file-dropzone"
 
-export function FileDropzoneMaxFiles() {
+export function FileDropzoneMaxFiles({ dictionary }: { dictionary: any }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>File Dropzone Max Files</CardTitle>
-        <CardDescription>Set to max 2 files</CardDescription>
+        <CardTitle>{dictionary?.fileDropzonesPage?.maxFiles?.title}</CardTitle>
+        <CardDescription>
+          {dictionary?.fileDropzonesPage?.maxFiles?.description.replace(
+            "{count}",
+            "2"
+          )}
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex items-center justify-center">
-        <FileDropzone multiple maxFiles={2} />
+        <FileDropzone multiple maxFiles={2} dictionary={dictionary} />
       </CardContent>
     </Card>
   )

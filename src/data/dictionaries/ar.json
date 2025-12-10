@@ -946,6 +946,22 @@
       "uploadFailed": "فشل الرفع",
       "deleteFailed": "فشل حذف الملف القديم من Cloudinary"
     }
+  },
+  "fileDropzone": {
+    "instructions": "اسحب وأفلت بعض الملفات هنا، أو انقر لتحديد الملفات",
+    "remove": "إزالة"
+  },
+  "fileDropzonesPage": {
+    "basic": "منطقة إسقاط الملفات الأساسية",
+    "multiple": "منطقة إسقاط ملفات متعددة",
+    "maxFiles": {
+      "title": "الحد الأقصى للملفات",
+      "description": "تم تعيين الحد الأقصى إلى {count} ملفات"
+    },
+    "maxSize": {
+      "title": "الحد الأقصى للحجم",
+      "description": "تم تعيين الحد الأقصى إلى {size}"
+    }
   }
 }
 

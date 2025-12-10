@@ -1,4 +1,7 @@
+import type { LocaleType } from "@/types"
 import type { Metadata } from "next"
+
+import { getDictionary } from "@/lib/get-dictionary"
 
 import { BasicFileDropzone } from "../../extended-ui/file-dropzone/_components/basic-file-dropzone"
 import { FileDropzoneMaxFiles } from "../../extended-ui/file-dropzone/_components/file-dropzone-max-files"
@@ -11,13 +14,18 @@ export const metadata: Metadata = {
   title: "File Dropzones",
 }
 
-export default function FileDropzonesPage() {
+export default async function FileDropzonesPage(props: {
+  params: Promise<{ lang: LocaleType }>
+}) {
+  const { lang } = await props.params
+  const dictionary = await getDictionary(lang)
+
   return (
     <section className="container grid gap-4 p-4 md:grid-cols-2">
-      <BasicFileDropzone />
-      <FileDropzoneMultiple />
-      <FileDropzoneMaxFiles />
-      <FileDropzoneMaxSize />
+      <BasicFileDropzone dictionary={dictionary} />
+      <FileDropzoneMultiple dictionary={dictionary} />
+      <FileDropzoneMaxFiles dictionary={dictionary} />
+      <FileDropzoneMaxSize dictionary={dictionary} />
     </section>
   )
 }

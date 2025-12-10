@@ -9,6 +9,7 @@ import type { FileType } from "@/types"
 import type { DropzoneOptions } from "react-dropzone"
 
 import { cn, formatFileSize, wait } from "@/lib/utils"
+import type { DictionaryType } from "@/lib/get-dictionary"
 
 import { Button } from "@/components/ui/button"
 import { FileThumbnail } from "./file-thumbnail"
@@ -18,12 +19,14 @@ export interface FileDropzoneProps extends Partial<DropzoneOptions> {
   className?: string
   value?: FileType[]
   onFilesChange?: (files: FileType[]) => void
+  dictionary?: DictionaryType
 }
 
 export function FileDropzone({
   className,
   value,
   onFilesChange,
+  dictionary,
   ...props
 }: FileDropzoneProps) {
   const [files, setFiles] = useState<FileType[]>(value || [])
@@ -40,6 +43,7 @@ export function FileDropzone({
         size: file.size,
         type: file.type,
         url: URL.createObjectURL(file),
+        file,
       }))
 
       const updatedFiles = [...files, ...newFiles]
@@ -48,14 +52,15 @@ export function FileDropzone({
       setLoadingFiles(new Set(newFiles.map((file) => file.id)))
 
       // Simulate file processing
-      for (const file of newFiles) {
-        await wait(2000) // Simulate 2 seconds of processing
-        setLoadingFiles((prev) => {
-          const newLoadingFiles = new Set(prev)
-          newLoadingFiles.delete(file.id)
-          return newLoadingFiles
-        })
-      }
+      // for (const file of newFiles) {
+      //   await wait(2000) // Simulate 2 seconds of processing
+      //   setLoadingFiles((prev) => {
+      //     const newLoadingFiles = new Set(prev)
+      //     newLoadingFiles.delete(file.id)
+      //     return newLoadingFiles
+      //   })
+      // }
+      setLoadingFiles(new Set())
     },
     [files, onFilesChange]
   )
@@ -92,7 +97,7 @@ export function FileDropzone({
       data-slot="file-dropzone"
       {...getRootProps()}
       className={cn(
-        "h-[17.75rem] w-full relative flex rounded-lg border-2 border-dashed border-muted-foreground cursor-pointer transition-colors hover:border-primary hover:bg-muted/50",
+        "h-71 w-full relative flex rounded-lg border-2 border-dashed border-muted-foreground cursor-pointer transition-colors hover:border-primary hover:bg-muted/50",
         isDragActive && "border-primary bg-muted/50",
         isDisabled && "cursor-not-allowed",
         className
@@ -140,7 +145,7 @@ export function FileDropzone({
                     e.stopPropagation()
                     removeFile(file.id)
                   }}
-                  aria-label="Remove"
+                  aria-label={dictionary?.fileDropzone?.remove || "Remove"}
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -151,7 +156,8 @@ export function FileDropzone({
           <div className="h-56 flex flex-col justify-center items-center gap-2 text-center p-4">
             <UploadCloud className="h-8 w-8 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
-              Drag and drop some files here, or click to select files
+              {dictionary?.fileDropzone?.instructions ||
+                "Drag and drop some files here, or click to select files"}
             </p>
           </div>
         )}

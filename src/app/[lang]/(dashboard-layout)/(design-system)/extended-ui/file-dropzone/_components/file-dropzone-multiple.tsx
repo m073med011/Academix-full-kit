@@ -3,14 +3,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileDropzone } from "@/components/ui/file-dropzone"
 
-export function FileDropzoneMultiple() {
+export function FileDropzoneMultiple({ dictionary }: { dictionary: any }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>File Dropzone Multiple</CardTitle>
+        <CardTitle>{dictionary?.fileDropzonesPage?.multiple}</CardTitle>
       </CardHeader>
       <CardContent className="flex items-center justify-center">
-        <FileDropzone multiple />
+        <FileDropzone multiple dictionary={dictionary} />
       </CardContent>
     </Card>
   )
