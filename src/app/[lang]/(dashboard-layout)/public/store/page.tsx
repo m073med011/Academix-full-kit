@@ -13,6 +13,7 @@ export default async function StorePage(props: {
     category?: string
     level?: string
     search?: string
+    sort?: string
   }>
 }) {
   const [params, searchParams] = await Promise.all([
