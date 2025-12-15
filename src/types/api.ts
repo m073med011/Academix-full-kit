@@ -270,6 +270,15 @@ export interface Course extends BaseEntity {
   termId?: string
   promoVideoUrl?: string
   brandColor?: string
+  modules?: Array<{
+    _id?: string
+    title: string
+    items: Array<{
+      _id?: string
+      materialId: string | Material
+      order?: number
+    }>
+  }>
 }
 
 export interface CreateCourseRequest {
