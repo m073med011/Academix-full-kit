@@ -780,7 +780,8 @@
       "lessonPrefix": "الدرس",
       "topicName": "اسم الموضوع",
       "hours": "ساعات",
-      "reading": "قراءة"
+      "reading": "قراءة",
+      "lessons": "دروس"
     },
     "instructor": {
       "title": "عن المدرب",

@@ -780,7 +780,8 @@
       "lessonPrefix": "Lesson",
       "topicName": "Topic Name",
       "hours": "hours",
-      "reading": "Reading"
+      "reading": "Reading",
+      "lessons": "lessons"
     },
     "instructor": {
       "title": "About the Instructor",
