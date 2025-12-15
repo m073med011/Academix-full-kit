@@ -52,17 +52,19 @@ export function CoursePurchaseCard({
   const purchasedCourses = usePurchasedCoursesStore((state) => state.courses)
 
   const [isWishlisted, setIsWishlisted] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(false)
 
   // Check if course is already purchased or in cart
   const courseAlreadyPurchased = purchasedCourses.some(
     (c) => c._id === course._id
   )
   const courseInCart =
-    cart?.items.some((item) =>
-      typeof item.courseId === "string"
+    cart?.items.some((item) => {
+      if (!item.courseId) return false
+      return typeof item.courseId === "string"
         ? item.courseId === course._id
         : item.courseId._id === course._id
-    ) ?? false
+    }) ?? false
 
   const handleAddToCart = async () => {
     try {
@@ -125,33 +127,50 @@ export function CoursePurchaseCard({
       <Card className="overflow-hidden">
         {/* Video Preview */}
         <div className="relative aspect-video bg-muted">
-          {course.thumbnailUrl ? (
-            <Image
-              src={course.thumbnailUrl}
-              alt={course.title}
-              fill
-              className="object-cover"
+          {isPlaying && course.promoVideoUrl ? (
+            <video
+              src={course.promoVideoUrl}
+              poster={course.thumbnailUrl}
+              controls
+              autoPlay
+              className="w-full h-full object-contain bg-black"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-primary/20 to-primary/10">
-              <Play className="h-16 w-16 text-primary/50" />
-            </div>
+            <>
+              {course.thumbnailUrl ? (
+                <Image
+                  src={course.thumbnailUrl}
+                  alt={course.title}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-primary/20 to-primary/10">
+                  <Play className="h-16 w-16 text-primary/50" />
+                </div>
+              )}
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  className="gap-2"
+                  onClick={() => {
+                    if (course.promoVideoUrl) {
+                      setIsPlaying(true)
+                    } else {
+                      toast.info(dictionary.toast.course.previewNotAvailable, {
+                        description:
+                          dictionary.toast.course.previewNotAvailableDesc,
+                      })
+                    }
+                  }}
+                >
+                  <Play className="h-5 w-5" />
+                  {t?.previewCourse || "Preview Course"}
+                </Button>
+              </div>
+            </>
           )}
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-            <Button
-              variant="secondary"
-              size="lg"
-              className="gap-2"
-              onClick={() => {
-                toast.info(dictionary.toast.course.previewNotAvailable, {
-                  description: dictionary.toast.course.previewNotAvailableDesc,
-                })
-              }}
-            >
-              <Play className="h-5 w-5" />
-              {t?.previewCourse || "Preview Course"}
-            </Button>
-          </div>
         </div>
 
         <CardContent className="p-6 space-y-6">

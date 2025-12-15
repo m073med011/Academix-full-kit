@@ -76,7 +76,7 @@ export function StoreFilters({
 
       {/* Sidebar Filters (Desktop) */}
       <aside className="hidden lg:block w-full lg:w-1/4">
-        <div className="sticky top-8 border rounded-lg bg-card p-6">
+        <div className="sticky top-24 border rounded-lg bg-card p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className={typography.h4}>{t.title}</h2>
             <Button

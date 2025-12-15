@@ -46,7 +46,7 @@ export function PricingStep({
   const enrollmentTypes = [
     { value: "free", label: t.free },
     { value: "subscription", label: t.subscription },
-    { value: "one-time", label: t.oneTimePurchase },
+    { value: "one-time-purchase", label: t.oneTimePurchase },
   ] as const
 
   return (
@@ -103,7 +103,7 @@ export function PricingStep({
             <div className="flex items-center gap-2">
               <CardTitle>{t.pricingSection}</CardTitle>
               <Badge variant="secondary" className="bg-primary/20 text-primary">
-                {formData.enrollmentType === "one-time"
+                {formData.enrollmentType === "one-time-purchase"
                   ? t.oneTimePurchase
                   : t.subscription}
               </Badge>
@@ -248,14 +248,6 @@ export function PricingStep({
           </div>
         </CardContent>
       </Card>
-
-      {/* Navigation */}
-      <footer className="flex justify-between items-center pt-4">
-        <Button variant="outline" onClick={onBack}>
-          {tActions.back}
-        </Button>
-        <Button onClick={onNext}>{tActions.nextPublish}</Button>
-      </footer>
     </div>
   )
 }

@@ -18,6 +18,13 @@ export function CourseCurriculumTab({
 }: CourseCurriculumTabProps) {
   const t = dictionary.courseDetailsPage?.curriculum
 
+  // Calculate total lessons/items
+  const totalItems =
+    course.modules?.reduce(
+      (acc, module) => acc + (module.items?.length || 0),
+      0
+    ) || 0
+
   return (
     <Card>
       <CardHeader>
@@ -25,46 +32,57 @@ export function CourseCurriculumTab({
           {t?.title || "Course Content"}
         </h3>
         <p className="text-sm text-muted-foreground">
-          {course.materials?.length || 0} {t?.sections || "sections"} •{" "}
-          {course.duration} {t?.totalLength || "hours total length"}
+          {course.modules?.length || 0} {t?.sections || "sections"} •{" "}
+          {totalItems} {t?.lessons || "lessons"} • {course.duration}{" "}
+          {t?.totalLength || "hours total length"}
         </p>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {[1, 2, 3, 4, 5].map((section) => (
-            <div key={section} className="border rounded-lg p-4 space-y-3">
+          {course.modules?.map((module, index) => (
+            <div
+              key={module._id || index}
+              className="border rounded-lg p-4 space-y-3"
+            >
               <div className="flex items-center justify-between">
                 <h4 className="font-semibold">
-                  {t?.sectionPrefix || "Section"} {section}:{" "}
-                  {t?.moduleTitle || "Module Title"}
+                  {t?.sectionPrefix || "Section"} {index + 1}: {module.title}
                 </h4>
                 <span className="text-sm text-muted-foreground">
-                  {Math.round(course.duration / 5)} {t?.hours || "hours"}
+                  {module.items?.length || 0} {t?.lessons || "lessons"}
                 </span>
               </div>
               <div className="space-y-2">
-                {[1, 2, 3].map((lesson) => (
-                  <div
-                    key={lesson}
-                    className="flex items-center gap-3 text-sm text-muted-foreground"
-                  >
-                    {lesson === 1 ? (
-                      <Video className="h-4 w-4" />
-                    ) : (
-                      <FileText className="h-4 w-4" />
-                    )}
-                    <span>
-                      {t?.lessonPrefix || "Lesson"} {lesson}:{" "}
-                      {t?.topicName || "Topic Name"}
-                    </span>
-                    <span className="ml-auto">
-                      {lesson === 1 ? "15:30" : t?.reading || "Reading"}
-                    </span>
-                  </div>
-                ))}
+                {module.items?.map((item: any, itemIndex) => {
+                  const material = item.materialId
+                  return (
+                    <div
+                      key={item._id || itemIndex}
+                      className="flex items-center gap-3 text-sm text-muted-foreground"
+                    >
+                      {material?.type === "video" ? (
+                        <Video className="h-4 w-4" />
+                      ) : (
+                        <FileText className="h-4 w-4" />
+                      )}
+                      <span>{material?.title || "Untitled Lesson"}</span>
+                      <span className="ml-auto">
+                        {material?.duration
+                          ? `${material.duration} min`
+                          : t?.reading || "Reading"}
+                      </span>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           ))}
+
+          {(!course.modules || course.modules.length === 0) && (
+            <div className="text-center py-8 text-muted-foreground">
+              No curriculum content available yet.
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

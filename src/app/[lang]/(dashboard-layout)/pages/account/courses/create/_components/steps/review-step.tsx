@@ -15,7 +15,6 @@ interface ReviewStepProps {
   formData: CourseFormData
   onBack: () => void
   onPublish: () => void
-  onSaveDraft: () => void
   onEditStep: (step: number) => void
 }
 
@@ -24,7 +23,6 @@ export function ReviewStep({
   formData,
   onBack,
   onPublish,
-  onSaveDraft,
   onEditStep,
 }: ReviewStepProps) {
   const t = dictionary.profilePage.createCourse.review
@@ -55,46 +53,6 @@ export function ReviewStep({
       {/* Header */}
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold">{t.title}</h1>
-        <nav aria-label="Progress">
-          <ol className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <li>
-              <button
-                onClick={() => onEditStep(WIZARD_STEPS.BASIC_INFO)}
-                className="hover:text-primary transition-colors"
-              >
-                {dictionary.profilePage.createCourse.steps.basicInfo}
-              </button>
-            </li>
-            <li>
-              <ChevronRight className="size-4" />
-            </li>
-            <li>
-              <button
-                onClick={() => onEditStep(WIZARD_STEPS.CURRICULUM)}
-                className="hover:text-primary transition-colors"
-              >
-                {dictionary.profilePage.createCourse.steps.curriculum}
-              </button>
-            </li>
-            <li>
-              <ChevronRight className="size-4" />
-            </li>
-            <li>
-              <button
-                onClick={() => onEditStep(WIZARD_STEPS.PRICING)}
-                className="hover:text-primary transition-colors"
-              >
-                {dictionary.profilePage.createCourse.steps.pricing}
-              </button>
-            </li>
-            <li>
-              <ChevronRight className="size-4" />
-            </li>
-            <li className="font-semibold text-primary">
-              {dictionary.profilePage.createCourse.steps.review}
-            </li>
-          </ol>
-        </nav>
       </header>
 
       {/* Success Alert */}
@@ -126,7 +84,7 @@ export function ReviewStep({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 <p className="text-sm text-muted-foreground">{t.category}</p>
                 <p className="md:col-span-2 text-sm">
-                  {formData.categories.join(", ") || "Not set"}
+                  {formData.category || "Not set"}
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
@@ -134,7 +92,7 @@ export function ReviewStep({
                   {dictionary.profilePage.createCourse.basicInfo.targetAudience}
                 </p>
                 <p className="md:col-span-2 text-sm capitalize">
-                  {formData.targetAudience}
+                  {formData.level}
                 </p>
               </div>
             </CardContent>
@@ -263,28 +221,11 @@ export function ReviewStep({
             </Card>
 
             {/* Action Buttons */}
-            <div className="flex flex-col gap-3">
+            {/* <div className="flex flex-col gap-3">
               <Button className="w-full" size="lg" onClick={onPublish}>
                 {t.publishCourse}
               </Button>
-              <Button
-                variant="secondary"
-                className="w-full"
-                size="lg"
-                onClick={onSaveDraft}
-              >
-                {tActions.saveDraft}
-              </Button>
-            </div>
-
-            {/* Back Link */}
-            <button
-              onClick={onBack}
-              className="flex w-full items-center justify-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-            >
-              <ArrowLeft className="size-4" />
-              <span>{t.backToPricing}</span>
-            </button>
+            </div> */}
           </div>
         </aside>
       </div>

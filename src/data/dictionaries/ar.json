@@ -156,6 +156,8 @@
     "bentoGrid": "شبكة بنتو",
     "mockups": "نماذج محاكاة",
     "steps": "خطوات",
+    "sortableList": "قائمة قابلة للترتيب",
+
     "dashboard": "لوحة التحكم",
     "products": "المنتجات",
     "list": "قائمة",
@@ -340,10 +342,11 @@
       "level": "المستوى",
       "rating": "التقييم",
       "categories": {
-        "business": "أعمال",
-        "technology": "تكنولوجيا",
-        "design": "تصميم",
-        "marketing": "تسويق"
+        "webDevelopment": "تطوير الويب",
+        "design": "التصميم",
+        "softwareEngineering": "هندسة البرمجيات",
+        "frontend": "الواجهة الأمامية",
+        "backend": "الواجهة الخلفية"
       },
       "levels": {
         "beginner": "مبتدئ",
@@ -961,6 +964,30 @@
     "maxSize": {
       "title": "الحد الأقصى للحجم",
       "description": "تم تعيين الحد الأقصى إلى {size}"
+    }
+  },
+  "sortableListDemo": {
+    "verticalList": "قائمة عمودية",
+    "horizontalList": "قائمة أفقية",
+    "cardList": "قائمة البطاقات",
+    "items": {
+      "researchCompetitors": "بحث المنافسين",
+      "draftProposal": "صياغة مقترح المشروع",
+      "designSystem": "تصميم بنية النظام",
+      "setupEnv": "إعداد بيئة التطوير",
+      "implementFeatures": "تنفيذ الميزات الأساسية",
+      "research": "بحث",
+      "draft": "مسودة",
+      "design": "تصميم"
+    },
+    "status": {
+      "todo": "للعمل",
+      "inProgress": "جاري العمل",
+      "done": "تم"
+    },
+    "labels": {
+      "task": "مهمة",
+      "status": "الحالة"
     }
   }
 }

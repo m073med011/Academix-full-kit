@@ -2,14 +2,15 @@ export interface CourseFormData {
   // Basic Info
   title: string
   description: string
-  categories: string[]
-  targetAudience: "beginner" | "intermediate" | "advanced" | "expert"
+  category: string
+  level: "beginner" | "intermediate" | "advanced" | "expert"
+  duration: number
 
   // Curriculum
   modules: CourseModule[]
 
   // Pricing
-  enrollmentType: "free" | "subscription" | "one-time"
+  enrollmentType: "free" | "subscription" | "one-time-purchase"
   price: number
   currency: string
   isPrivate: boolean
@@ -33,12 +34,26 @@ export interface CourseModule {
 
 export interface CourseContent {
   id: string
-  type: "video" | "article" | "quiz" | "assignment"
+  type: "video" | "article" | "quiz" | "assignment" | "link"
   title: string
   status: "published" | "draft"
-  duration?: string
-  questions?: number
+  // Video fields
+  url?: string
+  isFreePreview?: boolean
+  allowDownloads?: boolean
+  // Article fields
+  content?: string
+  duration?: number // read time in minutes
+  // Assignment fields
+  description?: string
+  points?: number
   dueDate?: string
+  submissionTypes?: string[]
+  allowLate?: boolean
+  // Link fields
+  openInNewTab?: boolean
+  // Legacy fields
+  questions?: number
 }
 
 export type WizardStep = 1 | 2 | 3 | 4 | 5
@@ -54,10 +69,11 @@ export const WIZARD_STEPS = {
 export const initialCourseFormData: CourseFormData = {
   title: "",
   description: "",
-  categories: [],
-  targetAudience: "beginner",
+  category: "",
+  level: "beginner",
+  duration: 0,
   modules: [],
-  enrollmentType: "one-time",
+  enrollmentType: "one-time-purchase",
   price: 0,
   currency: "USD",
   isPrivate: false,

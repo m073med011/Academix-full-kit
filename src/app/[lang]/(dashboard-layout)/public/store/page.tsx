@@ -28,6 +28,7 @@ export default async function StorePage(props: {
   const category = searchParams.category
   const level = searchParams.level
   const search = searchParams.search
+  const sort = searchParams.sort
 
   // Fetch initial courses server-side
   const serverCourseService = createServerCourseService()
@@ -39,6 +40,7 @@ export default async function StorePage(props: {
       category,
       level,
       search,
+      sort,
     })
 
     const initialCourses = response.data || []

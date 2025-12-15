@@ -3,15 +3,19 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import { AlertCircle, Loader2, Star } from "lucide-react"
+import { AlertCircle, HelpCircle, Loader2, Star } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType } from "@/types"
 import type { Course, CoursePagination, User } from "@/types/api"
 
+import { cn } from "@/lib/utils"
 import { typography } from "@/lib/typography"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { DefaultImage } from "@/components/ui/defult-Image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import {
@@ -40,6 +44,7 @@ interface StoreListProps {
   error: string | null
   onPageChange: (page: number) => void
   onSortChange: (sortValue: string) => void
+  currentSort?: string
 }
 
 export function StoreList({
@@ -50,6 +55,7 @@ export function StoreList({
   error,
   onPageChange,
   onSortChange,
+  currentSort,
 }: StoreListProps) {
   const params = useParams()
   const locale = params.lang as LocaleType
@@ -69,6 +75,26 @@ export function StoreList({
     return students?.length || 0
   }
 
+  // Helper for safe display
+  const SafeDisplay = ({
+    value,
+    fallback = "N/A",
+    className,
+  }: {
+    value: any
+    fallback?: string
+    className?: string
+  }) => {
+    if (value === null || value === undefined || value === "") {
+      return (
+        <span className={cn("text-muted-foreground italic", className)}>
+          {fallback}
+        </span>
+      )
+    }
+    return <>{value}</>
+  }
+
   return (
     <div className="w-full lg:w-3/4">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
@@ -86,7 +112,11 @@ export function StoreList({
           >
             {t.sort.label}
           </Label>
-          <Select defaultValue="popular" onValueChange={onSortChange}>
+          <Select
+            defaultValue="popular"
+            value={currentSort || "popular"}
+            onValueChange={onSortChange}
+          >
             <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder={t.sort.placeholder} />
             </SelectTrigger>
@@ -142,18 +172,15 @@ export function StoreList({
               <Link
                 key={course._id}
                 href={`/${locale}/public/course/${course._id}`}
-                className="block"
+                className="block h-full"
               >
-                <Card className="group overflow-hidden border-border transition-all duration-300 hover:border-primary/50 hover:shadow-lg h-full">
+                <Card className="group overflow-hidden border-border transition-all duration-300 hover:border-primary/50 hover:shadow-lg h-full flex flex-col">
                   <div className="relative overflow-hidden aspect-video">
-                    <Image
+                    <DefaultImage
+                      src={course.thumbnailUrl}
                       width={600}
                       height={400}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      src={
-                        course.thumbnailUrl ||
-                        "https://placehold.co/600x400?text=Course+Image"
-                      }
+                      className="w-full h-full transition-transform duration-300 group-hover:scale-105"
                       alt={course.title}
                     />
                     {course.price === 0 && (
@@ -163,18 +190,59 @@ export function StoreList({
                     )}
                   </div>
                   <CardContent className="p-5 flex flex-col grow">
-                    <p className={`${typography.muted} mb-2`}>
-                      {getInstructorName(course.instructor)}
-                    </p>
+                    <div className="flex gap-2 mb-3">
+                      <Badge variant="secondary" className="capitalize">
+                        <SafeDisplay value={course.category} />
+                      </Badge>
+                      <Badge variant="outline" className="capitalize">
+                        <SafeDisplay value={course.level} />
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2 mb-3">
+                      {typeof course.instructor === "object" &&
+                      course.instructor &&
+                      course.instructor.name ? (
+                        <>
+                          <Avatar className="h-6 w-6">
+                            <AvatarImage
+                              src={course.instructor.imageProfileUrl}
+                              alt={course.instructor.name}
+                            />
+                            <AvatarFallback>
+                              {course.instructor.name.charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                            {course.instructor.name}
+                          </span>
+                        </>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-6 w-6">
+                            <AvatarFallback className="bg-destructive/10 text-destructive">
+                              <HelpCircle className="h-3 w-3" />
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-sm font-medium text-destructive/80 italic">
+                            Info Unavailable
+                          </span>
+                        </div>
+                      )}
+                    </div>
                     <h3
-                      className={`${typography.h4} leading-tight mb-3 grow line-clamp-2`}
+                      className={`${typography.h4} leading-tight mb-3 line-clamp-2`}
                     >
-                      {course.title}
+                      <SafeDisplay
+                        value={course.title}
+                        fallback="Title Unavailable"
+                      />
                     </h3>
                     <div className="flex items-center gap-1 mb-4">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                       <span className={`${typography.large} text-foreground`}>
-                        {course.rating?.toFixed(1) || "0.0"}
+                        {course.rating !== undefined && course.rating !== null
+                          ? course.rating.toFixed(1)
+                          : "N/A"}
                       </span>
                       <span
                         className={`${typography.small} text-muted-foreground`}
@@ -184,7 +252,13 @@ export function StoreList({
                     </div>
                     <div className="flex justify-between items-center mt-auto gap-2">
                       <p className={`${typography.h4} text-primary`}>
-                        ${course.price.toFixed(2)}
+                        {course.price !== undefined && course.price !== null ? (
+                          `$${course.price.toFixed(2)}`
+                        ) : (
+                          <span className="text-muted-foreground text-base italic">
+                            Price Unavailable
+                          </span>
+                        )}
                       </p>
                       <div onClick={(e) => e.preventDefault()}>
                         <AddToCartButton courseId={course._id} size="sm" />

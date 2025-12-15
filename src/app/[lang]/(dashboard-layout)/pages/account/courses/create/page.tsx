@@ -19,7 +19,7 @@ export default async function CreateCoursePage(props: {
   const currentStep = parseInt(searchParams.step || "1", 10)
 
   return (
-    <div className="container max-w-5xl py-8">
+    <div className="container mx-auto p-[clamp(0.5rem,2vw,1rem)]">
       <WizardContainer
         dictionary={dictionary}
         locale={params.lang}

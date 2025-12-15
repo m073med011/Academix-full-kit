@@ -48,7 +48,7 @@ export function CartItem({
         <div className="relative w-24 h-24 shrink-0 rounded-md overflow-hidden">
           <Image
             src={
-              course.thumbnailUrl || "https://placehold.co/600x400?text=Course"
+              course.thumbnailUrl
             }
             alt={course.title}
             fill

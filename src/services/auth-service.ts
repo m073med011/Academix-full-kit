@@ -91,43 +91,24 @@ export const authService = {
   }> {
     // Refresh is handled automatically by NextAuth on the server
     // We just return the current token via the API route
-    try {
-      const res = await fetch("/api/auth/token")
-      if (!res.ok) throw new Error("Failed to get token")
-      const data = await res.json()
-      if (!data.accessToken) throw new ApiClientError("No session", 401)
-      return { accessToken: data.accessToken }
-    } catch (_e) {
-      throw new ApiClientError("No session", 401)
-    }
+    const token = await apiClient.getAccessToken()
+    if (!token) throw new ApiClientError("No session", 401)
+    return { accessToken: token }
   },
 
   /**
    * Check if user is authenticated (has valid tokens)
    */
   async isAuthenticated(): Promise<boolean> {
-    try {
-      const res = await fetch("/api/auth/token")
-      if (!res.ok) return false
-      const data = await res.json()
-      return !!data.accessToken
-    } catch {
-      return false
-    }
+    const token = await apiClient.getAccessToken()
+    return !!token
   },
 
   /**
    * Get stored access token
    */
   async getAccessToken(): Promise<string | null> {
-    try {
-      const res = await fetch("/api/auth/token")
-      if (!res.ok) return null
-      const data = await res.json()
-      return data.accessToken
-    } catch {
-      return null
-    }
+    return apiClient.getAccessToken()
   },
 
   // ============================================

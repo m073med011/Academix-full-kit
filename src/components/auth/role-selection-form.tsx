@@ -27,6 +27,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { DefaultImage } from "@/components/ui/defult-Image"
 
 type RoleType =
   | "student"
@@ -53,6 +54,7 @@ export function RoleSelectionForm({ dictionary }: RoleSelectionFormProps) {
       description:
         dictionary.navigation.roleSelection.roles.student.description,
       icon: GraduationCap,
+      image: "/images/illustrations/characters/Student.jpg",
     },
     {
       id: "freelancer",
@@ -60,6 +62,7 @@ export function RoleSelectionForm({ dictionary }: RoleSelectionFormProps) {
       description:
         dictionary.navigation.roleSelection.roles.freelancer.description,
       icon: Briefcase,
+      image: "/images/illustrations/characters/freelancer.jpg",
     },
     {
       id: "organizer",
@@ -67,6 +70,7 @@ export function RoleSelectionForm({ dictionary }: RoleSelectionFormProps) {
       description:
         dictionary.navigation.roleSelection.roles.organizer.description,
       icon: CalendarDays,
+      image: "/images/illustrations/characters/Orgnazation.jpg",
     },
     {
       id: "instructor",
@@ -74,12 +78,14 @@ export function RoleSelectionForm({ dictionary }: RoleSelectionFormProps) {
       description:
         dictionary.navigation.roleSelection.roles.instructor.description,
       icon: School,
+      image: "/images/illustrations/characters/Instructor.jpg",
     },
     {
       id: "guest",
       label: dictionary.navigation.roleSelection.roles.guest.label,
       description: dictionary.navigation.roleSelection.roles.guest.description,
       icon: User,
+      image: "/images/illustrations/characters/Gust.jpg",
     },
   ] as const
 
@@ -164,29 +170,37 @@ export function RoleSelectionForm({ dictionary }: RoleSelectionFormProps) {
             const Icon = role.icon
             const isSelected = selectedRole === role.id
             return (
-              <div
+              <Card
                 key={role.id}
                 className={cn(
-                  "cursor-pointer rounded-xl border-2 bg-card p-6 transition-all hover:border-primary/50 hover:bg-accent",
+                  "cursor-pointer transition-all hover:border-primary/50 hover:bg-accent",
                   isSelected
                     ? "border-primary ring-2 ring-primary/20"
                     : "border-muted"
                 )}
                 onClick={() => handleRoleSelect(role.id as RoleType)}
               >
-                <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <Icon className="size-6" />
-                </div>
-                <h3 className="font-semibold">{role.label}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {role.description}
-                </p>
-                {isSelected && (
-                  <div className="mt-4 flex justify-end">
-                    <Check className="size-5 text-primary" />
+                <CardHeader className="items-center p-6 pb-2">
+                  <div className="mb-4 flex w-full items-center justify-center">
+                    <DefaultImage
+                      src={role.image}
+                      alt={role.label}
+                      width={400}
+                      height={400}
+                      className="h-48 w-full max-w-48 object-cover"
+                    />
                   </div>
+                  <CardTitle className="text-center">{role.label}</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center p-6 pt-0">
+                  <CardDescription>{role.description}</CardDescription>
+                </CardContent>
+                {isSelected && (
+                  <CardFooter className="justify-end p-6 pt-0 pb-6">
+                    <Check className="size-5 text-primary" />
+                  </CardFooter>
                 )}
-              </div>
+              </Card>
             )
           })}
         </CardContent>

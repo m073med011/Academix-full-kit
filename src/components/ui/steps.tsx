@@ -169,7 +169,7 @@ export function Steps({
 export const stepsListVariants = cva("flex", {
   variants: {
     orientation: {
-      horizontal: "flex-row items-center justify-between w-full",
+      horizontal: "flex-row items-start justify-between w-full",
       vertical: "flex-col items-start gap-2 shrink-0",
     },
   },
@@ -440,16 +440,29 @@ export function StepsConnector({
   className,
   ...props
 }: StepsConnectorProps) {
-  const { activeStep, orientation } = useStepsContext()
+  const { activeStep, orientation, size } = useStepsContext()
 
   const status: "completed" | "upcoming" =
     afterStep < activeStep ? "completed" : "upcoming"
+
+  const marginTop =
+    orientation === "horizontal"
+      ? {
+          sm: "mt-[15px]",
+          default: "mt-[19px]",
+          lg: "mt-[23px]",
+        }[size]
+      : undefined
 
   return (
     <div
       data-slot="steps-connector"
       data-status={status}
-      className={cn(stepsConnectorVariants({ orientation, status }), className)}
+      className={cn(
+        stepsConnectorVariants({ orientation, status }),
+        marginTop,
+        className
+      )}
       {...props}
     />
   )

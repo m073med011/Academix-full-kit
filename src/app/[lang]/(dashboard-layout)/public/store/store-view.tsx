@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { Course, CourseFilterParams, CoursePagination } from "@/types/api"
@@ -23,6 +23,7 @@ export function StoreView({
   initialPagination,
 }: StoreViewProps) {
   const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
 
   const [isFilterOpen, setIsFilterOpen] = useState(false)
@@ -35,6 +36,7 @@ export function StoreView({
     level:
       (searchParams.get("level") as CourseFilterParams["level"]) || undefined,
     search: searchParams.get("search") || undefined,
+    sort: searchParams.get("sort") || undefined,
   }
 
   // Use the hook for filter state management only
@@ -54,12 +56,13 @@ export function StoreView({
     if (newFilters.category) params.set("category", newFilters.category)
     if (newFilters.level) params.set("level", newFilters.level)
     if (newFilters.search) params.set("search", newFilters.search)
+    if (newFilters.sort) params.set("sort", newFilters.sort)
 
     const queryString = params.toString()
     const newURL = queryString ? `?${queryString}` : ""
 
     // Navigate to new URL - this triggers server-side re-render
-    router.push(newURL)
+    router.push(`${pathname}${newURL}`)
   }
 
   const handleFilterChange = (newFilters: Partial<CourseFilterParams>) => {
@@ -73,6 +76,7 @@ export function StoreView({
       ...(merged.category && { category: merged.category }),
       ...(merged.level && { level: merged.level }),
       ...(merged.search && { search: merged.search }),
+      ...(merged.sort && { sort: merged.sort }),
     }
 
     setFilters(updatedFilters)
@@ -86,8 +90,9 @@ export function StoreView({
   }
 
   const handleSortChange = (sortValue: string) => {
-    // Sort can be added to backend later
-    console.log("Sort changed:", sortValue)
+    const updatedFilters = { ...filters, sort: sortValue, page: 1 }
+    setFilters(updatedFilters)
+    updateURL(updatedFilters)
   }
 
   const handleClearFilters = () => {
@@ -119,6 +124,7 @@ export function StoreView({
             error={null}
             onPageChange={handlePageChange}
             onSortChange={handleSortChange}
+            currentSort={filters.sort}
           />
         </div>
       </div>

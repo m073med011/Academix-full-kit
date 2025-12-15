@@ -15,9 +15,48 @@ interface RequestConfig extends RequestInit {
 // Main API client class
 class ApiClient {
   private baseUrl: string
+  private tokenPromise: Promise<string | null> | null = null
+  private cachedToken: string | null = null
+  private tokenExpiresAt: number = 0
 
   constructor(baseUrl: string = API_BASE_URL) {
     this.baseUrl = baseUrl
+  }
+
+  public async getAccessToken(): Promise<string | null> {
+    const now = Date.now()
+    
+    // Return cached token if valid (cache for 10 seconds to deduplicate bursts)
+    if (this.cachedToken && this.tokenExpiresAt > now) {
+      return this.cachedToken
+    }
+
+    // If a fetch is already in progress, wait for it
+    if (this.tokenPromise) {
+      return this.tokenPromise
+    }
+
+    // Start a new fetch
+    this.tokenPromise = (async () => {
+      try {
+        const res = await fetch("/api/auth/token")
+        if (res.ok) {
+          const data = (await res.json()) as { accessToken?: string }
+          if (data.accessToken) {
+            this.cachedToken = data.accessToken
+            this.tokenExpiresAt = Date.now() + 10000 // Cache for 10 seconds
+            return data.accessToken
+          }
+        }
+        return null
+      } catch {
+        return null
+      } finally {
+        this.tokenPromise = null
+      }
+    })()
+
+    return this.tokenPromise
   }
 
   private async request<T>(
@@ -40,12 +79,9 @@ class ApiClient {
     // Add authorization header if not skipped and token exists
     if (!skipAuth && typeof window !== "undefined") {
       try {
-        const res = await fetch("/api/auth/token")
-        if (res.ok) {
-          const data = (await res.json()) as { accessToken?: string }
-          if (data.accessToken) {
-            headers.set("Authorization", `Bearer ${data.accessToken}`)
-          }
+        const token = await this.getAccessToken()
+        if (token) {
+          headers.set("Authorization", `Bearer ${token}`)
         }
       } catch (_e) {
         // Ignore token fetch errors
@@ -162,12 +198,9 @@ class ApiClient {
 
     if (!skipAuth && typeof window !== "undefined") {
       try {
-        const res = await fetch("/api/auth/token")
-        if (res.ok) {
-          const data = (await res.json()) as { accessToken?: string }
-          if (data.accessToken) {
-            headers.set("Authorization", `Bearer ${data.accessToken}`)
-          }
+        const token = await this.getAccessToken()
+        if (token) {
+          headers.set("Authorization", `Bearer ${token}`)
         }
       } catch (_e) {
         // Ignore token fetch errors

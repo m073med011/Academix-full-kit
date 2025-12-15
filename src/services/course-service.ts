@@ -17,6 +17,7 @@ interface CourseQueryParams {
   level?: string
   isPublished?: boolean
   search?: string
+  sort?: string
 }
 
 // Course service for client-side course operations
@@ -40,6 +41,7 @@ export const courseService = {
     if (params.isPublished !== undefined)
       queryParams.set("isPublished", String(params.isPublished))
     if (params.search) queryParams.set("search", params.search)
+    if (params.sort) queryParams.set("sort", params.sort)
 
     const queryString = queryParams.toString()
     const endpoint = `/courses${queryString ? `?${queryString}` : ""}`
@@ -112,7 +114,7 @@ export const courseService = {
    * Update a course
    */
   async updateCourse(id: string, data: UpdateCourseRequest): Promise<Course> {
-    const response = await apiClient.put<Course>(`/courses/${id}`, data)
+    const response = await apiClient.patch<Course>(`/courses/${id}`, data)
 
     if (response.success && response.data) {
       return response.data

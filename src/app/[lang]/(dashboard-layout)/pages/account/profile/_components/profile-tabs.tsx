@@ -1,6 +1,7 @@
 "use client"
 
 import { useRouter, useSearchParams } from "next/navigation"
+import { useSession } from "next-auth/react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType } from "@/types"
@@ -19,8 +20,11 @@ interface ProfileTabsProps {
 export function ProfileTabs({ dictionary, locale }: ProfileTabsProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const activeTab = searchParams.get("tab") || "created"
+  const { data: session } = useSession()
+  const activeTab = searchParams.get("tab") || "purchased"
   const t = dictionary.profilePage.tabs
+
+  const isStudent = session?.user?.role === "student"
 
   const handleTabChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -31,15 +35,20 @@ export function ProfileTabs({ dictionary, locale }: ProfileTabsProps) {
 
   const tabs = [
     {
-      value: "created",
-      label: t.createdCourses,
-      content: <CreatedCourses dictionary={dictionary} />,
-    },
-    {
       value: "purchased",
       label: t.purchasedCourses,
       content: <PurchasedCourses dictionary={dictionary} locale={locale} />,
     },
+    // Only show created courses for non-student users
+    ...(!isStudent
+      ? [
+          {
+            value: "created",
+            label: t.createdCourses,
+            content: <CreatedCourses dictionary={dictionary} />,
+          },
+        ]
+      : []),
     {
       value: "personal",
       label: t.personalInformation,

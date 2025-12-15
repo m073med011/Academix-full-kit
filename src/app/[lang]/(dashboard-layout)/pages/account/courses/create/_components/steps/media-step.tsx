@@ -4,6 +4,7 @@ import { Upload, Video } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { CourseFormData } from "../../types"
+import type { CloudinaryUploadResult } from "@/services/cloudinary-service"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -15,8 +16,8 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
+import { CloudinaryUploader } from "@/components/ui/cloudinary-uploader"
 
 interface MediaStepProps {
   dictionary: DictionaryType
@@ -49,18 +50,6 @@ export function MediaStep({
               .join(" ")}
           </h1>
         </div>
-        {/* Progress Bar */}
-        <div className="flex flex-col gap-2">
-          <div className="flex justify-between text-sm">
-            <span className="font-medium">
-              {tProgress.stepOf
-                .replace("{current}", "4")
-                .replace("{total}", "5")}
-              : {t.title}
-            </span>
-          </div>
-          <Progress value={80} />
-        </div>
       </header>
 
       {/* Course Thumbnail Card */}
@@ -70,17 +59,30 @@ export function MediaStep({
           <CardDescription>{t.thumbnailRecommendation}</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="aspect-video w-full rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/20 flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
-            <div className="text-center text-muted-foreground p-4">
-              <Upload className="size-10 mx-auto mb-2" />
-              <p className="text-sm">
-                {t.dragDropImage}{" "}
-                <span className="font-semibold text-primary">
-                  {t.clickToBrowse}
-                </span>
-              </p>
+          {formData.thumbnailUrl ? (
+            <div className="relative aspect-video w-full rounded-lg overflow-hidden border">
+              <img 
+                src={formData.thumbnailUrl} 
+                alt="Course Thumbnail" 
+                className="w-full h-full object-cover"
+              />
+              <Button
+                variant="destructive"
+                size="sm"
+                className="absolute top-2 right-2"
+                onClick={() => onUpdate({ thumbnailUrl: undefined })}
+              >
+                Remove
+              </Button>
             </div>
-          </div>
+          ) : (
+            <CloudinaryUploader
+              dictionary={dictionary}
+              defaultResourceType="image"
+              showTypeSelector={false}
+              onUploadComplete={(result: CloudinaryUploadResult) => onUpdate({ thumbnailUrl: result.secureUrl })}
+            />
+          )}
         </CardContent>
       </Card>
 
@@ -91,40 +93,56 @@ export function MediaStep({
           <CardDescription>{t.videoRecommendation}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* File Uploader */}
-          <div className="aspect-video w-full rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/20 flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
-            <div className="text-center text-muted-foreground p-4">
-              <Video className="size-10 mx-auto mb-2" />
-              <p className="text-sm">
-                {t.dragDropVideo}{" "}
-                <span className="font-semibold text-primary">
-                  {t.clickToBrowse}
-                </span>
-              </p>
+          {formData.promoVideoUrl ? (
+            <div className="relative aspect-video w-full rounded-lg overflow-hidden border bg-black">
+              <video
+                src={formData.promoVideoUrl}
+                poster={formData.thumbnailUrl}
+                controls
+                className="w-full h-full"
+              />
+              <Button
+                variant="destructive"
+                size="sm"
+                className="absolute top-2 right-2 z-10"
+                onClick={() => onUpdate({ promoVideoUrl: undefined })}
+              >
+                Remove
+              </Button>
             </div>
-          </div>
+          ) : (
+            <>
+              {/* File Uploader */}
+              <CloudinaryUploader
+                dictionary={dictionary}
+                defaultResourceType="video"
+                showTypeSelector={false}
+                onUploadComplete={(result: CloudinaryUploadResult) => onUpdate({ promoVideoUrl: result.secureUrl })}
+              />
 
-          {/* Separator */}
-          <div className="flex items-center gap-4">
-            <Separator className="flex-1" />
-            <span className="text-xs font-semibold text-muted-foreground">
-              {t.or}
-            </span>
-            <Separator className="flex-1" />
-          </div>
+              {/* Separator */}
+              <div className="flex items-center gap-4">
+                <Separator className="flex-1" />
+                <span className="text-xs font-semibold text-muted-foreground">
+                  {t.or}
+                </span>
+                <Separator className="flex-1" />
+              </div>
 
-          {/* URL Input */}
-          <div>
-            <Label htmlFor="video-url">{t.pasteVideoUrl}</Label>
-            <Input
-              id="video-url"
-              type="url"
-              placeholder={t.videoUrlPlaceholder}
-              value={formData.promoVideoUrl || ""}
-              onChange={(e) => onUpdate({ promoVideoUrl: e.target.value })}
-              className="mt-2"
-            />
-          </div>
+              {/* URL Input */}
+              <div>
+                <Label htmlFor="video-url">{t.pasteVideoUrl}</Label>
+                <Input
+                  id="video-url"
+                  type="url"
+                  placeholder={t.videoUrlPlaceholder}
+                  value={formData.promoVideoUrl || ""}
+                  onChange={(e) => onUpdate({ promoVideoUrl: e.target.value })}
+                  className="mt-2"
+                />
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
 
@@ -164,14 +182,6 @@ export function MediaStep({
           </div>
         </CardContent>
       </Card>
-
-      {/* Navigation Buttons */}
-      <footer className="flex justify-between items-center pt-4 border-t">
-        <Button variant="outline" onClick={onBack}>
-          {tActions.back}
-        </Button>
-        <Button onClick={onNext}>{tActions.saveAndContinue}</Button>
-      </footer>
     </div>
   )
 }

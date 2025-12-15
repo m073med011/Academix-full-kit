@@ -6,6 +6,7 @@ import {
   ChevronUp,
   FileText,
   GripVertical,
+  MoreVertical,
   Pencil,
   PlayCircle,
   Plus,
@@ -13,14 +14,22 @@ import {
 } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
-import type { CourseFormData, CourseModule } from "../../types"
+import type { CourseContent, CourseFormData, CourseModule } from "../../types"
 
 import { cn } from "@/lib/utils"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
+import { SortableList } from "@/components/ui/sortable-list"
+import { AddContentModal } from "./add-content-modal"
 
 interface CurriculumStepProps {
   dictionary: DictionaryType
@@ -28,7 +37,6 @@ interface CurriculumStepProps {
   onUpdate: (data: Partial<CourseFormData>) => void
   onNext: () => void
   onBack: () => void
-  onSaveDraft: () => void
 }
 
 export function CurriculumStep({
@@ -37,73 +45,31 @@ export function CurriculumStep({
   onUpdate,
   onNext,
   onBack,
-  onSaveDraft,
 }: CurriculumStepProps) {
   const t = dictionary.profilePage.createCourse.curriculum
   const tActions = dictionary.profilePage.createCourse.actions
-  const tProgress = dictionary.profilePage.createCourse.progress
 
   const [selectedModuleId, setSelectedModuleId] = useState<string | null>(
     formData.modules[0]?.id || null
   )
+  const [isAddContentModalOpen, setIsAddContentModalOpen] = useState(false)
+
+  // Edit state
+  const [editingModuleId, setEditingModuleId] = useState<string | null>(null)
+  const [editingTitle, setEditingTitle] = useState("")
 
   // Demo data for initial state
-  const [modules, setModules] = useState<CourseModule[]>(
-    formData.modules.length > 0
-      ? formData.modules
-      : [
-          {
-            id: "1",
-            title: "Module 1: Introduction",
-            isExpanded: true,
-            contents: [
-              {
-                id: "1-1",
-                type: "video",
-                title: "Welcome Video",
-                status: "published",
-                duration: "5:32",
-              },
-              {
-                id: "1-2",
-                type: "article",
-                title: "What is UX Design?",
-                status: "draft",
-                duration: "12",
-              },
-              {
-                id: "1-3",
-                type: "quiz",
-                title: "Chapter 1 Knowledge Check",
-                status: "published",
-                questions: 10,
-              },
-            ],
-          },
-          {
-            id: "2",
-            title: "Module 2: Core Concepts",
-            isExpanded: false,
-            contents: [],
-          },
-          {
-            id: "3",
-            title: "Module 3: Advanced Topics",
-            isExpanded: false,
-            contents: [],
-          },
-        ]
-  )
+  const [modules, setModules] = useState<CourseModule[]>(formData.modules)
 
   const selectedModule = modules.find((m) => m.id === selectedModuleId)
-  const currentProgress = 50 // Can calculate based on content completion
 
   const toggleModuleExpansion = (moduleId: string) => {
-    setModules((prev) =>
-      prev.map((m) =>
-        m.id === moduleId ? { ...m, isExpanded: !m.isExpanded } : m
-      )
+    if (editingModuleId === moduleId) return // Prevent expansion toggle while editing
+    const newModules = modules.map((m) =>
+      m.id === moduleId ? { ...m, isExpanded: !m.isExpanded } : m
     )
+    setModules(newModules)
+    onUpdate({ modules: newModules })
     setSelectedModuleId(moduleId)
   }
 
@@ -114,12 +80,36 @@ export function CurriculumStep({
       isExpanded: false,
       contents: [],
     }
-    setModules((prev) => [...prev, newModule])
+    const newModules = [...modules, newModule]
+    setModules(newModules)
+    onUpdate({ modules: newModules })
   }
 
-  const handleSave = () => {
-    onUpdate({ modules })
-    onNext()
+  const handleEditModule = (module: CourseModule) => {
+    setEditingModuleId(module.id)
+    setEditingTitle(module.title)
+  }
+
+  const handleSaveModuleTitle = () => {
+    if (!editingModuleId) return
+
+    const newModules = modules.map((m) =>
+      m.id === editingModuleId ? { ...m, title: editingTitle } : m
+    )
+    setModules(newModules)
+    onUpdate({ modules: newModules })
+    setEditingModuleId(null)
+    setEditingTitle("")
+  }
+
+  const handleDeleteModule = (moduleId: string) => {
+    const newModules = modules.filter((m) => m.id !== moduleId)
+    setModules(newModules)
+    onUpdate({ modules: newModules })
+
+    if (selectedModuleId === moduleId) {
+      setSelectedModuleId(newModules[0]?.id || null)
+    }
   }
 
   const getContentIcon = (type: string) => {
@@ -135,6 +125,43 @@ export function CurriculumStep({
     }
   }
 
+  const handleModalAddContent = (type: string, data: any) => {
+    if (!selectedModuleId) return
+
+    const newContent: CourseContent = {
+      id: crypto.randomUUID(),
+      type: type as CourseContent["type"],
+      title: data.title,
+      status: "draft",
+      // Common fields
+      description: data.description,
+      // Video fields
+      url: data.videoUrl || data.url,
+      isFreePreview: data.isFreePreview,
+      allowDownloads: data.allowDownloads,
+      // Article fields
+      content: data.content,
+      duration: data.readTime || 0,
+      // Assignment fields
+      points: data.points,
+      dueDate: data.dueDate?.toISOString(),
+      submissionTypes: data.submissionTypes,
+      allowLate: data.allowLate,
+      // Link fields
+      openInNewTab: data.openInNewTab === "new_tab",
+      // Legacy
+      questions: type === "quiz" ? 0 : undefined,
+    }
+
+    const newModules = modules.map((m) =>
+      m.id === selectedModuleId
+        ? { ...m, contents: [...m.contents, newContent] }
+        : m
+    )
+    setModules(newModules)
+    onUpdate({ modules: newModules })
+  }
+
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
@@ -143,25 +170,7 @@ export function CurriculumStep({
           <h1 className="text-3xl md:text-4xl font-black leading-tight tracking-tight">
             {t.title}
           </h1>
-          <div className="flex items-center gap-2">
-            <Button variant="secondary" onClick={onSaveDraft}>
-              {tActions.saveDraft}
-            </Button>
-            <Button onClick={handleSave}>{tActions.nextSettings}</Button>
-          </div>
-        </div>
-        {/* Progress Bar */}
-        <div className="flex flex-col gap-2">
-          <div className="flex justify-between text-sm">
-            <span className="font-medium">
-              {tProgress.stepOf
-                .replace("{current}", "2")
-                .replace("{total}", "5")}
-              : {t.title.split(" ").slice(1).join(" ")}
-            </span>
-            <span>{currentProgress}%</span>
-          </div>
-          <Progress value={currentProgress} />
+          <div className="flex items-center gap-2"></div>
         </div>
       </header>
 
@@ -173,35 +182,98 @@ export function CurriculumStep({
             <h3 className="text-lg font-bold">{t.modules}</h3>
           </CardHeader>
           <CardContent className="space-y-2">
-            {modules.map((module) => (
-              <div
-                key={module.id}
-                className={cn(
-                  "rounded-lg p-3 cursor-pointer transition-colors",
-                  selectedModuleId === module.id
-                    ? "bg-primary/10 border border-primary/50"
-                    : "hover:bg-muted/50"
-                )}
-                onClick={() => toggleModuleExpansion(module.id)}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <GripVertical className="size-4 text-muted-foreground" />
-                    <span className="font-medium text-sm">{module.title}</span>
+            <SortableList
+              items={modules}
+              onReorder={(newModules) => {
+                setModules(newModules)
+                onUpdate({ modules: newModules })
+              }}
+              renderItem={(module) => (
+                <div
+                  className={cn(
+                    "rounded-lg p-3 cursor-pointer transition-colors mb-2 group",
+                    selectedModuleId === module.id
+                      ? "bg-primary/10 border border-primary/50"
+                      : "hover:bg-muted/50 border border-transparent"
+                  )}
+                  onClick={() => toggleModuleExpansion(module.id)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <GripVertical className="size-4 text-muted-foreground cursor-grab active:cursor-grabbing flex-shrink-0" />
+                      {editingModuleId === module.id ? (
+                        <Input
+                          value={editingTitle}
+                          onChange={(e) => setEditingTitle(e.target.value)}
+                          onBlur={handleSaveModuleTitle}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleSaveModuleTitle()
+                            if (e.key === "Escape") {
+                              setEditingModuleId(null)
+                              setEditingTitle("")
+                            }
+                          }}
+                          autoFocus
+                          className="h-7 text-sm"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      ) : (
+                        <span className="font-medium text-sm truncate">
+                          {module.title}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {editingModuleId !== module.id && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <MoreVertical className="size-3" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleEditModule(module)
+                              }}
+                            >
+                              <Pencil className="mr-2 size-4" />
+                              {tActions?.edit || "Edit"}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleDeleteModule(module.id)
+                              }}
+                            >
+                              <Trash2 className="mr-2 size-4" />
+                              {(tActions as any)?.delete || "Delete"}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                      {module.isExpanded ? (
+                        <ChevronUp className="size-4 flex-shrink-0" />
+                      ) : (
+                        <ChevronDown className="size-4 flex-shrink-0" />
+                      )}
+                    </div>
                   </div>
-                  {module.isExpanded ? (
-                    <ChevronUp className="size-4" />
-                  ) : (
-                    <ChevronDown className="size-4" />
+                  {module.isExpanded && (
+                    <p className="text-xs text-muted-foreground mt-2 ps-6">
+                      {module.contents.length} {t.lesson.toLowerCase()}s
+                    </p>
                   )}
                 </div>
-                {module.isExpanded && (
-                  <p className="text-xs text-muted-foreground mt-2 ps-6">
-                    {module.contents.length} {t.lesson.toLowerCase()}s
-                  </p>
-                )}
-              </div>
-            ))}
+              )}
+            />
             <Button
               variant="secondary"
               className="w-full mt-4"
@@ -219,57 +291,74 @@ export function CurriculumStep({
               <h2 className="text-2xl font-bold">
                 {selectedModule?.title || "Select a module"}
               </h2>
-              <Button size="sm">
+              <Button
+                size="sm"
+                onClick={() => setIsAddContentModalOpen(true)}
+                disabled={!selectedModuleId}
+              >
                 <Plus className="size-4" />
                 {t.addContent}
               </Button>
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            {selectedModule?.contents.map((content) => (
-              <div
-                key={content.id}
-                className="bg-muted/30 p-4 rounded-lg flex items-center justify-between border border-transparent hover:border-primary transition-colors"
-              >
-                <div className="flex items-center gap-4">
-                  <GripVertical className="size-4 text-muted-foreground cursor-grab" />
-                  {getContentIcon(content.type)}
-                  <div>
-                    <p className="font-medium">
-                      {t.lesson}: {content.title}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {content.type === "video" &&
-                        `${t.video} - ${content.duration} min`}
-                      {content.type === "article" &&
-                        `${t.article} - ${content.duration} ${t.minRead}`}
-                      {content.type === "quiz" &&
-                        `${content.questions} ${t.questions}`}
-                    </p>
+            {selectedModule && (
+              <SortableList
+                items={selectedModule.contents}
+                onReorder={(newContents) => {
+                  const newModules = modules.map((m) =>
+                    m.id === selectedModuleId
+                      ? { ...m, contents: newContents }
+                      : m
+                  )
+                  setModules(newModules)
+                  onUpdate({ modules: newModules })
+                }}
+                renderItem={(content) => (
+                  <div className="bg-muted/30 p-4 rounded-lg flex items-center justify-between border border-transparent hover:border-primary transition-colors mb-3">
+                    <div className="flex items-center gap-4">
+                      <GripVertical className="size-4 text-muted-foreground cursor-grab active:cursor-grabbing" />
+                      {getContentIcon(content.type)}
+                      <div>
+                        <p className="font-medium">
+                          {t.lesson}: {content.title}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {content.type === "video" &&
+                            `${t.video} - ${content.duration} min`}
+                          {content.type === "article" &&
+                            `${t.article} - ${content.duration} ${t.minRead}`}
+                          {content.type === "quiz" &&
+                            `${content.questions} ${t.questions}`}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Badge
+                        variant={
+                          content.status === "published"
+                            ? "default"
+                            : "secondary"
+                        }
+                        className={cn(
+                          content.status === "published"
+                            ? "bg-green-500/20 text-green-400"
+                            : "bg-yellow-500/20 text-yellow-400"
+                        )}
+                      >
+                        {content.status === "published" ? t.published : t.draft}
+                      </Badge>
+                      <Button variant="ghost" size="icon">
+                        <Pencil className="size-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon">
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Badge
-                    variant={
-                      content.status === "published" ? "default" : "secondary"
-                    }
-                    className={cn(
-                      content.status === "published"
-                        ? "bg-green-500/20 text-green-400"
-                        : "bg-yellow-500/20 text-yellow-400"
-                    )}
-                  >
-                    {content.status === "published" ? t.published : t.draft}
-                  </Badge>
-                  <Button variant="ghost" size="icon">
-                    <Pencil className="size-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon">
-                    <Trash2 className="size-4" />
-                  </Button>
-                </div>
-              </div>
-            ))}
+                )}
+              />
+            )}
 
             {/* Drop Zone */}
             <div className="border-2 border-dashed border-primary/30 rounded-lg h-12 flex items-center justify-center">
@@ -279,13 +368,12 @@ export function CurriculumStep({
         </Card>
       </div>
 
-      {/* Navigation */}
-      <footer className="flex justify-between items-center pt-4">
-        <Button variant="outline" onClick={onBack}>
-          {tActions.back}
-        </Button>
-        <Button onClick={handleSave}>{tActions.nextSettings}</Button>
-      </footer>
+      <AddContentModal
+        isOpen={isAddContentModalOpen}
+        onClose={() => setIsAddContentModalOpen(false)}
+        onAddContent={handleModalAddContent}
+        dictionary={dictionary}
+      />
     </div>
   )
 }

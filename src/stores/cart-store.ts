@@ -179,11 +179,12 @@ export const useCartStore = create<CartStore>((set, get) => ({
   isInCart: (courseId: string) => {
     const cart = get().cart
     if (!cart) return false
-    return cart.items.some((item) =>
-      typeof item.courseId === "string"
+    return cart.items.some((item) => {
+      if (!item.courseId) return false
+      return typeof item.courseId === "string"
         ? item.courseId === courseId
         : item.courseId._id === courseId
-    )
+    })
   },
 
   applyDiscount: async (code: string) => {

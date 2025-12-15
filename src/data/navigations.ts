@@ -63,7 +63,7 @@ export const navigationsData: NavigationType[] = [
       },
     ],
   },
-   {
+  {
     title: "Design System",
     items: [
       {
@@ -342,6 +342,10 @@ export const navigationsData: NavigationType[] = [
           {
             title: "Steps",
             href: "/extended-ui/steps",
+          },
+          {
+            title: "Sortable List",
+            href: "/extended-ui/sortable-list",
           },
         ],
       },

@@ -14,7 +14,6 @@ import {
   // CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { InputTags } from "@/components/ui/input-tags"
 import { Label } from "@/components/ui/label"
 import {
   Select,
@@ -30,8 +29,6 @@ interface BasicInfoStepProps {
   formData: CourseFormData
   onUpdate: (data: Partial<CourseFormData>) => void
   onNext: () => void
-  onCancel: () => void
-  onSaveDraft: () => void
 }
 
 export function BasicInfoStep({
@@ -39,8 +36,6 @@ export function BasicInfoStep({
   formData,
   onUpdate,
   onNext,
-  onCancel,
-  onSaveDraft,
 }: BasicInfoStepProps) {
   const t = dictionary.profilePage.createCourse.basicInfo
   const tActions = dictionary.profilePage.createCourse.actions
@@ -83,24 +78,26 @@ export function BasicInfoStep({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Course Categories */}
+            {/* Course Category */}
             <div className="flex flex-col gap-2">
-              <Label>{t.courseCategories}</Label>
-              <InputTags
-                tags={formData.categories}
-                onTagsChange={(categories) => onUpdate({ categories })}
+              <Label htmlFor="course-category">{t.courseCategories}</Label>
+              <Input
+                id="course-category"
                 placeholder={t.categoriesPlaceholder}
+                value={formData.category}
+                onChange={(e) => onUpdate({ category: e.target.value })}
+                className="h-12"
               />
             </div>
 
-            {/* Target Audience */}
+            {/* Level */}
             <div className="flex flex-col gap-2">
               <Label htmlFor="target-audience">{t.targetAudience}</Label>
               <Select
-                value={formData.targetAudience}
+                value={formData.level}
                 onValueChange={(value) =>
                   onUpdate({
-                    targetAudience: value as CourseFormData["targetAudience"],
+                    level: value as CourseFormData["level"],
                   })
                 }
               >
@@ -123,29 +120,29 @@ export function BasicInfoStep({
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Duration */}
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="course-duration">Total Duration (Hours)</Label>
+              <Input
+                id="course-duration"
+                type="number"
+                min="0"
+                step="0.5"
+                placeholder="e.g. 10.5"
+                value={formData.duration || ""}
+                onChange={(e) =>
+                  onUpdate({ duration: parseFloat(e.target.value) || 0 })
+                }
+                className="h-12"
+              />
+            </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Action Bar */}
-      <footer className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
-        <Button variant="ghost" onClick={onCancel}>
-          {tActions.cancel}
-        </Button>
-        <div className="flex flex-col-reverse sm:flex-row items-center gap-4 w-full sm:w-auto">
-          <Button
-            variant="secondary"
-            onClick={onSaveDraft}
-            className="w-full sm:w-auto"
-          >
-            {tActions.saveDraft}
-          </Button>
-          <Button onClick={onNext} className="w-full sm:w-auto">
-            {tActions.nextAddContent}
-            <ArrowRight className="size-4" />
-          </Button>
-        </div>
-      </footer>
+      <footer className="flex flex-col-reverse sm:flex-row items-center justify-end gap-4"></footer>
     </div>
   )
 }

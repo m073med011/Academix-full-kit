@@ -156,6 +156,8 @@
     "bentoGrid": "Bento Grid",
     "mockups": "Mockups",
     "steps": "Steps",
+    "sortableList": "Sortable List",
+
     "dashboard": "Dashboard",
     "products": "Products",
     "list": "List",
@@ -340,10 +342,11 @@
       "level": "Level",
       "rating": "Rating",
       "categories": {
-        "business": "Business",
-        "technology": "Technology",
+        "webDevelopment": "Web Development",
         "design": "Design",
-        "marketing": "Marketing"
+        "softwareEngineering": "Software Engineering",
+        "frontend": "Frontend",
+        "backend": "Backend"
       },
       "levels": {
         "beginner": "Beginner",
@@ -961,6 +964,30 @@
     "maxSize": {
       "title": "File Dropzone Max Size",
       "description": "Set to max {size}"
+    }
+  },
+  "sortableListDemo": {
+    "verticalList": "Vertical List",
+    "horizontalList": "Horizontal List",
+    "cardList": "Card List",
+    "items": {
+      "researchCompetitors": "Research competitors",
+      "draftProposal": "Draft project proposal",
+      "designSystem": "Design system architecture",
+      "setupEnv": "Setup development environment",
+      "implementFeatures": "Implement core features",
+      "research": "Research",
+      "draft": "Draft",
+      "design": "Design"
+    },
+    "status": {
+      "todo": "Todo",
+      "inProgress": "In Progress",
+      "done": "Done"
+    },
+    "labels": {
+      "task": "Task",
+      "status": "Status"
     }
   }
 }

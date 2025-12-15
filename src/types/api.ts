@@ -14,11 +14,28 @@ export type UserRole =
   | "user"
   | "guest"
 
-export type CourseLevel = "beginner" | "intermediate" | "advanced"
+export type CourseLevel = "beginner" | "intermediate" | "advanced" | "expert"
 
-export type MaterialType = "VIDEO" | "DOCUMENT" | "LINK" | "QUIZ"
+export type EnrollmentType =
+  | "free"
+  | "subscription"
+  | "one-time-purchase"
+  | "org-subscription"
 
-export type PaymentStatus = "pending" | "success" | "failed" | "refunded" | "cancelled"
+export type MaterialType =
+  | "video"
+  | "pdf"
+  | "link"
+  | "text"
+  | "quiz"
+  | "assignment"
+
+export type PaymentStatus =
+  | "pending"
+  | "success"
+  | "failed"
+  | "refunded"
+  | "cancelled"
 
 export type PaymentMethod = "CARD"
 
@@ -67,8 +84,10 @@ export interface User extends BaseEntity {
   twoFactorEnabled?: boolean
 }
 
-export interface UserProfile
-  extends Omit<User, "purchasedCourses" | "organizationMemberships"> {
+export interface UserProfile extends Omit<
+  User,
+  "purchasedCourses" | "organizationMemberships"
+> {
   purchasedCourses?: Course[]
   organizationMemberships?: OrganizationMembership[]
 }
@@ -249,6 +268,8 @@ export interface Course extends BaseEntity {
   organizationId?: string
   isOrgPrivate?: boolean
   termId?: string
+  promoVideoUrl?: string
+  brandColor?: string
 }
 
 export interface CreateCourseRequest {
@@ -262,6 +283,21 @@ export interface CreateCourseRequest {
   isPublished?: boolean
   organizationId?: string
   isOrgPrivate?: boolean
+  modules?: Array<{
+    title: string
+    items: Array<{
+      materialId: string
+      order?: number
+    }>
+  }>
+  enrollmentType?: EnrollmentType
+  enrollmentCap?: number
+  hasAccessRestrictions?: boolean
+  currency?: string
+  promoVideoUrl?: string
+  brandColor?: string
+  enrollmentStartDate?: string
+  enrollmentEndDate?: string
 }
 
 export interface UpdateCourseRequest extends Partial<CreateCourseRequest> {}
@@ -275,9 +311,19 @@ export interface Material extends BaseEntity {
   description?: string
   courseId: string
   type: MaterialType
-  fileUrl?: string
+  content?: string
+  url?: string
   duration?: number
   order: number
+  isPublished?: boolean
+  isFreePreview?: boolean
+  allowDownloads?: boolean
+  points?: number
+  dueDate?: string
+  submissionTypes?: string[]
+  allowLate?: boolean
+  openInNewTab?: boolean
+  moduleId?: string
 }
 
 export interface CreateMaterialRequest {
@@ -285,9 +331,19 @@ export interface CreateMaterialRequest {
   description?: string
   courseId: string
   type: MaterialType
-  fileUrl?: string
+  content?: string
+  url?: string
   duration?: number
   order?: number
+  isPublished?: boolean
+  isFreePreview?: boolean
+  allowDownloads?: boolean
+  points?: number
+  dueDate?: string
+  submissionTypes?: string[]
+  allowLate?: boolean
+  openInNewTab?: boolean
+  moduleId?: string
 }
 
 // ============================================
@@ -580,6 +636,7 @@ export interface CourseFilterParams {
   category?: string
   level?: CourseLevel
   search?: string
+  sort?: string
 }
 
 export interface CoursePagination {
