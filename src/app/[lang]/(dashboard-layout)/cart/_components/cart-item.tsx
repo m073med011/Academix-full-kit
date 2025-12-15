@@ -48,7 +48,7 @@ export function CartItem({
         <div className="relative w-24 h-24 shrink-0 rounded-md overflow-hidden">
           <Image
             src={
-              course.thumbnailUrl
+              course.thumbnailUrl || "/images/misc/product-01.jpg"
             }
             alt={course.title}
             fill
