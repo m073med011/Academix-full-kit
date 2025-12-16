@@ -467,10 +467,10 @@ export interface CartWithCourses extends Cart {
 // ============================================
 
 export interface BillingData {
-  firstName: string
-  lastName: string
-  email: string
-  phoneNumber: string
+  firstName?: string
+  lastName?: string
+  email?: string
+  phoneNumber?: string
   apartment?: string
   floor?: string
   street?: string

@@ -1,7 +1,10 @@
+import { redirect } from "next/navigation"
 import type { LocaleType } from "@/types"
 import type { Metadata } from "next"
 
 import { getDictionary } from "@/lib/get-dictionary"
+import { getAuthenticatedContext } from "@/lib/auth"
+import { serverUserService } from "@/services/user-service"
 
 import { ProfileHeader } from "./_components/profile-header"
 import { ProfileTabs } from "./_components/profile-tabs"
@@ -17,10 +20,27 @@ export default async function ProfilePage(props: {
 }) {
   const params = await props.params
   const dictionary = await getDictionary(params.lang)
+  const context = await getAuthenticatedContext()
+
+  if (!context) {
+    redirect("/sign-in")
+  }
+
+  const { getProfile } = await serverUserService(context.accessToken)
+  const profileResponse = await getProfile()
+
+  if (!profileResponse.success || !profileResponse.data) {
+    // Handle error or redirect
+    return <div>Error loading profile</div>
+  }
 
   return (
     <div className="container px-0">
-      <ProfileHeader locale={params.lang} dictionary={dictionary} />
+      <ProfileHeader 
+        locale={params.lang} 
+        dictionary={dictionary} 
+        user={profileResponse.data}
+      />
       <ProfileTabs dictionary={dictionary} locale={params.lang} />
     </div>
   )

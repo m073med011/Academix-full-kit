@@ -101,19 +101,21 @@ export function CartClient({ dictionary }: CartClientProps) {
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Cart Items List */}
         <div className="lg:col-span-2 space-y-4">
-          {cart.items.map((item) => (
-            <CartItem
-              key={
-                typeof item.courseId === "string"
-                  ? item.courseId
-                  : item.courseId._id
-              }
-              courseId={item.courseId}
-              addedDate={item.addedDate}
-              onRemove={removeFromCart}
-              dictionary={dictionary}
-            />
-          ))}
+          {cart.items
+            .filter((item) => item.courseId !== null)
+            .map((item) => (
+              <CartItem
+                key={
+                  typeof item.courseId === "string"
+                    ? item.courseId
+                    : item.courseId._id
+                }
+                courseId={item.courseId}
+                addedDate={item.addedDate}
+                onRemove={removeFromCart}
+                dictionary={dictionary}
+              />
+            ))}
         </div>
 
         {/* Cart Summary */}

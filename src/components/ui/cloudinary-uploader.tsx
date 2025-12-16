@@ -29,6 +29,7 @@ import {
 
 export interface CloudinaryUploaderProps {
   onUploadComplete?: (result: CloudinaryUploadResult) => void
+  onUploadStart?: () => void
   onError?: (error: string) => void
   accept?: string
   maxSize?: number // in bytes
@@ -51,6 +52,7 @@ const getFileTypeOptions = (t: DictionaryType["cloudinary"]) => [
 
 export function CloudinaryUploader({
   onUploadComplete,
+  onUploadStart,
   onError,
   accept,
   maxSize,
@@ -159,6 +161,7 @@ export function CloudinaryUploader({
     if (!selectedFile) return
 
     try {
+      onUploadStart?.()
       const uploadResult = await upload(selectedFile, resourceType)
       onUploadComplete?.(uploadResult)
     } catch (err) {

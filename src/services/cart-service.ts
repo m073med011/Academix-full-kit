@@ -93,11 +93,12 @@ export const cartService = {
   async isInCart(courseId: string): Promise<boolean> {
     try {
       const cart = await this.getCart()
-      return cart.items.some((item) =>
-        typeof item.courseId === "string"
+      return cart.items.some((item) => {
+        if (!item.courseId) return false
+        return typeof item.courseId === "string"
           ? item.courseId === courseId
           : item.courseId._id === courseId
-      )
+      })
     } catch {
       return false
     }

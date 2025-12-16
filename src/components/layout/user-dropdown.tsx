@@ -55,7 +55,7 @@ export function UserDropdown({
               {user?.name && getInitials(user.name)}
             </AvatarFallback>
           </Avatar>
-          <div className="flex flex-col overflow-hidden">
+          <div className="flex flex-col overflow-hidden max-w-[150px]">
             <p className="text-sm font-medium truncate">{user?.name}</p>
             <p className="text-xs text-muted-foreground font-semibold truncate">
               {user?.email}

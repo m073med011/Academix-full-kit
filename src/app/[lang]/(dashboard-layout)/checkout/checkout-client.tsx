@@ -13,15 +13,14 @@ import { ArrowLeft, CreditCard, DollarSign, Wallet } from "lucide-react"
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType } from "@/types"
 import type { BillingData } from "@/types/api"
-import type { BillingFormValues } from "./_components/billing-form"
 
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "@/components/ui/sonner"
-import { BillingForm } from "./_components/billing-form"
 
 type PaymentMethod = "card" | "wallet" | "cash"
 
@@ -54,22 +53,24 @@ export function CheckoutClient({ dictionary, locale }: CheckoutClientProps) {
     return null
   }
 
-  const handlePayment = async (formData: BillingFormValues) => {
+  const handlePayment = async () => {
     setIsProcessing(true)
     try {
+      // Billing data with placeholder values required by Paymob
+      // User will provide actual billing info in Paymob iframe
       const billingData: BillingData = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        phoneNumber: formData.phoneNumber,
-        street: formData.address,
-        city: formData.city,
-        country: formData.country,
-        postalCode: formData.postalCode,
-        apartment: "",
-        floor: "",
-        building: "",
-        state: "",
+        firstName: "Guest",
+        lastName: "User",
+        email: "guest@academix.com",
+        phoneNumber: "+201000000000",
+        street: "NA",
+        city: "Cairo",
+        country: "EG",
+        postalCode: "12345",
+        apartment: "NA",
+        floor: "NA",
+        building: "NA",
+        state: "NA",
       }
 
       const response = await paymentService.initiateCheckout({
@@ -146,16 +147,21 @@ export function CheckoutClient({ dictionary, locale }: CheckoutClientProps) {
                 </Label>
               </div>
 
-              <div className="flex items-center space-x-3 border rounded-lg p-4 cursor-pointer hover:bg-accent">
-                <RadioGroupItem value="wallet" id="wallet" />
+              <div className="flex items-center space-x-3 border rounded-lg p-4 opacity-50 cursor-not-allowed bg-muted/50">
+                <RadioGroupItem value="wallet" id="wallet" disabled />
                 <Label
                   htmlFor="wallet"
-                  className="flex items-center gap-2 cursor-pointer flex-1"
+                  className="flex items-center gap-2 cursor-not-allowed flex-1"
                 >
                   <Wallet className="h-5 w-5" />
-                  <div>
-                    <div className="font-medium">
-                      {t.paymentMethod.wallet.title}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <div className="font-medium">
+                        {t.paymentMethod.wallet.title}
+                      </div>
+                      <Badge variant="secondary" className="text-[10px] h-5 px-1.5">
+                        {dictionary.label.soon}
+                      </Badge>
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {t.paymentMethod.wallet.description}
@@ -164,16 +170,21 @@ export function CheckoutClient({ dictionary, locale }: CheckoutClientProps) {
                 </Label>
               </div>
 
-              <div className="flex items-center space-x-3 border rounded-lg p-4 cursor-pointer hover:bg-accent">
-                <RadioGroupItem value="cash" id="cash" />
+              <div className="flex items-center space-x-3 border rounded-lg p-4 opacity-50 cursor-not-allowed bg-muted/50">
+                <RadioGroupItem value="cash" id="cash" disabled />
                 <Label
                   htmlFor="cash"
-                  className="flex items-center gap-2 cursor-pointer flex-1"
+                  className="flex items-center gap-2 cursor-not-allowed flex-1"
                 >
                   <DollarSign className="h-5 w-5" />
-                  <div>
-                    <div className="font-medium">
-                      {t.paymentMethod.cash.title}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <div className="font-medium">
+                        {t.paymentMethod.cash.title}
+                      </div>
+                      <Badge variant="secondary" className="text-[10px] h-5 px-1.5">
+                        {dictionary.label.soon}
+                      </Badge>
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {t.paymentMethod.cash.description}
@@ -184,16 +195,16 @@ export function CheckoutClient({ dictionary, locale }: CheckoutClientProps) {
             </RadioGroup>
           </Card>
 
-          {/* Billing Information */}
+          {/* Proceed to Payment */}
           <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">
-              {t.billingInfo.title}
-            </h2>
-            <BillingForm
-              onSubmit={handlePayment}
-              isLoading={isProcessing}
-              dictionary={dictionary}
-            />
+            <Button
+              onClick={handlePayment}
+              className="w-full"
+              size="lg"
+              disabled={isProcessing}
+            >
+              {isProcessing ? t.billingInfo.processing : t.billingInfo.continueToPayment}
+            </Button>
           </Card>
         </div>
 

@@ -33,7 +33,7 @@ export const userService = {
    * Update user profile
    */
   async updateProfile(data: UpdateProfileRequest): Promise<User> {
-    const response = await apiClient.put<User>("/users/profile", data)
+    const response = await apiClient.patch<User>("/users/profile", data)
 
     if (response.success && response.data) {
       return response.data
@@ -46,7 +46,7 @@ export const userService = {
    * Change user password
    */
   async changePassword(data: ChangePasswordRequest): Promise<void> {
-    const response = await apiClient.put<void>("/users/change-password", data)
+    const response = await apiClient.post<void>("/users/change-password", data)
 
     if (!response.success) {
       throw new ApiClientError("Failed to change password", 400)

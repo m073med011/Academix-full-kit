@@ -44,13 +44,16 @@ export const selectTotalPrice = (state: CartStore): number => {
   }
 
   // Fallback: calculate from items
-  const calculated = cart.items.reduce((sum, item) => {
-    // Check if course data is in the course property first
-    const course =
-      item.course || (typeof item.courseId !== "string" ? item.courseId : null)
-    console.log("Item course:", course, "Price:", course?.price)
-    return sum + (course?.price || 0)
-  }, 0)
+  const calculated = cart.items
+    .filter((item) => item.courseId !== null)
+    .reduce((sum, item) => {
+      // Check if course data is in the course property first
+      const course =
+        item.course ||
+        (typeof item.courseId !== "string" ? item.courseId : null)
+      console.log("Item course:", course, "Price:", course?.price)
+      return sum + (course?.price || 0)
+    }, 0)
   console.log("Calculated totalPrice:", calculated)
   return calculated
 }
@@ -201,9 +204,11 @@ export const useCartStore = create<CartStore>((set, get) => ({
 
     try {
       set({ isLoading: true, discountError: null })
-      const courseIds = cart.items.map((item) =>
-        typeof item.courseId === "string" ? item.courseId : item.courseId._id
-      )
+      const courseIds = cart.items
+        .filter((item) => item.courseId !== null)
+        .map((item) =>
+          typeof item.courseId === "string" ? item.courseId : item.courseId._id
+        )
 
       const result = await paymentService.validateDiscountCode(code, courseIds)
 
