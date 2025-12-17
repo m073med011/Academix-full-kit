@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import { courseService } from "@/services/course-service"
+import { courseService } from "@/app/[lang]/(dashboard-layout)/pages/account/courses/_services/course-service"
 import { useSession } from "next-auth/react"
 import { Loader2, Plus } from "lucide-react"
 
@@ -106,7 +106,9 @@ export function CreatedCourses({ dictionary }: CreatedCoursesProps) {
 
       {courses.length === 0 ? (
         <div className="text-center py-12 border rounded-lg bg-muted/20">
-          <p className="text-muted-foreground mb-4">You haven't created any courses yet.</p>
+          <p className="text-muted-foreground mb-4">
+            You haven't created any courses yet.
+          </p>
           <Button asChild>
             <Link
               href={ensureLocalizedPathname(
@@ -127,7 +129,12 @@ export function CreatedCourses({ dictionary }: CreatedCoursesProps) {
               asChild
               className="overflow-hidden hover:shadow-md transition-shadow"
             >
-              <Link href={ensureLocalizedPathname(`/public/course/${course._id}`, locale)}>
+              <Link
+                href={ensureLocalizedPathname(
+                  `/public/course/${course._id}`,
+                  locale
+                )}
+              >
                 <CardContent className="p-0">
                   <AspectRatio ratio={16 / 9} className="bg-muted">
                     <DefaultImage
@@ -151,7 +158,8 @@ export function CreatedCourses({ dictionary }: CreatedCoursesProps) {
                     </Badge>
                   </div>
                   <CardDescription>
-                    {(course.students?.length || 0).toLocaleString()} {t.students}
+                    {(course.students?.length || 0).toLocaleString()}{" "}
+                    {t.students}
                   </CardDescription>
                 </CardHeader>
               </Link>

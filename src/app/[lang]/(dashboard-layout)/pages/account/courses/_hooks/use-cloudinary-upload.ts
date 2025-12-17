@@ -5,13 +5,13 @@ import {
   deleteFromCloudinary,
   getResourceTypeFromFile,
   uploadToCloudinary,
-} from "@/services/cloudinary-service"
+} from "@/app/[lang]/(dashboard-layout)/pages/account/courses/_services/cloudinary-service"
 
 import type {
   CloudinaryUploadResult,
   ResourceType,
   UploadProgressEvent,
-} from "@/services/cloudinary-service"
+} from "@/app/[lang]/(dashboard-layout)/pages/account/courses/_services/cloudinary-service"
 
 export interface UseCloudinaryUploadReturn {
   upload: (

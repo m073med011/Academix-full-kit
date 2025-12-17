@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ImageIcon, Lock, Mail, User, UserCog } from "lucide-react"
 import { useForm } from "react-hook-form"
 
-import type { CloudinaryUploadResult } from "@/services/cloudinary-service"
+import type { CloudinaryUploadResult } from "@/app/[lang]/(dashboard-layout)/pages/account/courses/_services/cloudinary-service"
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType, RegisterFormType } from "@/types"
 import type { RegisterResponse } from "@/types/api"

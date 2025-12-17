@@ -35,7 +35,15 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "example.com",
-      },  
+      },
+      {
+        protocol: "https",
+        hostname: "i.pravatar.cc",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
     ],
   },
 

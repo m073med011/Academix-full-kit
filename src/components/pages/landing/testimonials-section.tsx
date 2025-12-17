@@ -1,4 +1,5 @@
 import { FaCheckCircle } from "react-icons/fa"
+import { Button } from "@/components/ui/button"
 
 export function TestimonialsSection() {
   const testimonials = [
@@ -93,9 +94,9 @@ export function TestimonialsSection() {
               ))}
             </div>
 
-            <button className="mt-5 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs rounded-lg transition-colors">
+            <Button className="mt-5 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs rounded-lg transition-colors">
               Notify me
-            </button>
+            </Button>
           </div>
         </div>
 

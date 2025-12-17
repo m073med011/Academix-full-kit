@@ -8,6 +8,7 @@ import Autoplay from "embla-carousel-autoplay"
 import { useCallback, useEffect, useState } from "react"
 
 import { NeuralNetwork } from "./neural-network"
+import { Button } from "@/components/ui/button"
 
 export function HeroSection() {
   const [emblaRef, emblaApi] = useEmblaCarousel(
@@ -183,14 +184,14 @@ export function HeroSection() {
             {/* CTA Buttons */}
             <div className="flex flex-col xs:flex-row justify-center lg:justify-start gap-2 xs:gap-2.5 sm:gap-3 md:gap-4 mb-4 xs:mb-5 sm:mb-6 md:mb-7 lg:mb-9 px-2 xs:px-0">
               <Link href="/en/sign-in" className="w-full xs:w-auto">
-                <button className="w-full xs:w-auto bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 px-4 xs:px-5 sm:px-6 md:px-8 py-2 xs:py-2.5 sm:py-3 md:py-3.5 rounded-lg font-semibold transition-all duration-300 text-white shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 hover:scale-105 text-[10px] xs:text-[11px] sm:text-xs md:text-sm flex items-center justify-center gap-1.5 xs:gap-2">
+                <Button className="w-full xs:w-auto bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 px-4 xs:px-5 sm:px-6 md:px-8 py-2 xs:py-2.5 sm:py-3 md:py-3.5 rounded-lg font-semibold transition-all duration-300 text-white shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 hover:scale-105 text-[10px] xs:text-[11px] sm:text-xs md:text-sm flex items-center justify-center gap-1.5 xs:gap-2">
                   <FaRocket className="text-[9px] xs:text-[10px] sm:text-xs" />
                   Start Learning Free
-                </button>
+                </Button>
               </Link>
-              <button className="w-full xs:w-auto px-4 xs:px-5 sm:px-6 md:px-8 py-2 xs:py-2.5 sm:py-3 md:py-3.5 rounded-lg font-semibold border-2 border-gray-600 hover:border-cyan-500/50 hover:bg-gradient-to-r hover:from-cyan-500/5 hover:to-purple-500/5 transition-all duration-300 text-white text-[10px] xs:text-[11px] sm:text-xs md:text-sm backdrop-blur-sm">
+              <Button className="w-full xs:w-auto px-4 xs:px-5 sm:px-6 md:px-8 py-2 xs:py-2.5 sm:py-3 md:py-3.5 rounded-lg font-semibold border-2 border-gray-600 hover:border-cyan-500/50 hover:bg-gradient-to-r hover:from-cyan-500/5 hover:to-purple-500/5 transition-all duration-300 text-white text-[10px] xs:text-[11px] sm:text-xs md:text-sm backdrop-blur-sm">
                 View Pricing
-              </button>
+              </Button>
             </div>
 
             {/* Feature Slider */}
@@ -252,25 +253,25 @@ export function HeroSection() {
               </div>
 
               {/* Navigation Arrows */}
-              <button
+              <Button
                 onClick={scrollPrev}
                 className="absolute left-0 xs:left-1 sm:left-0 top-1/2 -translate-y-1/2 w-5 h-5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full bg-dark-800/90 backdrop-blur-sm border border-gray-600 hover:border-cyan-500 hover:bg-dark-700 flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg z-10"
                 aria-label="Previous slide"
               >
                 <FaChevronLeft className="text-gray-400 hover:text-cyan-400 text-[9px] xs:text-[10px] sm:text-xs" />
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={scrollNext}
                 className="absolute right-0 xs:right-1 sm:right-0 top-1/2 -translate-y-1/2 w-5 h-5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full bg-dark-800/90 backdrop-blur-sm border border-gray-600 hover:border-cyan-500 hover:bg-dark-700 flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg z-10"
                 aria-label="Next slide"
               >
                 <FaChevronRight className="text-gray-400 hover:text-cyan-400 text-[9px] xs:text-[10px] sm:text-xs" />
-              </button>
+              </Button>
 
               {/* Dots Navigation */}
               <div className="flex justify-center gap-1 xs:gap-1.5 sm:gap-2 mt-2.5 xs:mt-3 sm:mt-4">
                 {scrollSnaps.map((_, index) => (
-                  <button
+                  <Button
                     key={index}
                     onClick={() => scrollTo(index)}
                     className={`h-0.5 xs:h-1 sm:h-1.5 rounded-full transition-all duration-300 ${

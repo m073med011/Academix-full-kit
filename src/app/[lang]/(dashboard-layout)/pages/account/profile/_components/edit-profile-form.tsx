@@ -1,14 +1,20 @@
 "use client"
 
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { useRouter } from "next/navigation"
+import { userService } from "@/app/[lang]/(dashboard-layout)/pages/account/_services/user-service"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useSession } from "next-auth/react"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Loader2 } from "lucide-react"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
+
+import { useToast } from "@/hooks/use-toast"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { CloudinaryUploader } from "@/components/ui/cloudinary-uploader"
 import {
   Form,
   FormControl,
@@ -18,11 +24,6 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useToast } from "@/hooks/use-toast"
-import { userService } from "@/services/user-service"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { CloudinaryUploader } from "@/components/ui/cloudinary-uploader"
-import type { DictionaryType } from "@/lib/get-dictionary"
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -40,7 +41,11 @@ interface EditProfileFormProps {
   dictionary: DictionaryType
 }
 
-export function EditProfileForm({ user, onSuccess, dictionary }: EditProfileFormProps) {
+export function EditProfileForm({
+  user,
+  onSuccess,
+  dictionary,
+}: EditProfileFormProps) {
   const { update } = useSession()
   const router = useRouter()
   const { toast } = useToast()
@@ -61,16 +66,16 @@ export function EditProfileForm({ user, onSuccess, dictionary }: EditProfileForm
     try {
       setIsLoading(true)
       const updatedUser = await userService.updateProfile(values)
-      
+
       await update({
         ...updatedUser,
       })
-      
+
       toast({
         title: "Profile updated",
         description: "Your profile has been updated successfully.",
       })
-      
+
       router.refresh()
       onSuccess?.()
     } catch (error) {
@@ -88,8 +93,6 @@ export function EditProfileForm({ user, onSuccess, dictionary }: EditProfileForm
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex flex-col items-center gap-4">
-          
-          
           <div className="w-full max-w-xs">
             <CloudinaryUploader
               dictionary={dictionary}

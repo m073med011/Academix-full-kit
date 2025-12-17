@@ -1,3 +1,5 @@
+import { DefaultImage } from "@/components/ui/defult-Image"
+
 export function TrustedBySection() {
   const testimonials = [
     {
@@ -42,9 +44,11 @@ export function TrustedBySection() {
               key={index}
               className="bg-[#13131a] rounded-2xl p-6 border border-gray-800 transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/30 flex flex-col"
             >
-              <img
+              <DefaultImage
                 src={testimonial.image}
                 alt={testimonial.name}
+                width={48}
+                height={48}
                 className="w-12 h-12 rounded-full object-cover mb-4"
               />
               <p className="text-sm text-gray-400 leading-relaxed mb-4 flex-1">

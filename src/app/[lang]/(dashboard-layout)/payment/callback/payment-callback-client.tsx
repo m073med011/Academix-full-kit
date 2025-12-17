@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { paymentService } from "@/services/payment-service"
+import { paymentService } from "@/app/[lang]/(dashboard-layout)/checkout/_services/payment-service"
 import { useCartStore } from "@/stores/cart-store"
 import { usePurchasedCoursesStore } from "@/stores/purchased-courses-store"
 import { CheckCircle, Loader2, XCircle } from "lucide-react"

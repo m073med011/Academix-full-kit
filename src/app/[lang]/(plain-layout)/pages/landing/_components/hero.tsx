@@ -66,9 +66,9 @@ function SocialProofBadge() {
   )
 }
 
-function HeroImage() {
+export function HeroImage() {
   return (
-    <Card className="bg-accent p-3 md:p-6">
+    <Card className="bg-accent p-3 md:p-6 hidden md:block">
       <Card
         className="pointer-events-none bg-muted p-6 overflow-hidden"
         asChild

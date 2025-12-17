@@ -1,11 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { userService } from "@/app/[lang]/(dashboard-layout)/pages/account/_services/user-service"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Loader2 } from "lucide-react"
 
+import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -16,18 +18,18 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useToast } from "@/hooks/use-toast"
-import { userService } from "@/services/user-service"
 import { PasswordInput } from "@/components/ui/password-input"
 
-const formSchema = z.object({
-  currentPassword: z.string().min(1, "Current password is required"),
-  newPassword: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string().min(1, "Please confirm your password"),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-})
+const formSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  })
 
 interface ChangePasswordFormProps {
   onSuccess?: () => void
@@ -53,16 +55,19 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
       })
-      
+
       toast({
         title: "Password updated",
         description: "Your password has been changed successfully.",
       })
-      
+
       form.reset()
       onSuccess?.()
     } catch (error: any) {
-      if (error?.message === "Incorrect current password" || error?.data?.message === "Incorrect current password") {
+      if (
+        error?.message === "Incorrect current password" ||
+        error?.data?.message === "Incorrect current password"
+      ) {
         form.setError("currentPassword", {
           type: "manual",
           message: "Incorrect current password",
@@ -73,7 +78,8 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to change password. Please check your current password.",
+        description:
+          "Failed to change password. Please check your current password.",
       })
     } finally {
       setIsLoading(false)
@@ -90,7 +96,11 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
             <FormItem>
               <FormLabel>Current Password</FormLabel>
               <FormControl>
-                <PasswordInput placeholder="••••••••" {...field} disabled={isLoading} />
+                <PasswordInput
+                  placeholder="••••••••"
+                  {...field}
+                  disabled={isLoading}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -104,7 +114,11 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
             <FormItem>
               <FormLabel>New Password</FormLabel>
               <FormControl>
-                <PasswordInput placeholder="••••••••" {...field} disabled={isLoading} />
+                <PasswordInput
+                  placeholder="••••••••"
+                  {...field}
+                  disabled={isLoading}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -118,7 +132,11 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
             <FormItem>
               <FormLabel>Confirm New Password</FormLabel>
               <FormControl>
-                <PasswordInput placeholder="••••••••" {...field} disabled={isLoading} />
+                <PasswordInput
+                  placeholder="••••••••"
+                  {...field}
+                  disabled={isLoading}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

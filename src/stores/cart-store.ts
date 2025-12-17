@@ -1,10 +1,11 @@
-import { cartService } from "@/services/cart-service"
-import { paymentService } from "@/services/payment-service"
-import { toast } from "@/components/ui/sonner"
+import { cartService } from "@/app/[lang]/(dashboard-layout)/cart/_services/cart-service"
+import { paymentService } from "@/app/[lang]/(dashboard-layout)/checkout/_services/payment-service"
 import { create } from "zustand"
 
-import type { CartWithCourses } from "@/types/api"
 import type { DictionaryType } from "@/lib/get-dictionary"
+import type { CartWithCourses } from "@/types/api"
+
+import { toast } from "@/components/ui/sonner"
 
 interface CartStore {
   cart: CartWithCourses | null
@@ -124,9 +125,11 @@ export const useCartStore = create<CartStore>((set, get) => ({
       const { dictionary } = get()
       // Display the actual error message from the backend
       const errorMessage =
-        error instanceof Error ? error.message : dictionary
-          ? { key: "toast.cart.failedToAdd", dictionary }
-          : "Failed to add to cart"
+        error instanceof Error
+          ? error.message
+          : dictionary
+            ? { key: "toast.cart.failedToAdd", dictionary }
+            : "Failed to add to cart"
       toast.error(errorMessage)
       set({ isLoading: false })
       throw error
@@ -226,9 +229,11 @@ export const useCartStore = create<CartStore>((set, get) => ({
           discountAmount: 0,
           discountError: result.message || "Invalid discount code",
         })
-        const errorMsg = result.message || (dictionary
-          ? { key: "toast.cart.invalidDiscount", dictionary }
-          : "Invalid discount code")
+        const errorMsg =
+          result.message ||
+          (dictionary
+            ? { key: "toast.cart.invalidDiscount", dictionary }
+            : "Invalid discount code")
         toast.error(errorMsg)
       }
     } catch (_error) {

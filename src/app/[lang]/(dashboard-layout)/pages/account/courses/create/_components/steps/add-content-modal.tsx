@@ -12,8 +12,9 @@ import {
   X,
 } from "lucide-react"
 
-import { cn } from "@/lib/utils"
 import type { DictionaryType } from "@/lib/get-dictionary"
+
+import { cn } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -30,6 +31,7 @@ import { Editor } from "@/components/ui/editor"
 import { Input } from "@/components/ui/input"
 import { InputSpin } from "@/components/ui/input-spin"
 import { Label } from "@/components/ui/label"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Select,
   SelectContent,
@@ -38,7 +40,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { ScrollArea } from "@/components/ui/scroll-area"
 
 type ContentType = "video" | "article" | "quiz" | "assignment" | "link"
 
@@ -63,7 +64,9 @@ export function AddContentModal({
   const [description, setDescription] = useState("")
 
   // Video State
-  const [videoSource, setVideoSource] = useState<"upload" | "embed" | "library">("upload")
+  const [videoSource, setVideoSource] = useState<
+    "upload" | "embed" | "library"
+  >("upload")
   const [videoUrl, setVideoUrl] = useState("")
   const [isFreePreview, setIsFreePreview] = useState(false)
   const [allowDownloads, setAllowDownloads] = useState(false)
@@ -192,18 +195,19 @@ export function AddContentModal({
               <Label>Video Source</Label>
               <div className="flex gap-2 p-1 bg-muted rounded-lg w-fit">
                 {(["upload", "embed", "library"] as const).map((source) => (
-                  <button
+                  <Button
                     key={source}
+                    variant="ghost"
                     onClick={() => setVideoSource(source)}
                     className={cn(
-                      "px-3 py-1.5 text-sm font-medium rounded-md transition-all",
+                      "px-3 py-1.5 text-sm font-medium rounded-md transition-all h-auto",
                       videoSource === source
                         ? "bg-background shadow-sm text-foreground"
                         : "text-muted-foreground hover:text-foreground"
                     )}
                   >
                     {source.charAt(0).toUpperCase() + source.slice(1)}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -272,14 +276,10 @@ export function AddContentModal({
                 </div>
                 <div className="space-y-2">
                   <Label>Estimated Read Time (minutes)</Label>
-                  <InputSpin
-                    value={readTime}
-                    onChange={setReadTime}
-                    min={1}
-                  />
+                  <InputSpin value={readTime} onChange={setReadTime} min={1} />
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Lesson Thumbnail (Optional)</Label>
                 <CloudinaryUploader
@@ -339,10 +339,7 @@ export function AddContentModal({
               </div>
               <div className="space-y-2">
                 <Label>Due Date</Label>
-                <DatePicker
-                  value={dueDate}
-                  onValueChange={setDueDate}
-                />
+                <DatePicker value={dueDate} onValueChange={setDueDate} />
               </div>
             </div>
 
@@ -358,7 +355,9 @@ export function AddContentModal({
                         if (checked) {
                           setSubmissionTypes([...submissionTypes, type])
                         } else {
-                          setSubmissionTypes(submissionTypes.filter((t) => t !== type))
+                          setSubmissionTypes(
+                            submissionTypes.filter((t) => t !== type)
+                          )
                         }
                       }}
                     />
@@ -368,14 +367,14 @@ export function AddContentModal({
               </div>
             </div>
 
-             <div className="flex items-center space-x-2 pt-2">
-                <Checkbox
-                  id="allow-late"
-                  checked={allowLate}
-                  onCheckedChange={(c) => setAllowLate(!!c)}
-                />
-                <Label htmlFor="allow-late">Allow Late Submissions</Label>
-              </div>
+            <div className="flex items-center space-x-2 pt-2">
+              <Checkbox
+                id="allow-late"
+                checked={allowLate}
+                onCheckedChange={(c) => setAllowLate(!!c)}
+              />
+              <Label htmlFor="allow-late">Allow Late Submissions</Label>
+            </div>
           </div>
         )
 
@@ -426,9 +425,9 @@ export function AddContentModal({
 
       default:
         return (
-            <div className="text-center py-8 text-muted-foreground">
-                Form for {selectedType} is under construction.
-            </div>
+          <div className="text-center py-8 text-muted-foreground">
+            Form for {selectedType} is under construction.
+          </div>
         )
     }
   }
@@ -441,8 +440,17 @@ export function AddContentModal({
             {step === "selection"
               ? "Add Content to Module"
               : `Add New ${
-                  contentTypes.find((c) => c.id === selectedType)?.label.split(" ")[0]
-                }${selectedType === 'video' || selectedType === 'article' ? `: ${contentTypes.find((c) => c.id === selectedType)?.label.split("(")[1].replace(")", "")}` : ""}`}
+                  contentTypes
+                    .find((c) => c.id === selectedType)
+                    ?.label.split(" ")[0]
+                }${
+                  selectedType === "video" || selectedType === "article"
+                    ? `: ${contentTypes
+                        .find((c) => c.id === selectedType)
+                        ?.label.split("(")[1]
+                        .replace(")", "")}`
+                    : ""
+                }`}
           </DialogTitle>
           {step === "selection" && (
             <DialogDescription>
@@ -480,10 +488,11 @@ export function AddContentModal({
                 </p>
                 <div className="grid gap-2">
                   {contentTypes.map((type) => (
-                    <button
+                    <Button
                       key={type.id}
+                      variant="ghost"
                       onClick={() => handleTypeSelect(type.id)}
-                      className="flex items-start gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors text-left w-full group"
+                      className="flex items-start gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors text-left w-full group h-auto"
                     >
                       <div
                         className={cn(
@@ -501,15 +510,13 @@ export function AddContentModal({
                           {type.description}
                         </div>
                       </div>
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
             </div>
           ) : (
-            <div className="space-y-6">
-               {renderForm()}
-            </div>
+            <div className="space-y-6">{renderForm()}</div>
           )}
         </ScrollArea>
 
@@ -524,7 +531,13 @@ export function AddContentModal({
                 Cancel
               </Button>
               <Button onClick={handleSubmit}>
-                {selectedType === 'assignment' ? 'Save Assignment' : selectedType === 'link' ? 'Save Link' : selectedType === 'article' ? 'Save Lesson' : 'Add Lesson'}
+                {selectedType === "assignment"
+                  ? "Save Assignment"
+                  : selectedType === "link"
+                    ? "Save Link"
+                    : selectedType === "article"
+                      ? "Save Lesson"
+                      : "Add Lesson"}
               </Button>
             </div>
           </div>

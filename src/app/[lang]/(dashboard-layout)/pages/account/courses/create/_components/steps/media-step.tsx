@@ -2,11 +2,12 @@
 
 import { Upload, Video } from "lucide-react"
 
+import type { CloudinaryUploadResult } from "@/app/[lang]/(dashboard-layout)/pages/account/courses/_services/cloudinary-service"
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { CourseFormData } from "../../types"
-import type { CloudinaryUploadResult } from "@/services/cloudinary-service"
 
 import { Button } from "@/components/ui/button"
+import { DefaultImage } from "@/components/ui/defult-Image"
 import {
   Card,
   CardContent,
@@ -14,10 +15,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { CloudinaryUploader } from "@/components/ui/cloudinary-uploader"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { CloudinaryUploader } from "@/components/ui/cloudinary-uploader"
 
 interface MediaStepProps {
   dictionary: DictionaryType
@@ -61,9 +62,10 @@ export function MediaStep({
         <CardContent>
           {formData.thumbnailUrl ? (
             <div className="relative aspect-video w-full rounded-lg overflow-hidden border">
-              <img 
-                src={formData.thumbnailUrl} 
-                alt="Course Thumbnail" 
+              <DefaultImage
+                src={formData.thumbnailUrl}
+                alt="Course Thumbnail"
+                fill
                 className="w-full h-full object-cover"
               />
               <Button
@@ -80,7 +82,9 @@ export function MediaStep({
               dictionary={dictionary}
               defaultResourceType="image"
               showTypeSelector={false}
-              onUploadComplete={(result: CloudinaryUploadResult) => onUpdate({ thumbnailUrl: result.secureUrl })}
+              onUploadComplete={(result: CloudinaryUploadResult) =>
+                onUpdate({ thumbnailUrl: result.secureUrl })
+              }
             />
           )}
         </CardContent>
@@ -117,7 +121,9 @@ export function MediaStep({
                 dictionary={dictionary}
                 defaultResourceType="video"
                 showTypeSelector={false}
-                onUploadComplete={(result: CloudinaryUploadResult) => onUpdate({ promoVideoUrl: result.secureUrl })}
+                onUploadComplete={(result: CloudinaryUploadResult) =>
+                  onUpdate({ promoVideoUrl: result.secureUrl })
+                }
               />
 
               {/* Separator */}
@@ -170,7 +176,7 @@ export function MediaStep({
                 className="pl-10 pr-12"
               />
               <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                <input
+                <Input
                   type="color"
                   value={formData.brandColor}
                   onChange={(e) => onUpdate({ brandColor: e.target.value })}

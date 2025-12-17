@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { paymentService } from "@/services/payment-service"
+import { paymentService } from "@/app/[lang]/(dashboard-layout)/checkout/_services/payment-service"
 import {
   selectItemCount,
   selectTotalPrice,

@@ -9,7 +9,7 @@ import { z } from "zod"
 import type { DictionaryType } from "@/lib/get-dictionary"
 
 import { toast } from "@/hooks/use-toast"
-import { ButtonLoading } from "@/components/ui/button"
+import { Button, ButtonLoading } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -235,11 +235,12 @@ export function Verify2FAForm({ dictionary }: { dictionary: DictionaryType }) {
 
         <div className="text-center text-sm">
           {dictionary.auth.verify2FA.didntReceive}{" "}
-          <button
+          <Button
             type="button"
+            variant="link"
             onClick={handleResendCode}
             disabled={countdown > 0 || isResending}
-            className="underline disabled:opacity-50 disabled:cursor-not-allowed"
+            className="underline disabled:opacity-50 disabled:cursor-not-allowed p-0 h-auto font-normal"
           >
             {countdown > 0
               ? dictionary.auth.verify2FA.resendIn.replace(
@@ -249,7 +250,7 @@ export function Verify2FAForm({ dictionary }: { dictionary: DictionaryType }) {
               : isResending
                 ? dictionary.auth.verify2FA.sending
                 : dictionary.auth.verify2FA.resend}
-          </button>
+          </Button>
         </div>
       </form>
     </Form>

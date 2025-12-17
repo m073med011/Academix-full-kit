@@ -8,17 +8,7 @@ export const navigationsData: NavigationType[] = [
         title: "Analytics",
         href: "/dashboards/analytics",
         iconName: "ChartPie",
-      },
-      {
-        title: "CRM",
-        href: "/dashboards/crm",
-        iconName: "ChartBar",
-      },
-      {
-        title: "eCommerce",
-        href: "/dashboards/ecommerce",
-        iconName: "ShoppingCart",
-      },
+      }
     ],
   },
   {

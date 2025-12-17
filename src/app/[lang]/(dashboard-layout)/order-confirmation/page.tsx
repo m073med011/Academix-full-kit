@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
-import { paymentService } from "@/services/payment-service"
+import { paymentService } from "@/app/[lang]/(dashboard-layout)/checkout/_services/payment-service"
 import { ArrowRight, CheckCircle, Package } from "lucide-react"
 
 import type { LocaleType } from "@/types"

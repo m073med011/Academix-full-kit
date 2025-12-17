@@ -80,8 +80,9 @@ export function WhatPeopleSayCarousel() {
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      </CarouselContent>
+      {/* <CarouselPrevious />
+      <CarouselNext /> */}
     </Carousel>
   )
 }

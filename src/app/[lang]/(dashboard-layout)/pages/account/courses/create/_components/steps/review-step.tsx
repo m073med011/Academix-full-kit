@@ -39,13 +39,14 @@ export function ReviewStep({
     basicInfoComplete && curriculumComplete && mediaComplete && pricingComplete
 
   const EditButton = ({ onClick }: { onClick: () => void }) => (
-    <button
+    <Button
+      variant="ghost"
       onClick={onClick}
-      className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+      className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors h-auto p-0 hover:bg-transparent"
     >
       <Pencil className="size-4" />
       <span>{tActions.edit}</span>
-    </button>
+    </Button>
   )
 
   return (

@@ -23,7 +23,7 @@ import { ensureLocalizedPathname } from "@/lib/i18n"
 
 import { toast } from "sonner"
 
-import { courseService } from "@/services/course-service"
+import { courseService } from "@/app/[lang]/(dashboard-layout)/pages/account/courses/_services/course-service"
 import type { CreateCourseRequest } from "@/types/api"
 import {
   Steps,

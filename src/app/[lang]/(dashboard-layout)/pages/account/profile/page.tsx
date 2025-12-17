@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation"
+import { serverUserService } from "@/app/[lang]/(dashboard-layout)/pages/account/_services/user-service"
+
 import type { LocaleType } from "@/types"
 import type { Metadata } from "next"
 
-import { getDictionary } from "@/lib/get-dictionary"
 import { getAuthenticatedContext } from "@/lib/auth"
-import { serverUserService } from "@/services/user-service"
+import { getDictionary } from "@/lib/get-dictionary"
 
 import { ProfileHeader } from "./_components/profile-header"
 import { ProfileTabs } from "./_components/profile-tabs"
@@ -36,9 +37,9 @@ export default async function ProfilePage(props: {
 
   return (
     <div className="container px-0">
-      <ProfileHeader 
-        locale={params.lang} 
-        dictionary={dictionary} 
+      <ProfileHeader
+        locale={params.lang}
+        dictionary={dictionary}
         user={profileResponse.data}
       />
       <ProfileTabs dictionary={dictionary} locale={params.lang} />
