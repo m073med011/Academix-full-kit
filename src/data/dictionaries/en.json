@@ -2,6 +2,7 @@
   "navigation": {
     "dashboards": "Dashboards",
     "analytics": "Analytics",
+    "organizations": "Organizations",
     "crm": "CRM",
     "ecommerce": "eCommerce",
     "pages": "Pages",
@@ -14,6 +15,7 @@
     "maintenance": "Maintenance",
     "comingSoon": "Coming Soon",
     "settings": "Settings",
+    "customizer": "Customizer",
     "profile": "Profile",
     "apps": "Apps",
     "email": "Email",
@@ -187,6 +189,24 @@
       "settings": "Settings",
       "signOut": "Sign out"
     }
+  },
+  "customizer": {
+    "title": "Customizer",
+    "description": "Pick a style and color for the dashboard.",
+    "color": "Color",
+    "reset": "Reset",
+    "radius": "Radius",
+    "mode": "Mode",
+    "layout": "Layout",
+    "horizontal": "Horizontal",
+    "vertical": "Vertical",
+    "direction": "Direction",
+    "ltr": "LTR",
+    "rtl": "RTL",
+    "sidebarMode": "Sidebar Mode",
+    "open": "Open",
+    "icons": "Icons",
+    "closed": "Closed"
   },
   "auth": {
     "signIn": {
@@ -989,6 +1009,17 @@
     "labels": {
       "task": "Task",
       "status": "Status"
+    }
+  },
+  "ui": {
+    "breadcrumb": {
+      "home": "Home",
+      "navigateTo": "Navigate to",
+      "selectPage": "Select a page to navigate to.",
+      "close": "Close",
+      "more": "More",
+      "toggleMenu": "Toggle menu",
+      "breadcrumb": "Breadcrumb"
     }
   }
 }

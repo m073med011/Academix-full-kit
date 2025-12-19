@@ -32,6 +32,8 @@ export function BreadcrumbItem({ className, ...props }: ComponentProps<"li">) {
   )
 }
 
+import Link from "next/link"
+
 export function BreadcrumbLink({
   asChild,
   className,
@@ -39,13 +41,14 @@ export function BreadcrumbLink({
 }: ComponentProps<"a"> & {
   asChild?: boolean
 }) {
-  const Comp = asChild ? Slot : "a"
+  const Comp = asChild ? Slot : Link
 
   return (
     <Comp
       data-slot="breadcrumb-link"
       className={cn("transition-colors hover:text-foreground", className)}
       {...props}
+      href={props.href ?? "#"}
     />
   )
 }

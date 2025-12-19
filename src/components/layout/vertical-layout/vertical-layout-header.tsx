@@ -12,6 +12,7 @@ import { FullscreenToggle } from "@/components/layout/full-screen-toggle"
 import { NotificationDropdown } from "@/components/layout/notification-dropdown"
 import { UserDropdown } from "@/components/layout/user-dropdown"
 import { ModeDropdown } from "@/components/mode-dropdown"
+import { AppBreadcrumb } from "../app-breadcrumb"
 import { ToggleMobileSidebar } from "../toggle-mobile-sidebar"
 
 export function VerticalLayoutHeader({
@@ -28,7 +29,10 @@ export function VerticalLayoutHeader({
       <div className="container flex h-14 justify-between items-center gap-4">
         <ToggleMobileSidebar />
         <div className="grow flex justify-end gap-2">
-          <SidebarTrigger className="hidden lg:flex lg:me-auto" />
+          <div className="flex items-center gap-2 me-auto">
+            <SidebarTrigger className="hidden lg:flex" />
+            <AppBreadcrumb dictionary={dictionary} />
+          </div>
           <CartIcon dictionary={dictionary} />
           <NotificationDropdown dictionary={dictionary} />
           <FullscreenToggle />

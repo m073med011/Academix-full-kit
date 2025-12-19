@@ -33,6 +33,7 @@ export type SettingsType = {
   layout: LayoutType
   locale: LocaleType
   sidebarMode: SidebarModeType
+  lightness: number
 }
 
 export interface IconProps extends SVGAttributes<SVGElement> {

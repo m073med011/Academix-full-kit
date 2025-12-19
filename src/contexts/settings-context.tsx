@@ -13,6 +13,7 @@ export const defaultSettings: SettingsType = {
   layout: "vertical",
   locale: "en",
   sidebarMode: "open",
+  lightness: 0,
 }
 
 export const SettingsContext = createContext<

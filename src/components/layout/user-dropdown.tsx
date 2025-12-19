@@ -72,7 +72,7 @@ export function UserDropdown({
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup className="max-w-48">
+        <DropdownMenuGroup>
           <DropdownMenuItem asChild>
             <Link
               href={ensureLocalizedPathname("/pages/account/profile", locale)}

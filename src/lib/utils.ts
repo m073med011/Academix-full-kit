@@ -348,3 +348,10 @@ export function getDictionaryValue(
 
   return value
 }
+
+// Helper function to adjust HSL lightness
+export function adjustLightness(hsl: string, amount: number) {
+  const [h, s, l] = hsl.split(" ").map((v) => parseFloat(v.replace("%", "")))
+  const newL = Math.max(0, Math.min(100, l + amount))
+  return `${h} ${s}% ${newL}%`
+}

@@ -20,11 +20,15 @@ import type { LocaleType, ModeType, ThemeType } from "@/types"
 import type { CSSProperties } from "react"
 
 import { i18n } from "@/configs/i18n"
-import { radii, themes } from "@/configs/themes"
+import { themes } from "@/configs/themes"
 import { relocalizePathname } from "@/lib/i18n"
+import { adjustLightness } from "@/lib/utils"
 
 import { useSettings } from "@/hooks/use-settings"
+import { useThemeScrubber } from "@/hooks/use-theme-scrubber"
+import { useCartStore } from "@/stores/cart-store"
 import { Button } from "@/components/ui/button"
+import { NumericScrubber } from "@/components/ui/number-scrubber"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Sheet,
@@ -43,6 +47,8 @@ export function Customizer() {
   const pathname = usePathname()
   const router = useRouter()
   const params = useParams()
+  const { handlePointerDown, handleKeyDown } = useThemeScrubber()
+  const dictionary = useCartStore((state) => state.dictionary)
 
   const locale = params.lang as LocaleType
   const direction = i18n.localeDirection[locale]
@@ -79,71 +85,146 @@ export function Customizer() {
         </Button>
       </SheetTrigger>
       <SheetPortal>
-        <SheetContent className="p-0" side="end">
+        <SheetContent className="p-0" side="start">
           <ScrollArea className="h-full p-4">
             <div className="flex flex-1 flex-col space-y-4">
               <SheetHeader>
-                <SheetTitle>Customizer</SheetTitle>
+                <SheetTitle>
+                  {dictionary?.customizer?.title || "Customizer"}
+                </SheetTitle>
                 <SheetDescription>
-                  Pick a style and color for the dashboard.
+                  {dictionary?.customizer?.description ||
+                    "Pick a style and color for the dashboard."}
                 </SheetDescription>
               </SheetHeader>
+
               <div className="space-y-1.5">
-                <p className="text-sm">Color</p>
+                <div className="flex items-center justify-between px-0.5">
+                  <p className="text-sm">
+                    {dictionary?.customizer?.color || "Color"}
+                  </p>
+                  {settings.lightness !== 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 px-2 text-xs font-mono tabular-nums transition-colors hover:bg-primary hover:text-primary-foreground"
+                      style={
+                        {
+                          "--primary":
+                            // @ts-ignore
+                            themes[settings.theme].activeColor[
+                              settings.mode === "dark" ? "dark" : "light"
+                            ],
+                        } as CSSProperties
+                      }
+                      onClick={() =>
+                        updateSettings({ ...settings, lightness: 0 })
+                      }
+                    >
+                      {dictionary?.customizer?.reset || "Reset"} (
+                      {settings.lightness > 0 ? "+" : ""}
+                      {settings.lightness}%)
+                    </Button>
+                  )}
+                </div>
                 <div className="grid grid-cols-3 gap-2">
                   {Object.entries(themes).map(([name, value]) => {
                     const isActive = settings.theme === name
+                    const mode = settings.mode === "dark" ? "dark" : "light"
+                    // @ts-ignore
+                    const baseColor = value.activeColor[mode]
 
                     return (
                       <Button
                         key={name}
                         variant={isActive ? "secondary" : "default"}
+                        className={`relative overflow-hidden ${
+                          isActive ? "cursor-ew-resize" : "cursor-pointer"
+                        }`}
                         style={
                           {
-                            "--primary":
-                              value.activeColor[
-                                settings.mode === "dark" ? "dark" : "light"
-                              ],
+                            "--primary": adjustLightness(
+                              baseColor,
+                              settings.lightness ?? 0
+                            ),
                             "--primary-foreground":
                               value.activeColor["foreground"],
                           } as CSSProperties
                         }
-                        onClick={() =>
-                          updateSettings({
-                            ...settings,
-                            theme: name as ThemeType,
-                          })
+                        onPointerDown={(e) =>
+                          handlePointerDown(e, name as ThemeType)
                         }
+                        onKeyDown={(e) => handleKeyDown(e, name as ThemeType)}
                       >
-                        <span>{value.label}</span>
+                        {isActive && (
+                          <div
+                            className="absolute inset-0 transition-all bg-primary"
+                            style={{
+                              width: `${((settings.lightness + 40) / 80) * 100}%`,
+                            }}
+                          />
+                        )}
+
+                        <div className="relative z-10 flex w-full items-center justify-between px-1">
+                          <span>{value.label}</span>
+                          {isActive && (
+                            <span className="text-[10px] font-mono tabular-nums opacity-80">
+                              {settings.lightness > 0 ? "+" : ""}
+                              {settings.lightness}%
+                            </span>
+                          )}
+                        </div>
                       </Button>
                     )
                   })}
                 </div>
               </div>
-              <div className="space-y-1.5">
-                <p className="text-sm">Radius</p>
-                <div className="grid grid-cols-5 gap-2">
-                  {radii.map((value) => (
+
+              {/* Radius */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between px-0.5">
+                  <p className="text-sm">
+                    {dictionary?.customizer?.radius || "Radius"}
+                  </p>
+                  {settings.radius !== 0.75 && (
                     <Button
-                      variant={
-                        settings.radius === value ? "secondary" : "outline"
+                      variant="outline"
+                      size="sm"
+                      className="h-7 px-2 text-xs font-mono tabular-nums transition-colors hover:bg-primary hover:text-primary-foreground"
+                      style={
+                        {
+                          "--primary":
+                            // @ts-ignore
+                            themes[settings.theme].activeColor[
+                              settings.mode === "dark" ? "dark" : "light"
+                            ],
+                        } as CSSProperties
                       }
-                      key={value}
-                      onClick={() => {
-                        updateSettings({
-                          ...settings,
-                          radius: value,
-                        })
-                      }}
+                      onClick={() =>
+                        updateSettings({ ...settings, radius: 0.75 })
+                      }
                     >
-                      {value}
+                      {dictionary?.customizer?.reset || "Reset"} (0.75)
                     </Button>
-                  ))}
+                  )}
                 </div>
+                <NumericScrubber
+                  min={0}
+                  max={1}
+                  step={0.01}
+                  value={settings.radius}
+                  onChange={(val) =>
+                    updateSettings({ ...settings, radius: val })
+                  }
+                  className="w-full"
+                />
               </div>
+
+              {/* Mode */}
               <div className="space-y-1.5">
-                <p className="text-sm">Mode</p>
+                <p className="text-sm">
+                  {dictionary?.customizer?.mode || "Mode"}
+                </p>
                 <div className="grid grid-cols-3 gap-2">
                   <Button
                     variant={
@@ -152,14 +233,14 @@ export function Customizer() {
                     onClick={() => handleSetMode("light")}
                   >
                     <Sun className="shrink-0 h-4 w-4 me-2" />
-                    Light
+                    {dictionary?.mode?.light || "Light"}
                   </Button>
                   <Button
                     variant={settings.mode === "dark" ? "secondary" : "outline"}
                     onClick={() => handleSetMode("dark")}
                   >
                     <MoonStar className="shrink-0 h-4 w-4 me-2" />
-                    Dark
+                    {dictionary?.mode?.dark || "Dark"}
                   </Button>
                   <Button
                     variant={
@@ -168,11 +249,15 @@ export function Customizer() {
                     onClick={() => handleSetMode("system")}
                   >
                     <SunMoon className="shrink-0 h-4 w-4 me-2" />
-                    System
+                    {dictionary?.mode?.system || "System"}
                   </Button>
                 </div>
+
+                {/* Layout */}
                 <div className="space-y-1.5">
-                  <span className="text-sm">Layout</span>
+                  <span className="text-sm">
+                    {dictionary?.customizer?.layout || "Layout"}
+                  </span>
                   <div className="grid grid-cols-2 gap-2">
                     <Button
                       variant={
@@ -188,7 +273,7 @@ export function Customizer() {
                       }
                     >
                       <AlignStartHorizontal className="shrink-0 h-4 w-4 me-2" />
-                      Horizontal
+                      {dictionary?.customizer?.horizontal || "Horizontal"}
                     </Button>
                     <Button
                       variant={
@@ -202,33 +287,39 @@ export function Customizer() {
                       }
                     >
                       <AlignStartVertical className="shrink-0 h-4 w-4 me-2" />
-                      Vertical
+                      {dictionary?.customizer?.vertical || "Vertical"}
                     </Button>
                   </div>
                 </div>
 
+                {/* Direction */}
                 <div className="space-y-1.5">
-                  <span className="text-sm">Direction</span>
+                  <span className="text-sm">
+                    {dictionary?.customizer?.direction || "Direction"}
+                  </span>
                   <div className="grid grid-cols-2 gap-2">
                     <Button
                       variant={direction === "ltr" ? "secondary" : "outline"}
                       onClick={() => handleSetLocale("en")}
                     >
                       <AlignLeft className="shrink-0 h-4 w-4 me-2" />
-                      LRT
+                      {dictionary?.customizer?.ltr || "LRT"}
                     </Button>
                     <Button
                       variant={direction === "rtl" ? "secondary" : "outline"}
                       onClick={() => handleSetLocale("ar")}
                     >
                       <AlignRight className="shrink-0 h-4 w-4 me-2" />
-                      RTL
+                      {dictionary?.customizer?.rtl || "RTL"}
                     </Button>
                   </div>
                 </div>
 
+                {/* Sidebar Mode */}
                 <div className="space-y-1.5">
-                  <span className="text-sm">Sidebar Mode</span>
+                  <span className="text-sm">
+                    {dictionary?.customizer?.sidebarMode || "Sidebar Mode"}
+                  </span>
                   <div className="grid grid-cols-3 gap-2">
                     <Button
                       variant={
@@ -244,8 +335,9 @@ export function Customizer() {
                         setOpen(true)
                       }}
                     >
+
                       <AlignStartVertical className="shrink-0 h-4 w-4 me-2" />
-                      Open
+                      {dictionary?.customizer?.open || "Open"}
                     </Button>
                     <Button
                       variant={
@@ -262,7 +354,7 @@ export function Customizer() {
                       }}
                     >
                       <PanelLeftClose className="shrink-0 h-4 w-4 me-2" />
-                      Icons
+                      {dictionary?.customizer?.icons || "Icons"}
                     </Button>
                     <Button
                       variant={
@@ -279,7 +371,7 @@ export function Customizer() {
                       }}
                     >
                       <PanelLeftOpen className="shrink-0 h-4 w-4 me-2" />
-                      Closed
+                      {dictionary?.customizer?.closed || "Closed"}
                     </Button>
                   </div>
                 </div>
@@ -291,7 +383,7 @@ export function Customizer() {
                 onClick={handleReset}
               >
                 <RotateCcw className="shrink-0 h-4 w-4 me-2" />
-                Reset
+                {dictionary?.customizer?.reset || "Reset"}
               </Button>
             </div>
           </ScrollArea>

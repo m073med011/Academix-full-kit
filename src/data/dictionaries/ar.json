@@ -2,6 +2,7 @@
   "navigation": {
     "dashboards": "لوحات التحكم",
     "analytics": "التحليلات",
+    "organizations": "المنظمات",
     "crm": "إدارة علاقات العملاء",
     "ecommerce": "التجارة الإلكترونية",
     "pages": "الصفحات",
@@ -187,6 +188,24 @@
       "settings": "الإعدادات",
       "signOut": "تسجيل الخروج"
     }
+  },
+  "customizer": {
+    "title": "المخصص",
+    "description": "اختر نمطاً ولوناً للوحة التحكم.",
+    "color": "اللون",
+    "reset": "إعادة تعيين",
+    "radius": "نصف القطر",
+    "mode": "الوضع",
+    "layout": "التخطيط",
+    "horizontal": "أفقي",
+    "vertical": "عمودي",
+    "direction": "الاتجاه",
+    "ltr": "يسار ليمين",
+    "rtl": "يمين ليسار",
+    "sidebarMode": "وضع الشريط الجانبي",
+    "open": "مفتوح",
+    "icons": "أيقونات",
+    "closed": "مغلق"
   },
   "auth": {
     "signIn": {
@@ -989,6 +1008,17 @@
     "labels": {
       "task": "مهمة",
       "status": "الحالة"
+    }
+  },
+  "ui": {
+    "breadcrumb": {
+      "home": "الرئيسية",
+      "navigateTo": "انتقل إلى",
+      "selectPage": "اختر صفحة للانتقال إليها.",
+      "close": "إغلاق",
+      "more": "المزيد",
+      "toggleMenu": "تبديل القائمة",
+      "breadcrumb": "التنقل التسلسلي"
     }
   }
 }

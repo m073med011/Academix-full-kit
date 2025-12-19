@@ -15,6 +15,7 @@ import { FullscreenToggle } from "@/components/layout/full-screen-toggle"
 import { NotificationDropdown } from "@/components/layout/notification-dropdown"
 import { UserDropdown } from "@/components/layout/user-dropdown"
 import { ModeDropdown } from "@/components/mode-dropdown"
+import { AppBreadcrumb } from "../app-breadcrumb"
 import { ToggleMobileSidebar } from "../toggle-mobile-sidebar"
 
 export function BottomBarHeader({
@@ -27,20 +28,25 @@ export function BottomBarHeader({
 
   return (
     <div className="container flex h-14 justify-between items-center gap-4">
-      <ToggleMobileSidebar />
-      <Link
-        href={ensureLocalizedPathname("/", locale)}
-        className="hidden text-foreground font-black lg:flex"
-      >
-        <Image
-          src="/images/icons/Academix.svg"
-          alt=""
-          height={24}
-          width={24}
-          className="dark:invert"
-        />
-        <span>Academix</span>
-      </Link>
+      <div className="flex items-center gap-4">
+        <ToggleMobileSidebar />
+        <div className="flex items-center gap-4">
+          <Link
+            href={ensureLocalizedPathname("/", locale)}
+            className="hidden text-foreground font-black lg:flex"
+          >
+            <Image
+              src="/images/icons/Academix.svg"
+              alt=""
+              height={24}
+              width={24}
+              className="dark:invert"
+            />
+            <span>Academix</span>
+          </Link>
+          <AppBreadcrumb dictionary={dictionary} />
+        </div>
+      </div>
       <div className="flex gap-2">
         <CartIcon dictionary={dictionary} />
         <NotificationDropdown dictionary={dictionary} />
