@@ -160,6 +160,7 @@
     "steps": "Steps",
     "sortableList": "Sortable List",
 
+
     "dashboard": "Dashboard",
     "products": "Products",
     "list": "List",
@@ -1021,6 +1022,148 @@
       "toggleMenu": "Toggle menu",
       "breadcrumb": "Breadcrumb"
     }
+  },
+  "landingPage": {
+    "header": {
+      "features": "Features",
+      "testimonials": "Testimonials",
+      "pricing": "Pricing",
+      "signIn": "Sign In",
+      "getStarted": "Get Started"
+    },
+    "hero": {
+      "badge": "New: Academix 2.0 is now available",
+      "title": "The unified learning infrastructure for modern education",
+      "description": "The perfect learning management system for schools, universities and corporate training needs. Simple, powerful and affordable.",
+      "startNow": "Get Started",
+      "learnMore": "Learn more"
+    },
+    "crossSystem": {
+      "title": "Cross system enterprises",
+      "description": "Seamlessly integrate with your existing tools and workflows",
+      "cards": {
+        "content": {
+          "title": "Effective content",
+          "description": "Create beautiful courses with our easy to use editor."
+        },
+        "integration": {
+          "title": "Faster integration",
+          "description": "Connect to your favorite tools in seconds.",
+          "learnMore": "Learn more"
+        },
+        "analytics": {
+          "title": "Visual analytics",
+          "description": "Track progress with detailed reporting."
+        },
+        "management": {
+          "title": "Team management",
+          "description": "Easily manage roles and permissions."
+        },
+        "media": {
+          "title": "Media rich",
+          "description": "Support for video, audio and interactive content."
+        },
+        "security": {
+          "title": "Secure & compliant",
+          "description": "Enterprise grade security for your data."
+        }
+      }
+    },
+    "roi": {
+      "title": "How to prove ROI from training",
+      "cards": {
+        "intent": {
+          "title": "Analyze intent",
+          "description": "Understand what your employees want to learn."
+        },
+        "gaps": {
+          "title": "Spot the gaps",
+          "description": "Identify skills missing in your organization."
+        },
+        "metrics": {
+          "title": "Set clear metrics",
+          "description": "Measure impact on business goals."
+        }
+      }
+    },
+    "analysis": {
+      "title": "Analysis, safe and normate",
+      "cards": {
+        "realtime": {
+          "title": "Analytics realtime",
+          "description": "See data as it happens."
+        },
+        "commitment": {
+          "title": "Full commitment",
+          "description": "Data security guaranteed."
+        },
+        "diverse": {
+          "title": "Live diverse components",
+          "description": "Adaptable to any workflow."
+        }
+      }
+    },
+    "featureSplit1": {
+      "badge": "Features",
+      "title": "Scientifically proven learning design",
+      "description": "Designed to be intuitive and accessible for all users regardless of their technical ability. Our platform adapts to your needs.",
+      "users": "10k+ Users"
+    },
+    "interactive": {
+      "title": "Interactive learning environments"
+    },
+    "featureSplit2": {
+      "title": "Technology and human support",
+      "description": "Advanced tools for developers and creators. Extend the platform with our robust API and SDKs.",
+      "learnMore": "Learn more"
+    },
+    "promotive": {
+      "title": "Promotive. Study invaluable Modules",
+      "description": "Bring your learning to the next level with our curated courses."
+    },
+    "authorTools": {
+      "badge": "New",
+      "title": "Author with endless creative tools",
+      "description": "Unleash your creativity with our new design tools built directly into the platform.",
+      "readMore": "Read more"
+    },
+    "cta": {
+      "title": "Ready to begin?",
+      "description": "Start your free trial today. No credit card required.",
+      "button": "Get Started Now"
+    },
+    "features": {
+      "title": "One system, endless scale",
+      "description": "Everything you need to run a world-class education program.",
+      "cards": {
+        "analytics": {
+           "title": "Real-time Analytics",
+           "description": "Track engagement and performance with precision."
+        },
+        "content": {
+           "title": "Rich Content",
+           "description": "Support for video, quizzes, and interactive assignments."
+        },
+        "gamification": {
+           "title": "Gamification",
+           "description": "Boost retention with badges, points, and leaderboards."
+        },
+        "mobile": {
+           "title": "Mobile First",
+           "description": "Learn anywhere, anytime on any device."
+        }
+      }
+    },
+    "testimonials": {
+      "title": "Built for global teams of learners",
+      "description": "Join thousands of organizations transforming their education."
+    },
+    "footer": {
+      "rights": "All rights reserved.",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service"
+    }
   }
 }
 
+ 

@@ -10,6 +10,7 @@ export interface SafariProps extends SVGProps<SVGSVGElement> {
   height?: number
   mode?: SafariMode
   id?: string
+  imageAspectRatio?: string
 }
 
 export function Safari({
@@ -20,6 +21,7 @@ export function Safari({
   height = 753,
   mode = "default",
   id = "safari",
+  imageAspectRatio = "xMidYMid slice",
   ...props
 }: SafariProps) {
   const roundedBottomClipId = id + "-rounded-bottom"
@@ -135,7 +137,7 @@ export function Safari({
             height="700"
             x="1"
             y="52"
-            preserveAspectRatio="xMidYMid slice"
+            preserveAspectRatio={imageAspectRatio}
             clipPath={`url(#${roundedBottomClipId})`}
           />
         )}

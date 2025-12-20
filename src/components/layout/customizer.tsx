@@ -2,6 +2,7 @@
 
 import { useCallback } from "react"
 import { useParams, usePathname, useRouter } from "next/navigation"
+import { useCartStore } from "@/stores/cart-store"
 import {
   AlignLeft,
   AlignRight,
@@ -26,7 +27,6 @@ import { adjustLightness } from "@/lib/utils"
 
 import { useSettings } from "@/hooks/use-settings"
 import { useThemeScrubber } from "@/hooks/use-theme-scrubber"
-import { useCartStore } from "@/stores/cart-store"
 import { Button } from "@/components/ui/button"
 import { NumericScrubber } from "@/components/ui/number-scrubber"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -233,14 +233,14 @@ export function Customizer() {
                     onClick={() => handleSetMode("light")}
                   >
                     <Sun className="shrink-0 h-4 w-4 me-2" />
-                    {dictionary?.mode?.light || "Light"}
+                    {dictionary?.navigation?.mode?.light || "Light"}
                   </Button>
                   <Button
                     variant={settings.mode === "dark" ? "secondary" : "outline"}
                     onClick={() => handleSetMode("dark")}
                   >
                     <MoonStar className="shrink-0 h-4 w-4 me-2" />
-                    {dictionary?.mode?.dark || "Dark"}
+                    {dictionary?.navigation?.mode?.dark || "Dark"}
                   </Button>
                   <Button
                     variant={
@@ -249,7 +249,7 @@ export function Customizer() {
                     onClick={() => handleSetMode("system")}
                   >
                     <SunMoon className="shrink-0 h-4 w-4 me-2" />
-                    {dictionary?.mode?.system || "System"}
+                    {dictionary?.navigation?.mode?.system || "System"}
                   </Button>
                 </div>
 
@@ -335,7 +335,6 @@ export function Customizer() {
                         setOpen(true)
                       }}
                     >
-
                       <AlignStartVertical className="shrink-0 h-4 w-4 me-2" />
                       {dictionary?.customizer?.open || "Open"}
                     </Button>
