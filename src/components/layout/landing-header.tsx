@@ -11,11 +11,20 @@ import { ensureLocalizedPathname } from "@/lib/i18n"
 
 import { Button } from "@/components/ui/button"
 import { LanguageDropdown } from "@/components/language-dropdown"
-import { ModeDropdown } from "@/components/mode-dropdown"
 
 interface LandingHeaderProps {
   dictionary: DictionaryType
 }
+
+import { Menu } from "lucide-react"
+
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 
 export function LandingHeader({ dictionary }: LandingHeaderProps) {
   const params = useParams()
@@ -33,7 +42,7 @@ export function LandingHeader({ dictionary }: LandingHeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-14 items-center">
+      <div className="container mx-auto flex h-14 items-center px-4 md:px-6">
         {/* Left: Logo */}
         <div className="flex flex-1 items-center justify-start">
           <Link
@@ -47,12 +56,12 @@ export function LandingHeader({ dictionary }: LandingHeaderProps) {
               width={26}
               className="dark:invert mr-2"
             />
-            <span className="hidden sm:inline-block">Academix</span>
+            <span className="font-bold inline-block">Academix</span>
           </Link>
         </div>
 
-        {/* Center: Navigation */}
-        <nav className="flex items-center gap-6 text-sm font-medium">
+        {/* Center: Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -66,20 +75,79 @@ export function LandingHeader({ dictionary }: LandingHeaderProps) {
 
         {/* Right: Actions */}
         <div className="flex flex-1 items-center justify-end gap-2">
-          <div className="hidden md:flex items-center gap-2 mr-2">
-            <ModeDropdown dictionary={dictionary} />
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center gap-2">
             <LanguageDropdown dictionary={dictionary} />
+            <Button variant="ghost" asChild>
+              <Link href={ensureLocalizedPathname("/auth/signin", locale)}>
+                {t.signIn}
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link href={ensureLocalizedPathname("/auth/register", locale)}>
+                {t.getStarted}
+              </Link>
+            </Button>
           </div>
-          <Button variant="ghost" asChild className="hidden sm:inline-flex">
-            <Link href={ensureLocalizedPathname("/auth/signin", locale)}>
-              {t.signIn}
-            </Link>
-          </Button>
-          <Button asChild>
-            <Link href={ensureLocalizedPathname("/auth/register", locale)}>
-              {t.getStarted}
-            </Link>
-          </Button>
+
+          {/* Mobile Actions: Only one primary button visible + Hamburger */}
+          <div className="flex md:hidden items-center gap-2">
+            <Button size="sm" asChild className="hidden xs:inline-flex">
+              <Link href={ensureLocalizedPathname("/auth/register", locale)}>
+                {t.getStarted}
+              </Link>
+            </Button>
+            
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Toggle menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right">
+                <SheetHeader>
+                  <SheetTitle className="text-left flex items-center gap-2">
+                     <Image
+                      src="/images/logos/logo02.png"
+                      alt="Academix"
+                      height={24}
+                      width={24}
+                      className="dark:invert"
+                    />
+                    Academix
+                  </SheetTitle>
+                </SheetHeader>
+                <div className="flex flex-col gap-4 mt-8">
+                  {navItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="text-lg font-medium transition-colors hover:text-foreground/80"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                  <hr className="my-2" />
+                  <Link
+                    href={ensureLocalizedPathname("/auth/signin", locale)}
+                    className="text-lg font-medium transition-colors hover:text-foreground/80"
+                  >
+                    {t.signIn}
+                  </Link>
+                  <Link
+                    href={ensureLocalizedPathname("/auth/register", locale)}
+                    className="text-lg font-medium transition-colors hover:text-foreground/80"
+                  >
+                    {t.getStarted}
+                  </Link>
+                  <div className="mt-4">
+                    <LanguageDropdown dictionary={dictionary} />
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </div>
     </header>
