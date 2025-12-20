@@ -1,32 +1,108 @@
-import Link from "next/link"
-import {
-  ArrowRight,
-  BarChart2,
-  BookOpen,
-  CheckCircle2,
-  Globe2,
-  Layout,
-  Lock,
-  PieChart,
-  Play,
-  Settings,
-  Zap,
-} from "lucide-react"
-
 import type { LocaleType } from "@/types"
 
 import { getDictionary } from "@/lib/get-dictionary"
 import { ensureLocalizedPathname } from "@/lib/i18n"
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Iphone15Pro } from "@/components/ui/iphone-15-pro"
-import { Safari } from "@/components/ui/safari"
+import {
+  FloatingIconsHero,
+  defaultHeroIcons,
+} from "@/components/ui/floating-icons-hero-section"
 import { ShaderBackgroundWrapper } from "@/components/ui/shader-background-wrapper"
-import { FloatingIconsHero, defaultHeroIcons } from "@/components/ui/floating-icons-hero-section"
 import { LandingFooter } from "@/components/layout/landing-footer"
 import { LandingHeader } from "@/components/layout/landing-header"
+
+// New imports
+import IntroAnimation from "@/components/ui/scroll-morph-hero"
+import RadialOrbitalTimeline from "@/components/ui/radial-orbital-timeline"
+import "../landing-animations.css"
+
+const rolesData = [
+  {
+    id: 1,
+    title: "Student",
+    date: "Learning",
+    content: "Embark on a personalized learning journey. Access world-class courses, track your growth with advanced analytics, and earn verified credentials that open doors.",
+    category: "Learner",
+    icon: "graduationCap",
+    relatedIds: [2, 4], // Instructor, Freelancer
+    status: "in-progress" as const,
+    energy: 100,
+    features: [
+      "Curated AI Learning Paths",
+      "Interactive Quizzes & Assignments",
+      "Real-time Progress Tracking",
+      "Blockchain-Verified Certificates"
+    ]
+  },
+  {
+    id: 2,
+    title: "Instructor",
+    date: "Teaching",
+    content: "Transform your expertise into income. Build engaging courses, mentor students globally, and leverage powerful tools to manage your education business.",
+    category: "Educator",
+    icon: "users",
+    relatedIds: [1, 5], // Student, Organizer
+    status: "completed" as const,
+    energy: 90,
+    features: [
+      "Advanced Course Creation Studio",
+      "Detailed Student Analytics",
+      "Automated Revenue Payouts",
+      "Live Session Management"
+    ]
+  },
+  {
+    id: 3,
+    title: "Admin",
+    date: "System",
+    content: "Maintain total control over your platform. Orchestrate user roles, oversee financial flows, and ensure system integrity with enterprise-grade tools.",
+    category: "Operations",
+    icon: "shield",
+    relatedIds: [1, 2, 4, 5],
+    status: "in-progress" as const,
+    energy: 60,
+    features: [
+      "System-wide Analytics Dashboard",
+      "User & Content Management",
+      "Financial Oversight & Refunds",
+      "Security & Audit Logs"
+    ]
+  },
+  {
+    id: 4,
+    title: "Freelancer",
+    date: "Working",
+    content: "Monetize your skills on your own terms. Connect with clients, showcase your portfolio, and deliver projects via a seamless, secure workspace.",
+    category: "Professional",
+    icon: "briefcase",
+    relatedIds: [1, 5],
+    status: "pending" as const,
+    energy: 85,
+    features: [
+      "Global Talent Marketplace",
+      "Self-Branding Profile Tools",
+      "Direct Client Messaging",
+      "Secure Project Milestones"
+    ]
+  },
+  {
+    id: 5,
+    title: "Organizer",
+    date: "Events",
+    content: "Empower your organization. Manage teams, assign private training, and track skill development across your entire workforce.",
+    category: "Community",
+    icon: "layout",
+    relatedIds: [1, 2, 4],
+    status: "completed" as const,
+    energy: 75,
+    features: [
+      "Multi-level Team Management",
+      "Private Course Library",
+      "Role-Based Access Control",
+      "Enterprise Performance Reports"
+    ]
+  },
+];
 
 export default async function LandingPage(props: {
   params: Promise<{ lang: string }>
@@ -35,12 +111,12 @@ export default async function LandingPage(props: {
   const dictionary = await getDictionary(params.lang)
 
   return (
-    <div className="dark relative flex min-h-screen flex-col w-full text-foreground antialiased overflow-x-hidden">
+    <div className="dark relative flex min-h-screen flex-col w-full text-foreground antialiased">
       {/* Fixed Shader Background */}
       <ShaderBackgroundWrapper />
 
       {/* Main Content */}
-      <div className="relative z-10">
+      <div className="relative z-10 w-full">
         <LandingHeader dictionary={dictionary} />
 
         <main className="flex-1 w-full">
@@ -52,317 +128,17 @@ export default async function LandingPage(props: {
             ctaHref={ensureLocalizedPathname("/auth/register", params.lang)}
             icons={defaultHeroIcons}
           />
-
-          {/* Cross system enterprises */}
-          <section className="container mx-auto px-4 py-20">
-            <div className="text-center mb-16 max-w-2xl mx-auto">
-              <h2 className="text-3xl font-bold tracking-tight mb-4">
-                {dictionary.landingPage.crossSystem.title}
-              </h2>
-              <p className="text-muted-foreground text-lg">
-                {dictionary.landingPage.crossSystem.description}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card className="bg-muted/30 border-none shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col h-full">
-                <div className="w-full h-40 bg-muted rounded-lg mb-6 flex items-center justify-center">
-                  <Layout className="w-10 h-10 text-muted-foreground/50" />
-                </div>
-                <h3 className="font-semibold text-xl mb-2">
-                  {dictionary.landingPage.crossSystem.cards.content.title}
-                </h3>
-                <p className="text-muted-foreground">
-                  {dictionary.landingPage.crossSystem.cards.content.description}
-                </p>
-              </Card>
-              <Card className="bg-muted/30 border-none shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col h-full">
-                <div className="mb-6 text-primary">
-                  <Zap className="w-8 h-8" />
-                </div>
-                <h3 className="font-semibold text-xl mb-2">
-                  {dictionary.landingPage.crossSystem.cards.integration.title}
-                </h3>
-                <p className="text-muted-foreground mb-4 flex-1">
-                  {
-                    dictionary.landingPage.crossSystem.cards.integration
-                      .description
-                  }
-                </p>
-                <Link
-                  href="#"
-                  className="text-primary text-sm font-medium hover:underline inline-flex items-center"
-                >
-                  {
-                    dictionary.landingPage.crossSystem.cards.integration
-                      .learnMore
-                  }{" "}
-                  <ArrowRight className="w-4 h-4 ml-1 rtl:rotate-180" />
-                </Link>
-              </Card>
-              <Card className="bg-muted/30 border-none shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col h-full">
-                <div className="w-full h-40 bg-muted rounded-lg mb-6 flex items-center justify-center">
-                  <BarChart2 className="w-10 h-10 text-muted-foreground/50" />
-                </div>
-                <h3 className="font-semibold text-xl mb-2">
-                  {dictionary.landingPage.crossSystem.cards.analytics.title}
-                </h3>
-                <p className="text-muted-foreground">
-                  {
-                    dictionary.landingPage.crossSystem.cards.analytics
-                      .description
-                  }
-                </p>
-              </Card>
-              <Card className="bg-muted/30 border-none shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col h-full">
-                <div className="mb-6 text-primary">
-                  <Settings className="w-8 h-8" />
-                </div>
-                <h3 className="font-semibold text-xl mb-2">
-                  {dictionary.landingPage.crossSystem.cards.management.title}
-                </h3>
-                <p className="text-muted-foreground">
-                  {
-                    dictionary.landingPage.crossSystem.cards.management
-                      .description
-                  }
-                </p>
-              </Card>
-              <Card className="bg-muted/30 border-none shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col h-full">
-                <div className="w-full h-40 bg-muted rounded-lg mb-6 flex items-center justify-center">
-                  <Play className="w-10 h-10 text-muted-foreground/50" />
-                </div>
-                <h3 className="font-semibold text-xl mb-2">
-                  {dictionary.landingPage.crossSystem.cards.media.title}
-                </h3>
-                <p className="text-muted-foreground">
-                  {dictionary.landingPage.crossSystem.cards.media.description}
-                </p>
-              </Card>
-              <Card className="bg-muted/30 border-none shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col h-full">
-                <div className="mb-6 text-primary">
-                  <Lock className="w-8 h-8" />
-                </div>
-                <h3 className="font-semibold text-xl mb-2">
-                  {dictionary.landingPage.crossSystem.cards.security.title}
-                </h3>
-                <p className="text-muted-foreground">
-                  {
-                    dictionary.landingPage.crossSystem.cards.security
-                      .description
-                  }
-                </p>
-              </Card>
-            </div>
+           
+          {/* Scroll Morph Hero Section */}
+          <section className="w-full relative z-20">
+             <IntroAnimation />
           </section>
 
-          {/* ROI Section */}
-          <section className="container mx-auto px-4 py-20 bg-muted/20">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight">
-                {dictionary.landingPage.roi.title}
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              <div className="text-center group">
-                <div className="w-full aspect-video bg-background border rounded-xl mb-6 flex items-center justify-center group-hover:scale-[1.02] transition-transform duration-300">
-                  <PieChart className="w-10 h-10 text-muted-foreground/30" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">
-                  {dictionary.landingPage.roi.cards.intent.title}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {dictionary.landingPage.roi.cards.intent.description}
-                </p>
-              </div>
-              <div className="text-center group">
-                <div className="w-full aspect-video bg-background border rounded-xl mb-6 flex items-center justify-center group-hover:scale-[1.02] transition-transform duration-300">
-                  <Globe2 className="w-10 h-10 text-muted-foreground/30" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">
-                  {dictionary.landingPage.roi.cards.gaps.title}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {dictionary.landingPage.roi.cards.gaps.description}
-                </p>
-              </div>
-              <div className="text-center group">
-                <div className="w-full aspect-video bg-background border rounded-xl mb-6 flex items-center justify-center group-hover:scale-[1.02] transition-transform duration-300">
-                  <BarChart2 className="w-10 h-10 text-muted-foreground/30" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">
-                  {dictionary.landingPage.roi.cards.metrics.title}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {dictionary.landingPage.roi.cards.metrics.description}
-                </p>
-              </div>
-            </div>
+          {/* Radial Orbital Timeline Section */}
+          <section className="w-full relative z-30">
+            <RadialOrbitalTimeline timelineData={rolesData} />
           </section>
 
-          {/* Analysis Section */}
-          <section className="container mx-auto px-4 py-20 border-t">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tight">
-                {dictionary.landingPage.analysis.title}
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              <div className="text-center px-4">
-                <div className="inline-flex p-3 rounded-full bg-primary/10 text-primary mb-4">
-                  <BarChart2 className="w-6 h-6" />
-                </div>
-                <h3 className="font-semibold">
-                  {dictionary.landingPage.analysis.cards.realtime.title}
-                </h3>
-                <p className="text-xs text-muted-foreground mt-2">
-                  {dictionary.landingPage.analysis.cards.realtime.description}
-                </p>
-              </div>
-              <div className="text-center px-4">
-                <div className="inline-flex p-3 rounded-full bg-primary/10 text-primary mb-4">
-                  <Lock className="w-6 h-6" />
-                </div>
-                <h3 className="font-semibold">
-                  {dictionary.landingPage.analysis.cards.commitment.title}
-                </h3>
-                <p className="text-xs text-muted-foreground mt-2">
-                  {dictionary.landingPage.analysis.cards.commitment.description}
-                </p>
-              </div>
-              <div className="text-center px-4">
-                <div className="inline-flex p-3 rounded-full bg-primary/10 text-primary mb-4">
-                  <Layout className="w-6 h-6" />
-                </div>
-                <h3 className="font-semibold">
-                  {dictionary.landingPage.analysis.cards.diverse.title}
-                </h3>
-                <p className="text-xs text-muted-foreground mt-2">
-                  {dictionary.landingPage.analysis.cards.diverse.description}
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* Feature Split 1 */}
-          <section className="container mx-auto px-4 py-16">
-            <div className="bg-muted/30 rounded-3xl p-8 md:p-12 overflow-hidden">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                <div className="h-64 md:h-80 bg-background rounded-xl shadow-lg border flex items-center justify-center">
-                  <CheckCircle2 className="w-16 h-16 text-muted-foreground/20" />
-                </div>
-                <div>
-                  <span className="text-primary font-bold text-sm uppercase tracking-wider">
-                    {dictionary.landingPage.featureSplit1.badge}
-                  </span>
-                  <h2 className="text-3xl font-bold mt-2 mb-4 leading-tight">
-                    {dictionary.landingPage.featureSplit1.title}
-                  </h2>
-                  <p className="text-muted-foreground mb-6 leading-relaxed">
-                    {dictionary.landingPage.featureSplit1.description}
-                  </p>
-                  <div className="flex items-center space-x-4">
-                    <div className="flex -space-x-2">
-                      <div className="w-8 h-8 rounded-full bg-muted border-2 border-background" />
-                      <div className="w-8 h-8 rounded-full bg-muted-foreground/20 border-2 border-background" />
-                      <div className="w-8 h-8 rounded-full bg-muted-foreground/40 border-2 border-background" />
-                    </div>
-                    <span className="text-sm font-semibold text-muted-foreground">
-                      {dictionary.landingPage.featureSplit1.users}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Middle Feature */}
-          <section className="container max-w-5xl mx-auto px-4 py-20 text-center">
-            <h2 className="text-3xl font-bold mb-10">
-              {dictionary.landingPage.interactive.title}
-            </h2>
-            <div className="w-full h-80 bg-muted/50 rounded-2xl mx-auto flex items-center justify-center border-2 border-dashed border-muted-foreground/25">
-              <Play className="w-20 h-20 text-muted-foreground/20" />
-            </div>
-          </section>
-
-          {/* Feature Split 2 */}
-          <section className="container mx-auto px-4 py-16">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-              <div className="order-2 md:order-1">
-                <h2 className="text-3xl font-bold mb-4">
-                  {dictionary.landingPage.featureSplit2.title}
-                </h2>
-                <p className="text-muted-foreground mb-6 text-lg">
-                  {dictionary.landingPage.featureSplit2.description}
-                </p>
-                <Link
-                  href="#"
-                  className="text-primary font-semibold hover:underline inline-flex items-center"
-                >
-                  {dictionary.landingPage.featureSplit2.learnMore}{" "}
-                  <ArrowRight className="ml-2 w-4 h-4 rtl:rotate-180" />
-                </Link>
-              </div>
-              <div className="order-1 md:order-2 h-64 md:h-80 bg-muted/50 rounded-2xl flex items-center justify-center border">
-                <Settings className="w-16 h-16 text-muted-foreground/20" />
-              </div>
-            </div>
-          </section>
-
-          {/* Promotive Section */}
-          <section className="container max-w-4xl mx-auto px-4 py-16 text-center">
-            <h2 className="text-3xl font-bold mb-4">
-              {dictionary.landingPage.promotive.title}
-            </h2>
-            <p className="text-muted-foreground mb-8 text-lg">
-              {dictionary.landingPage.promotive.description}
-            </p>
-          </section>
-
-          {/* New Feature Box */}
-          <section className="container mx-auto px-4 py-16 mb-12">
-            <div className="bg-primary/5 rounded-3xl p-8 md:p-16">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                <div>
-                  <Badge
-                    variant="outline"
-                    className="mb-4 border-orange-500 text-orange-500"
-                  >
-                    {dictionary.landingPage.authorTools.badge}
-                  </Badge>
-                  <h2 className="text-3xl font-bold mb-4">
-                    {dictionary.landingPage.authorTools.title}
-                  </h2>
-                  <p className="text-muted-foreground text-sm mb-6 leading-relaxed max-w-md">
-                    {dictionary.landingPage.authorTools.description}
-                  </p>
-                  <Button variant="outline">
-                    {dictionary.landingPage.authorTools.readMore}
-                  </Button>
-                </div>
-                <div className="h-48 md:h-64 bg-background rounded-xl border flex items-center justify-center shadow-lg">
-                  <BookOpen className="w-12 h-12 text-muted-foreground/20" />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* CTA */}
-          <section className="text-center py-20 px-4 mb-10">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
-              {dictionary.landingPage.cta.title}
-            </h2>
-            <p className="text-muted-foreground mb-10 max-w-lg mx-auto text-lg">
-              {dictionary.landingPage.cta.description}
-            </p>
-            <Button
-              size="lg"
-              className="h-14 px-10 text-lg shadow-xl shadow-primary/20"
-            >
-              {dictionary.landingPage.cta.button}
-            </Button>
-          </section>
         </main>
 
         <LandingFooter dictionary={dictionary} />

@@ -3,6 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useParams } from "next/navigation"
+import { Menu } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType } from "@/types"
@@ -10,14 +11,6 @@ import type { LocaleType } from "@/types"
 import { ensureLocalizedPathname } from "@/lib/i18n"
 
 import { Button } from "@/components/ui/button"
-import { LanguageDropdown } from "@/components/language-dropdown"
-
-interface LandingHeaderProps {
-  dictionary: DictionaryType
-}
-
-import { Menu } from "lucide-react"
-
 import {
   Sheet,
   SheetContent,
@@ -25,6 +18,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { LanguageDropdown } from "@/components/language-dropdown"
+
+interface LandingHeaderProps {
+  dictionary: DictionaryType
+}
 
 export function LandingHeader({ dictionary }: LandingHeaderProps) {
   const params = useParams()
@@ -41,8 +39,8 @@ export function LandingHeader({ dictionary }: LandingHeaderProps) {
   ]
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-14 items-center px-4 md:px-6">
+    <header className="fixed top-4 z-50 w-full max-w-5xl left-0 right-0 mx-auto border rounded-full bg-background/60 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 shadow-lg">
+      <div className="flex h-14 items-center px-6">
         {/* Left: Logo */}
         <div className="flex flex-1 items-center justify-start">
           <Link
@@ -78,12 +76,12 @@ export function LandingHeader({ dictionary }: LandingHeaderProps) {
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-2">
             <LanguageDropdown dictionary={dictionary} />
-            <Button variant="ghost" asChild>
+            <Button variant="ghost" size="sm" asChild className="rounded-full">
               <Link href={ensureLocalizedPathname("/auth/signin", locale)}>
                 {t.signIn}
               </Link>
             </Button>
-            <Button asChild>
+            <Button size="sm" asChild className="rounded-full">
               <Link href={ensureLocalizedPathname("/auth/register", locale)}>
                 {t.getStarted}
               </Link>
@@ -92,15 +90,19 @@ export function LandingHeader({ dictionary }: LandingHeaderProps) {
 
           {/* Mobile Actions: Only one primary button visible + Hamburger */}
           <div className="flex md:hidden items-center gap-2">
-            <Button size="sm" asChild className="hidden xs:inline-flex">
+            <Button
+              size="sm"
+              asChild
+              className="hidden xs:inline-flex rounded-full"
+            >
               <Link href={ensureLocalizedPathname("/auth/register", locale)}>
                 {t.getStarted}
               </Link>
             </Button>
-            
+
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon">
+                <Button variant="outline" size="icon" className="rounded-full">
                   <Menu className="h-5 w-5" />
                   <span className="sr-only">Toggle menu</span>
                 </Button>
@@ -108,7 +110,7 @@ export function LandingHeader({ dictionary }: LandingHeaderProps) {
               <SheetContent side="right">
                 <SheetHeader>
                   <SheetTitle className="text-left flex items-center gap-2">
-                     <Image
+                    <Image
                       src="/images/logos/logo02.png"
                       alt="Academix"
                       height={24}
