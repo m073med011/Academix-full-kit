@@ -48,7 +48,7 @@ export function ProfileHeader({
       </AspectRatio>
       <div className="relative w-full flex flex-col items-center gap-2 p-4 md:flex-row">
 
-        <div className="size-32 -mt-20 md:size-40 relative rounded-full overflow-hidden border-4 border-background">
+        <div className="size-32 -mt-20 md:size-40 relative rounded-lg overflow-hidden border-4 border-background">
           <DefaultImage
             src={user.imageProfileUrl}
             alt="Profile Avatar"

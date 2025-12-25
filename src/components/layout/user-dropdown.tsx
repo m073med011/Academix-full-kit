@@ -39,24 +39,24 @@ export function UserDropdown({
           className="rounded-lg size-12 p-0"
           aria-label="User"
         >
-          <div className="size-full relative rounded-full overflow-hidden">
+          <div className="size-full relative rounded-lg overflow-hidden">
             <DefaultImage
               src={user?.avatar}
               alt="Avatar"
               fill
-              className="object-cover p-1"
+              className="object-cover "
             />
           </div>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent forceMount>
         <DropdownMenuLabel className="flex gap-2">
-          <div className="size-16 relative rounded-full overflow-hidden shrink-0">
+          <div className="size-16 relative rounded-lg overflow-hidden shrink-0">
             <DefaultImage
               src={user?.avatar}
               alt="Avatar"
               fill
-              className="object-cover p-1"
+              className="object-cover"
             />
           </div>
           <div className="flex flex-col overflow-hidden max-w-[150px]">

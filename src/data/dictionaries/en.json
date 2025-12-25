@@ -760,6 +760,94 @@
       }
     }
   },
+  "organizationsPage": {
+    "list": {
+      "title": "Organizations",
+      "searchPlaceholder": "Search organizations...",
+      "createOrganization": "Create Organization",
+      "myOrganizations": "My Organizations",
+      "publicOrganizations": "Public Organizations",
+      "levels": "Levels",
+      "terms": "Terms",
+      "joined": "Joined",
+      "created": "Created",
+      "manage": "Manage",
+      "viewDashboard": "View Dashboard",
+      "actions": {
+        "edit": "Edit Organization",
+        "manageMembers": "Manage Members",
+        "leave": "Leave Organization"
+      },
+      "noDescription": "No description provided."
+    },
+    "createModal": {
+      "title": "Create Organization",
+      "description": "Create a new organization to manage your courses, students, and team members.",
+      "name": "Organization Name",
+      "namePlaceholder": "e.g., Tech Academy",
+      "description": "Description",
+      "descriptionPlaceholder": "A modern learning institution focused on technology education",
+      "orgCover": "Organization Cover Image",
+      "noImageChosen": "No image chosen",
+      "chooseImage": "Choose Image",
+      "cancel": "Cancel",
+      "create": "Create Organization",
+      "creating": "Creating...",
+      "success": "Success",
+      "successDescription": "Organization created successfully",
+      "error": "Error",
+      "errorDescription": "Failed to create organization"
+    },
+    "title": "Organizations",
+    "organization": {
+      "title": "Innovatech Solutions",
+      "description": "Manage courses, students, and settings for this organization."
+    },
+    "tabs": {
+      "about": "About",
+      "courses": "Courses",
+      "levels": "Levels",
+      "terms": "Terms",
+      "students": "Students",
+      "members": "Members",
+      "settings": "Settings",
+      "rolesPermissions": "Roles & Permissions"
+    },
+    "courses": {
+      "addNewCourse": "Add New Course",
+      "searchPlaceholder": "Search courses...",
+      "statusFilter": "Status: All",
+      "export": "Export",
+      "columns": {
+        "courseName": "Course Name",
+        "status": "Status",
+        "enrollees": "Enrollees",
+        "createdDate": "Created Date",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "pending": "Pending",
+        "archived": "Archived",
+        "all": "All"  
+      },
+      "actions": {
+        "view": "View",
+        "edit": "Edit",
+        "archive": "Archive",
+        "delete": "Delete"
+      },
+      "comingSoon": {
+        "about": "Organization information coming soon...",
+        "levels": "Levels management coming soon...",
+        "terms": "Terms management coming soon...",
+        "students": "Student management coming soon...",
+        "members": "Member management coming soon...",
+        "settings": "Settings coming soon...",
+        "roles": "Roles and permissions management coming soon..."
+      }
+    }
+  },
   "courseDetailsPage": {
     "navigation": {
       "back": "Back",

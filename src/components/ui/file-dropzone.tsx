@@ -5,11 +5,11 @@ import Image from "next/image"
 import { useDropzone } from "react-dropzone"
 import { Loader2, UploadCloud, X } from "lucide-react"
 
+import type { DictionaryType } from "@/lib/get-dictionary"
 import type { FileType } from "@/types"
 import type { DropzoneOptions } from "react-dropzone"
 
 import { cn, formatFileSize, wait } from "@/lib/utils"
-import type { DictionaryType } from "@/lib/get-dictionary"
 
 import { Button } from "@/components/ui/button"
 import { FileThumbnail } from "./file-thumbnail"
@@ -106,7 +106,14 @@ export function FileDropzone({
       <input {...getInputProps()} />
       <ScrollArea className="w-0 flex-1 p-6">
         {files.length > 0 ? (
-          <div className="grid gap-4 grid-cols-2">
+          <div
+            className={cn(
+              "grid gap-4",
+              files.length === 1
+                ? "grid-cols-1 place-items-center"
+                : "grid-cols-2"
+            )}
+          >
             {files.map((file) => (
               <div
                 key={file.id}

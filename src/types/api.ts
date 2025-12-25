@@ -1,6 +1,8 @@
 // LMS Backend API Type Definitions
 // These types match the MongoDB schemas from lms-backend
 
+import { Organization, OrganizationMembership } from "@/app/[lang]/(dashboard-layout)/organizations/_types/types"
+
 // ============================================
 // Enums
 // ============================================
@@ -107,7 +109,7 @@ export interface LoginSuccessResponse {
   user: User
   organizations?: Organization[]
   activeOrganizationId?: string
-  token: string
+  token: string   
   refreshToken: string
 }
 
@@ -359,39 +361,7 @@ export interface CreateMaterialRequest {
 // Organization Types
 // ============================================
 
-export interface OrganizationSettings {
-  allowMultipleLevels?: boolean
-  requireTermAssignment?: boolean
-  allowStudentSelfEnroll?: boolean
-}
-
-export interface Organization extends BaseEntity {
-  name: string
-  description?: string
-  owner: string | User
-  settings?: OrganizationSettings
-}
-
-export interface OrganizationRole extends BaseEntity {
-  organizationId: string
-  name: string
-  permissions: string[]
-  description?: string
-}
-
-export interface OrganizationMembership extends BaseEntity {
-  organizationId: string | Organization
-  userId: string | User
-  roleId: string | OrganizationRole
-  joinedDate: string
-  status: MembershipStatus
-}
-
-export interface CreateOrganizationRequest {
-  name: string
-  description?: string
-  settings?: OrganizationSettings
-}
+export * from "@/app/[lang]/(dashboard-layout)/organizations/_types/types"
 
 // ============================================
 // Payment Types

@@ -38,7 +38,7 @@ export function DefaultImage({
       alt={alt}
       className={cn(
         "transition-all duration-300",
-        isFallback ? "object-contain p-2" : "object-cover",
+        isFallback ? "object-contain rounded-lg h-full w-full" : "object-cover rounded-lg",
         // Assuming logo.png is white (for dark mode), invert it for light mode
         isFallback && !isDarkMode && "invert",
         className

@@ -2,7 +2,7 @@
   "navigation": {
     "dashboards": "لوحات التحكم",
     "analytics": "التحليلات",
-    "organizations": "المنظمات",
+    "organizations": "المؤسسات",
     "crm": "إدارة علاقات العملاء",
     "ecommerce": "التجارة الإلكترونية",
     "pages": "الصفحات",
@@ -758,6 +758,97 @@
       }
     }
   },
+  "organizationsPage": {
+    "list": {
+      "title": "المؤسسات",
+      "searchPlaceholder": "البحث عن المؤسسات...",
+      "createOrganization": "إنشاء مؤسسة",
+      "myOrganizations": "مؤسساتي",
+      "publicOrganizations": "المؤسسات العامة",
+      "levels": "المستويات",
+      "terms": "الفصول الدراسية",
+      "joined": "انضم",
+      "created": "تاريخ الإنشاء",
+      "manage": "إدارة",
+      "viewDashboard": "عرض لوحة التحكم",
+      "actions": {
+        "edit": "تعديل المؤسسة",
+        "manageMembers": "إدارة الأعضاء",
+        "leave": "مغادرة المؤسسة"
+      },
+      "noDescription": "لم يتم تقديم وصف."
+    },
+    "createModal": {
+      "title": "إنشاء مؤسسة",
+      "description": "إنشاء مؤسسة جديدة لإدارة الدورات والطلاب وأعضاء الفريق.",
+      "name": "اسم المؤسسة",
+      "namePlaceholder": "مثال: أكاديمية التكنولوجيا",
+      "description": "الوصف",
+      "descriptionPlaceholder": "مؤسسة تعليمية حديثة تركز على تعليم التكنولوجيا",
+      "orgCover": "صورة غلاف المؤسسة",
+      "noImageChosen": "لم يتم اختيار صورة",
+      "chooseImage": "اختر صورة",
+      "cancel": "إلغاء",
+      "create": "إنشاء مؤسسة",
+      "creating": "جاري الإنشاء...",
+      "success": "نجح",
+      "successDescription": "تم إنشاء المؤسسة بنجاح",
+      "error": "خطأ",
+      "errorDescription": "فشل في إنشاء المؤسسة"
+    },
+    "title": "المؤسسات",
+    "organization": {
+      "title": "Innovatech Solutions",
+      "description": "إدارة الدورات، الطلاب، والإعدادات لهذه المؤسسة."
+    },
+    "tabs": {
+      "about": "نبذة",
+      "courses": "الدورات",
+      "levels": "المستويات",
+      "terms": "الفصول",
+      "students": "الطلاب",
+      "members": "الأعضاء",
+      "settings": "الإعدادات",
+      "rolesPermissions": "الأدوار والصلاحيات"
+    },
+    "courses": {
+      "addNewCourse": "إضافة دورة جديدة",
+      "searchPlaceholder": "ابحث عن دورات...",
+      "statusFilter": "الحالة: الكل",
+      "export": "تصدير",
+      "columns": {
+        "courseName": "اسم الدورة",
+        "status": "الحالة",
+        "enrollees": "المسجلين",
+        "createdDate": "تاريخ الإنشاء",
+        "actions": "الإجراءات"
+      },
+      "status": {
+        "active": "نشط",
+        "pending": "قيد الانتظار",
+        "archived": "مؤرشف",
+        "all": "الكل"
+      },
+      "actions": {
+        "view": "عرض",
+        "edit": "تعديل",
+        "archive": "أرشفة",
+        "delete": "حذف"
+      },
+      "pagination": {
+        "showing": "عرض {start} إلى {end} من {total} نتيجة"
+      },
+      "comingSoon": {
+        "about": "معلومات المؤسسة قريباً...",
+        "levels": "إدارة المستويات قريباً...",
+        "terms": "إدارة الفصول قريباً...",
+        "students": "إدارة الطلاب قريباً...",
+        "members": "إدارة الأعضاء قريباً...",
+        "settings": "الإعدادات قريباً...",
+        "roles": "إدارة الأدوار والصلاحيات قريباً..."
+      }
+    }
+  },
   "courseDetailsPage": {
     "navigation": {
       "back": "رجوع",
@@ -1154,7 +1245,7 @@
     },
     "testimonials": {
       "title": "مبني لفرق المتعلمين العالمية",
-      "description": "انضم إلى آلاف المنظمات التي تحول تعليمها."
+      "description": "انضم إلى آلاف المؤسسات التي تحول تعليمها."
     },
     "footer": {
       "rights": "جميع الحقوق محفوظة.",

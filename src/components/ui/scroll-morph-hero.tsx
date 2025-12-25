@@ -7,6 +7,7 @@ import {
   useScroll,
   useSpring,
   useTransform,
+  AnimatePresence,
 } from "framer-motion"
 
 // --- Types ---
@@ -24,16 +25,16 @@ interface FlipCardProps {
     scale: number
     opacity: number
   }
+  onClick: (src: string) => void
 }
 
 // --- FlipCard Component ---
-const IMG_WIDTH = 60
-const IMG_HEIGHT = 85
+const IMG_WIDTH = 160
+const IMG_HEIGHT = 120
 
-function FlipCard({ src, index, total, phase, target }: FlipCardProps) {
+function FlipCard({ src, index, target, onClick }: FlipCardProps) {
   return (
     <motion.div
-      // Smoothly animate to the coordinates defined by the parent
       animate={{
         x: target.x,
         y: target.y,
@@ -41,55 +42,47 @@ function FlipCard({ src, index, total, phase, target }: FlipCardProps) {
         scale: target.scale,
         opacity: target.opacity,
       }}
-      transition={{
-        type: "spring",
-        stiffness: 40,
-        damping: 15,
-      }}
-      // Initial style
+      transition={{ type: "spring", stiffness: 40, damping: 15 }}
       style={{
         position: "absolute",
         width: IMG_WIDTH,
         height: IMG_HEIGHT,
-        transformStyle: "preserve-3d", // Essential for the 3D hover effect
+        transformStyle: "preserve-3d",
         perspective: "1000px",
       }}
       className="cursor-pointer group"
+      onClick={(e) => {
+        e.stopPropagation() // Prevent triggering parent clicks if any
+        onClick(src)
+      }}
     >
       <motion.div
         className="relative h-full w-full"
         style={{ transformStyle: "preserve-3d" }}
-        transition={{
-          duration: 0.6,
-          type: "spring",
-          stiffness: 260,
-          damping: 20,
-        }}
+        transition={{ duration: 0.6, type: "spring", stiffness: 260, damping: 20 }}
         whileHover={{ rotateY: 180 }}
       >
-        {/* Front Face */}
+        {/* Front */}
         <div
           className="absolute inset-0 h-full w-full overflow-hidden rounded-xl shadow-lg bg-gray-200"
           style={{ backfaceVisibility: "hidden" }}
         >
-          <img
-            src={src}
-            alt={`hero-${index}`}
-            className="h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/10 transition-colors group-hover:bg-transparent" />
+          <img src={src} alt={`learning-${index}`} className="h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
         </div>
 
-        {/* Back Face */}
+        {/* Back */}
         <div
-          className="absolute inset-0 h-full w-full overflow-hidden rounded-xl shadow-lg bg-gray-900 flex flex-col items-center justify-center p-4 border border-gray-700"
+          className="absolute inset-0 h-full w-full rounded-xl shadow-lg bg-gray-900 flex items-center justify-center border border-gray-700"
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
-          <div className="text-center">
-            <p className="text-[8px] font-bold text-blue-400 uppercase tracking-widest mb-1">
-              View
+          <div className="text-center px-4">
+            <p className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-1.5">
+              Learning Feature
             </p>
-            <p className="text-xs font-medium text-white">Details</p>
+            <p className="text-base font-medium text-white">
+              Structured Capability
+            </p>
           </div>
         </div>
       </motion.div>
@@ -97,306 +90,240 @@ function FlipCard({ src, index, total, phase, target }: FlipCardProps) {
   )
 }
 
-// --- Main Hero Component ---
+// --- Constants ---
 const TOTAL_IMAGES = 20
-const MAX_SCROLL = 3000 // Virtual scroll range
+const MAX_SCROLL = 3000
 
-// Unsplash Images
 const IMAGES = [
-  "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=300&q=80",
-  "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=300&q=80",
-  "https://images.unsplash.com/photo-1497366216548-37526070297c?w=300&q=80",
-  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=300&q=80",
-  "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=300&q=80",
-  "https://images.unsplash.com/photo-1506765515384-028b60a970df?w=300&q=80",
-  "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&q=80",
-  "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=300&q=80",
-  "https://images.unsplash.com/photo-1500485035595-cbe6f645feb1?w=300&q=80",
-  "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=300&q=80",
-  "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&q=80",
-  "https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=300&q=80",
-  "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=300&q=80",
-  "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=300&q=80",
-  "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=300&q=80",
-  "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=300&q=80",
-  "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=300&q=80",
-  "https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=300&q=80",
-  "https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?w=300&q=80",
-  "https://images.unsplash.com/photo-1496568816309-51d7c20e3b21?w=300&q=80",
+  "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80",
+  "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&q=80",
+  "https://images.unsplash.com/photo-1584697964192-4c5a3c1b3b0a?w=800&q=80",
+  "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
+  "https://images.unsplash.com/photo-1531497865144-0464ef8fb9a9?w=800&q=80",
+  "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&q=80",
+  "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&q=80",
+  "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80",
+  "https://images.unsplash.com/photo-1581091870627-3c9c1f9b6b8c?w=800&q=80",
+  "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800&q=80",
+  "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80",
+  "https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&q=80",
+  "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&q=80",
+  "https://images.unsplash.com/photo-1532619675605-1ede6c2ed2b0?w=800&q=80",
+  "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&q=80",
+  "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80",
+  "https://images.unsplash.com/photo-1603575448365-8b6b2a3c6c28?w=800&q=80",
+  "https://images.unsplash.com/photo-1556761175-129418cb2dfe?w=800&q=80",
+  "https://images.unsplash.com/photo-1600267165630-90d7b8b42c63?w=800&q=80",
+  "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&q=80",
 ]
 
-// Helper for linear interpolation
-const lerp = (start: number, end: number, t: number) =>
-  start * (1 - t) + end * t
+const lerp = (a: number, b: number, t: number) => a * (1 - t) + b * t
 
 export default function IntroAnimation() {
   const [introPhase, setIntroPhase] = useState<AnimationPhase>("scatter")
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 })
+  const [activeImage, setActiveImage] = useState<string | null>(null)
+
   const trackRef = useRef<HTMLDivElement>(null)
   const stickyRef = useRef<HTMLDivElement>(null)
 
-  // --- Container Size ---
+  // Resize observer
   useEffect(() => {
     if (!stickyRef.current) return
-
-    const handleResize = (entries: ResizeObserverEntry[]) => {
-      for (const entry of entries) {
-        setContainerSize({
-          width: entry.contentRect.width,
-          height: entry.contentRect.height,
-        })
-      }
-    }
-
-    const observer = new ResizeObserver(handleResize)
-    observer.observe(stickyRef.current)
-
-    // Initial set
-    setContainerSize({
-      width: stickyRef.current.offsetWidth,
-      height: stickyRef.current.offsetHeight,
+    const observer = new ResizeObserver(([entry]) => {
+      setContainerSize({
+        width: entry.contentRect.width,
+        height: entry.contentRect.height,
+      })
     })
-
+    observer.observe(stickyRef.current)
     return () => observer.disconnect()
   }, [])
 
-  // --- Virtual Scroll Logic (Via Page Scroll) ---
+  // Close modal on scroll
+  useEffect(() => {
+    if (!activeImage) return
+
+    const handleScroll = () => {
+      setActiveImage(null)
+    }
+
+    // Capture scrolling on the window
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [activeImage])
+
+  // Scroll
   const { scrollYProgress } = useScroll({
     target: trackRef,
     offset: ["start start", "end end"],
   })
 
-  // Map scroll progress 0..1 to virtual scroll range 0..MAX_SCROLL
   const virtualScroll = useTransform(scrollYProgress, [0, 1], [0, MAX_SCROLL])
-
-  // 1. Morph Progress: 0 (Circle) -> 1 (Bottom Arc)
-  // Happens between scroll 0 and 600
   const morphProgress = useTransform(virtualScroll, [0, 600], [0, 1])
   const smoothMorph = useSpring(morphProgress, { stiffness: 40, damping: 20 })
 
-  // 2. Scroll Rotation (Shuffling): Starts after morph (e.g., > 600)
-  // Rotates the bottom arc as user continues scrolling
   const scrollRotate = useTransform(virtualScroll, [600, 3000], [0, 360])
-  const smoothScrollRotate = useSpring(scrollRotate, {
-    stiffness: 40,
-    damping: 20,
-  })
+  const smoothRotate = useSpring(scrollRotate, { stiffness: 40, damping: 20 })
 
-  // --- Mouse Parallax ---
+  // Mouse parallax
   const mouseX = useMotionValue(0)
   const smoothMouseX = useSpring(mouseX, { stiffness: 30, damping: 20 })
 
   useEffect(() => {
-    const container = stickyRef.current
-    if (!container) return
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = container.getBoundingClientRect()
-      const relativeX = e.clientX - rect.left
-
-      // Normalize -1 to 1
-      const normalizedX = (relativeX / rect.width) * 2 - 1
-      // Move +/- 100px
-      mouseX.set(normalizedX * 100)
+    const el = stickyRef.current
+    if (!el) return
+    const onMove = (e: MouseEvent) => {
+      const rect = el.getBoundingClientRect()
+      const x = (e.clientX - rect.left) / rect.width
+      mouseX.set((x * 2 - 1) * 100)
     }
-    container.addEventListener("mousemove", handleMouseMove)
-    return () => container.removeEventListener("mousemove", handleMouseMove)
+    el.addEventListener("mousemove", onMove)
+    return () => el.removeEventListener("mousemove", onMove)
   }, [mouseX])
 
-  // --- Intro Sequence ---
+  // Intro timing
   useEffect(() => {
-    const timer1 = setTimeout(() => setIntroPhase("line"), 500)
-    const timer2 = setTimeout(() => setIntroPhase("circle"), 2500)
+    const t1 = setTimeout(() => setIntroPhase("line"), 500)
+    const t2 = setTimeout(() => setIntroPhase("circle"), 2500)
     return () => {
-      clearTimeout(timer1)
-      clearTimeout(timer2)
+      clearTimeout(t1)
+      clearTimeout(t2)
     }
   }, [])
 
-  // --- Random Scatter Positions ---
-  const scatterPositions = useMemo(() => {
-    return IMAGES.map(() => ({
-      x: (Math.random() - 0.5) * 1500,
-      y: (Math.random() - 0.5) * 1000,
-      rotation: (Math.random() - 0.5) * 180,
-      scale: 0.6,
-      opacity: 0,
-    }))
-  }, [])
+  // Scatter positions
+  const scatterPositions = useMemo(
+    () =>
+      IMAGES.map(() => ({
+        x: (Math.random() - 0.5) * 2200,
+        y: (Math.random() - 0.5) * 1400,
+        rotation: (Math.random() - 0.5) * 180,
+        scale: 0.6,
+        opacity: 0,
+      })),
+    []
+  )
 
-  // --- Render Loop (Manual Calculation for Morph) ---
+  // Live values
   const [morphValue, setMorphValue] = useState(0)
   const [rotateValue, setRotateValue] = useState(0)
   const [parallaxValue, setParallaxValue] = useState(0)
 
   useEffect(() => {
-    const unsubscribeMorph = smoothMorph.on("change", setMorphValue)
-    const unsubscribeRotate = smoothScrollRotate.on("change", setRotateValue)
-    const unsubscribeParallax = smoothMouseX.on("change", setParallaxValue)
+    const u1 = smoothMorph.on("change", setMorphValue)
+    const u2 = smoothRotate.on("change", setRotateValue)
+    const u3 = smoothMouseX.on("change", setParallaxValue)
     return () => {
-      unsubscribeMorph()
-      unsubscribeRotate()
-      unsubscribeParallax()
+      u1()
+      u2()
+      u3()
     }
-  }, [smoothMorph, smoothScrollRotate, smoothMouseX])
+  }, [smoothMorph, smoothRotate, smoothMouseX])
 
-  // --- Content Opacity ---
-  // Fade in content when arc is formed (morphValue > 0.8)
   const contentOpacity = useTransform(smoothMorph, [0.8, 1], [0, 1])
   const contentY = useTransform(smoothMorph, [0.8, 1], [20, 0])
 
   return (
     <div ref={trackRef} className="relative w-full h-[300vh]">
-      <div
-        ref={stickyRef}
-        className="sticky top-0 w-full h-screen bg-transparent overflow-hidden"
-      >
-        {/* Container */}
-        <div className="flex h-full w-full flex-col items-center justify-center perspective-1000">
-          {/* Intro Text (Fades out) */}
-          <div className="absolute z-0 flex flex-col items-center justify-center text-center pointer-events-none top-1/2 -translate-y-1/2">
+      <div ref={stickyRef} className="sticky top-0 h-screen w-full overflow-hidden">
+        <div className="relative h-full w-full flex items-center justify-center">
+
+          {/* Intro Text */}
+          <div className="absolute z-0 text-center pointer-events-none">
             <motion.h1
               initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
               animate={
                 introPhase === "circle" && morphValue < 0.5
                   ? { opacity: 1 - morphValue * 2, y: 0, filter: "blur(0px)" }
-                  : { opacity: 0, filter: "blur(10px)" }
+                  : { opacity: 0 }
               }
-              transition={{ duration: 1 }}
-              className="text-2xl font-medium tracking-tight text-white md:text-4xl"
+              className="text-2xl md:text-4xl font-medium text-white"
             >
-              The future is built on AI.
+              Learn skills. Build competence. Advance with clarity.
             </motion.h1>
             <motion.p
-              initial={{ opacity: 0 }}
               animate={
                 introPhase === "circle" && morphValue < 0.5
                   ? { opacity: 0.5 - morphValue }
                   : { opacity: 0 }
               }
-              transition={{ duration: 1, delay: 0.2 }}
-              className="mt-4 text-xs font-bold tracking-[0.2em] text-gray-400"
+              className="mt-4 text-xs tracking-[0.2em] text-gray-400"
             >
-              SCROLL TO EXPLORE
+              SCROLL TO SEE HOW LEARNING WORKS
             </motion.p>
           </div>
 
-          {/* Arc Active Content (Fades in) */}
+          {/* Active Content */}
           <motion.div
             style={{ opacity: contentOpacity, y: contentY }}
-            className="absolute top-[10%] z-10 flex flex-col items-center justify-center text-center pointer-events-none px-4"
+            className="absolute top-[10%] z-10 text-center px-4 pointer-events-none"
           >
-            <h2 className="text-3xl md:text-5xl font-semibold text-white tracking-tight mb-4">
-              Explore Our Vision
+            <h2 className="text-3xl md:text-5xl font-semibold text-white mb-4">
+              A Learning System Built for Outcomes
             </h2>
-            <p className="text-sm md:text-base text-gray-300 max-w-lg leading-relaxed">
-              Discover a world where technology meets creativity.{" "}
-              <br className="hidden md:block" />
-              Scroll through our curated collection of innovations designed to
-              shape the future.
+            <p className="max-w-lg mx-auto text-gray-300 text-sm md:text-base">
+              Structured programs, real projects, and measurable progress.
+              Designed for students, professionals, and organizations that value results.
             </p>
           </motion.div>
 
-          {/* Main Container */}
-          <div className="relative flex items-center justify-center w-full h-full">
-            {IMAGES.slice(0, TOTAL_IMAGES).map((src, i) => {
+          {/* Cards */}
+          <div className="relative w-full h-full flex items-center justify-center">
+            {IMAGES.map((src, i) => {
               let target = { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1 }
 
-              // 1. Intro Phases (Scatter -> Line)
               if (introPhase === "scatter") {
                 target = scatterPositions[i]
               } else if (introPhase === "line") {
-                const lineSpacing = 70 // Adjusted for smaller images (60px width + 10px gap)
-                const lineTotalWidth = TOTAL_IMAGES * lineSpacing
-                const lineX = i * lineSpacing - lineTotalWidth / 2
-                target = { x: lineX, y: 0, rotation: 0, scale: 1, opacity: 1 }
+                const spacing = 170
+                const totalWidth = TOTAL_IMAGES * spacing
+                target = {
+                  x: i * spacing - totalWidth / 2,
+                  y: 0,
+                  rotation: 0,
+                  scale: 1,
+                  opacity: 1,
+                }
               } else {
-                // 2. Circle Phase & Morph Logic
+                const minDim = Math.min(containerSize.width, containerSize.height)
+                const circleRadius = Math.min(minDim * 0.42, 480)
 
-                // Responsive Calculations
-                const isMobile = containerSize.width < 768
-                const minDimension = Math.min(
-                  containerSize.width,
-                  containerSize.height
-                )
+                const angle = (i / TOTAL_IMAGES) * 360
+                const rad = (angle * Math.PI) / 180
 
-                // A. Calculate Circle Position
-                const circleRadius = Math.min(minDimension * 0.35, 350)
-
-                const circleAngle = (i / TOTAL_IMAGES) * 360
-                const circleRad = (circleAngle * Math.PI) / 180
-                const circlePos = {
-                  x: Math.cos(circleRad) * circleRadius,
-                  y: Math.sin(circleRad) * circleRadius,
-                  rotation: circleAngle + 90,
+                const circle = {
+                  x: Math.cos(rad) * circleRadius,
+                  y: Math.sin(rad) * circleRadius,
+                  rotation: angle + 90,
                 }
 
-                // B. Calculate Bottom Arc Position
-                // "Rainbow" Arch: Convex up. Center is highest point.
+                const spread = containerSize.width < 768 ? 150 : 200
+                const start = -90 - spread / 2
+                const step = spread / (TOTAL_IMAGES - 1)
 
-                // Radius:
-                const baseRadius = Math.min(
-                  containerSize.width,
-                  containerSize.height * 1.5
-                )
-                const arcRadius = baseRadius * (isMobile ? 1.4 : 1.1)
+                const scrollProgress = Math.min(Math.max(rotateValue / 360, 0), 1)
+                const bounded = -scrollProgress * spread * 0.8
+                const arcAngle = start + i * step + bounded
+                const arcRad = (arcAngle * Math.PI) / 180
 
-                // Position:
-                const arcApexY = containerSize.height * (isMobile ? 0.35 : 0.25)
-                const arcCenterY = arcApexY + arcRadius
+                const arcRadius = minDim * 1.2
+                const arcCenterY = containerSize.height * 0.3 + arcRadius
 
-                // Spread angle:
-                const spreadAngle = isMobile ? 100 : 130
-                const startAngle = -90 - spreadAngle / 2
-                const step = spreadAngle / (TOTAL_IMAGES - 1)
-
-                // Apply Scroll Rotation (Shuffle) with Bounds
-                // We want to clamp rotation so images don't disappear.
-                // Map scroll range [600, 3000] to a limited rotation range.
-                // Range: [-spreadAngle/2, spreadAngle/2] keeps them roughly in view.
-                // We map 0 -> 1 (progress of scroll loop) to this range.
-
-                // Note: rotateValue comes from smoothScrollRotate which maps [600, 3000] -> [0, 360]
-                // We need to adjust that mapping in the hook above, OR adjust it here.
-                // Better to adjust it here relative to the spread.
-
-                // Let's interpret rotateValue (0 to 360) as a progress 0 to 1
-                const scrollProgress = Math.min(
-                  Math.max(rotateValue / 360, 0),
-                  1
-                )
-
-                // Calculate bounded rotation:
-                // Move from 0 (centered) to -spreadAngle (all the way left) or similar.
-                // Let's allow scrolling through the list.
-                // Total sweep needed to see all items if we start at one end?
-                // If we start centered, we can go +/- spreadAngle/2.
-
-                // User wants to "stop on the last image".
-                // Let's map scroll to: 0 -> -spreadAngle (shifts items left)
-                const maxRotation = spreadAngle * 0.8 // Don't go all the way, keep last item visible
-                const boundedRotation = -scrollProgress * maxRotation
-
-                const currentArcAngle = startAngle + i * step + boundedRotation
-                const arcRad = (currentArcAngle * Math.PI) / 180
-
-                const arcPos = {
+                const arc = {
                   x: Math.cos(arcRad) * arcRadius + parallaxValue,
                   y: Math.sin(arcRad) * arcRadius + arcCenterY,
-                  rotation: currentArcAngle + 90,
-                  scale: isMobile ? 1.4 : 1.8, // Increased scale for active state
+                  rotation: arcAngle + 90,
+                  scale: 1.5,
                 }
 
-                // C. Interpolate (Morph)
                 target = {
-                  x: lerp(circlePos.x, arcPos.x, morphValue),
-                  y: lerp(circlePos.y, arcPos.y, morphValue),
-                  rotation: lerp(
-                    circlePos.rotation,
-                    arcPos.rotation,
-                    morphValue
-                  ),
-                  scale: lerp(1, arcPos.scale, morphValue),
+                  x: lerp(circle.x, arc.x, morphValue),
+                  y: lerp(circle.y, arc.y, morphValue),
+                  rotation: lerp(circle.rotation, arc.rotation, morphValue),
+                  scale: lerp(1, arc.scale, morphValue),
                   opacity: 1,
                 }
               }
@@ -407,12 +334,49 @@ export default function IntroAnimation() {
                   src={src}
                   index={i}
                   total={TOTAL_IMAGES}
-                  phase={introPhase} // Pass intro phase for initial animations
+                  phase={introPhase}
                   target={target}
+                  onClick={setActiveImage}
                 />
               )
             })}
           </div>
+
+          {/* Modal Overlay */}
+          <AnimatePresence>
+            {activeImage && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+                onClick={() => setActiveImage(null)}
+              >
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                  className="relative max-w-4xl max-h-[90vh] w-full overflow-hidden rounded-2xl shadow-2xl bg-gray-900"
+                  onClick={(e) => e.stopPropagation()} // Prevent close when clicking image
+                >
+                    <img 
+                        src={activeImage} 
+                        alt="Expanded view" 
+                        className="w-full h-full object-contain max-h-[85vh]" 
+                    />
+                    <button 
+                        onClick={() => setActiveImage(null)}
+                        className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full backdrop-blur-md transition-colors"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
         </div>
       </div>
     </div>

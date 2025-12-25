@@ -122,12 +122,13 @@ export default async function LandingPage(props: {
         <main className="flex-1 w-full">
           {/* Hero Section - FloatingIconsHero - Full Width */}
           <FloatingIconsHero
-            title="A World of Innovation"
-            subtitle="Explore a universe of possibilities with our platform, connecting you to the tools and technologies that shape the future."
-            ctaText="Join the Revolution"
-            ctaHref={ensureLocalizedPathname("/auth/register", params.lang)}
-            icons={defaultHeroIcons}
-          />
+  title="Build Skills That Actually Matter"
+  subtitle="A modern learning platform for students, professionals, and organizations to acquire real-world skills, collaborate, and grow through structured, outcome-driven education."
+  ctaText="Start Learning Now"
+  ctaHref={ensureLocalizedPathname("/auth/register", params.lang)}
+  icons={defaultHeroIcons}
+/>
+
            
           {/* Scroll Morph Hero Section */}
           <section className="w-full relative z-20">

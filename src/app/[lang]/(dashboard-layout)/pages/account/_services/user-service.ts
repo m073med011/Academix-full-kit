@@ -81,18 +81,7 @@ export const userService = {
     return []
   },
 
-  /**
-   * Switch active organization context
-   */
-  async switchOrganizationContext(organizationId: string): Promise<void> {
-    const response = await apiClient.post<void>("/users/switch-context", {
-      organizationId,
-    })
 
-    if (!response.success) {
-      throw new ApiClientError("Failed to switch organization context", 400)
-    }
-  },
 
   /**
    * Upload profile image

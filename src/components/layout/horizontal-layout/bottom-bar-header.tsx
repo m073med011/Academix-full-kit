@@ -27,8 +27,8 @@ export function BottomBarHeader({
   const locale = params.lang as LocaleType
 
   return (
-    <div className="container flex h-14 justify-between items-center gap-4">
-      <div className="flex items-center gap-4">
+    <div className="container flex h-14 items-center gap-4">
+      <div className="flex items-center gap-4 flex-1">
         <ToggleMobileSidebar />
         <div className="flex items-center gap-4">
           <Link
@@ -47,12 +47,12 @@ export function BottomBarHeader({
           <AppBreadcrumb dictionary={dictionary} />
         </div>
       </div>
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2 justify-end">
         <CartIcon dictionary={dictionary} />
         <NotificationDropdown dictionary={dictionary} />
-        <FullscreenToggle />
         <ModeDropdown dictionary={dictionary} />
         <LanguageDropdown dictionary={dictionary} />
+        <FullscreenToggle />
         <UserDropdown dictionary={dictionary} locale={locale} />
       </div>
     </div>

@@ -185,12 +185,12 @@ export default function RadialOrbitalTimeline({
 
   return (
     <div
-      className="w-full min-h-screen flex flex-col lg:flex-row items-center justify-center bg-transparent overflow-hidden border-t border-white/10"
+      className="w-full flex flex-col lg:flex-row items-center justify-center bg-transparent overflow-hidden"
       ref={containerRef}
       onClick={handleContainerClick}
     >
       {/* Left Col: Text Content */}
-      <div className="w-full lg:w-1/2 p-8 lg:pl-20 z-20 pointer-events-none flex flex-col justify-center min-h-[50vh] lg:min-h-screen">
+      <div className="w-full lg:w-1/2 p-8 lg:pl-20 z-20 pointer-events-none flex flex-col justify-center  ">
         <div className="pointer-events-auto w-full max-w-xl">
           <AnimatePresence mode="wait">
             {activeItem ? (

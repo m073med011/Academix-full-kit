@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState, forwardRef, useImperativeHandle } from "react"
 import { Check, Copy, Loader2, Upload, X } from "lucide-react"
 
 import type {
@@ -14,6 +14,7 @@ import type { DictionaryType } from "@/lib/get-dictionary"
 import type { FileType } from "@/types"
 
 import { useCloudinaryUpload } from "@/app/[lang]/(dashboard-layout)/pages/account/courses/_hooks/use-cloudinary-upload"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button, ButtonLoading } from "@/components/ui/button"
 import { FileDropzone } from "@/components/ui/file-dropzone"
 import { FileThumbnail } from "@/components/ui/file-thumbnail"
@@ -31,6 +32,7 @@ export interface CloudinaryUploaderProps {
   onUploadComplete?: (result: CloudinaryUploadResult) => void
   onUploadStart?: () => void
   onError?: (error: string) => void
+  onProcessChange?: (isProcessing: boolean) => void
   accept?: string
   maxSize?: number // in bytes
   className?: string
@@ -50,10 +52,15 @@ const getFileTypeOptions = (t: DictionaryType["cloudinary"]) => [
   { value: "raw" as ResourceType, label: t.document },
 ]
 
-export function CloudinaryUploader({
+export interface CloudinaryUploaderRef {
+  deleteFile: () => Promise<void>
+}
+
+export const CloudinaryUploader = forwardRef<CloudinaryUploaderRef, CloudinaryUploaderProps>(({
   onUploadComplete,
   onUploadStart,
   onError,
+  onProcessChange,
   accept,
   maxSize,
   className,
@@ -64,7 +71,7 @@ export function CloudinaryUploader({
   defaultResourceType = "auto",
   showUploadedUrl = false,
   dictionary,
-}: CloudinaryUploaderProps) {
+}, ref) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [resourceType, setResourceType] =
@@ -82,6 +89,22 @@ export function CloudinaryUploader({
     result,
     reset,
   } = useCloudinaryUpload()
+
+  useImperativeHandle(ref, () => ({
+    deleteFile: async () => {
+      try {
+        await deleteUpload()
+        handleReset()
+      } catch (error) {
+        console.error("Failed to delete file via ref:", error)
+        throw error
+      }
+    }
+  }))
+
+  useEffect(() => {
+    onProcessChange?.(isUploading || isDeleting)
+  }, [isUploading, isDeleting, onProcessChange])
 
   // Check if we should show the dropzone UI (for images)
   const showDropzone = resourceType === "image"
@@ -142,10 +165,18 @@ export function CloudinaryUploader({
       ]
     : []
 
-  const handleDropzoneChange = (files: FileType[]) => {
+  const handleDropzoneChange = async (files: FileType[]) => {
     if (files.length > 0 && files[0].file) {
       processFile(files[0].file)
     } else {
+      // If file is removed, check if we need to delete from Cloudinary
+      if (result?.secureUrl) {
+        try {
+          await deleteUpload()
+        } catch (error) {
+          console.error("Failed to delete file:", error)
+        }
+      }
       handleReset()
     }
   }
@@ -213,6 +244,76 @@ export function CloudinaryUploader({
 
   return (
     <div className={cn("space-y-4", className)}>
+      {/* Error State */}
+      {error && (
+        <Alert variant="destructive" className="bg-destructive/10 border-destructive/20 text-destructive [&>svg]:text-destructive">
+          <X className="h-4 w-4" />
+          <AlertTitle>{t.uploadFailed || "Error"}</AlertTitle>
+          <AlertDescription className="mt-2 flex items-center justify-between gap-2">
+            <span>{error}</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleReset}
+              className="-my-2 h-8 px-3 hover:bg-destructive/20 hover:text-destructive"
+            >
+              {t.tryAgain}
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Success State */}
+      {result && (
+        <Alert className="border-emerald-500/50 text-emerald-600 dark:text-emerald-400 [&>svg]:text-emerald-600 dark:[&>svg]:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/20">
+          <Check className="h-4 w-4" />
+          <AlertTitle>{t.uploadSuccessful}</AlertTitle>
+          <AlertDescription className="mt-2 space-y-3">
+            {showUploadedUrl && (
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-foreground/70">{t.uploadedUrl}</label>
+                <div className="flex gap-2">
+                  <Input
+                    value={result.secureUrl}
+                    readOnly
+                    className="flex-1 text-xs h-8"
+                  />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={handleCopyUrl}
+                    title={copied ? t.copied : t.copyUrl}
+                  >
+                    {copied ? (
+                      <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleUploadAnother}
+              disabled={isDeleting}
+              className="w-full h-8 hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400 border-emerald-500/20"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin me-2" />
+                  {t.removeOld}
+                </>
+              ) : (
+                t.uploadAnother
+              )}
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Type Selector */}
       {showTypeSelector && (
             <div className="space-y-2">
@@ -342,73 +443,10 @@ export function CloudinaryUploader({
         </div>
       )}
 
-      {/* Error State */}
-      {error && (
-        <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive text-sm">
-          <X className="h-4 w-4 shrink-0" />
-          <span>{error}</span>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleReset}
-            className="ms-auto"
-          >
-            {t.tryAgain}
-          </Button>
-        </div>
-      )}
-
-      {/* Success State */}
-      {result && (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 p-3 rounded-md bg-primary/10 text-primary text-sm">
-            <Check className="h-4 w-4 shrink-0" />
-            <span>{t.uploadSuccessful}</span>
-          </div>
-          {showUploadedUrl && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">{t.uploadedUrl}</label>
-              <div className="flex gap-2">
-                <Input
-                  value={result.secureUrl}
-                  readOnly
-                  className="flex-1 text-xs"
-                />
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleCopyUrl}
-                  title={copied ? t.copied : t.copyUrl}
-                >
-                  {copied ? (
-                    <Check className="h-4 w-4 text-primary" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            </div>
-          )}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleUploadAnother}
-            disabled={isDeleting}
-            className="w-full"
-          >
-            {isDeleting ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin me-2" />
-                {t.removeOld}
-              </>
-            ) : (
-              t.uploadAnother
-            )}
-          </Button>
-        </div>
-      )}
     </div>
   )
-}
+})
+
+CloudinaryUploader.displayName = "CloudinaryUploader"
 
 

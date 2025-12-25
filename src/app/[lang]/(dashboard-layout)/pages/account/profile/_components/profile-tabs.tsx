@@ -63,7 +63,7 @@ export function ProfileTabs({ dictionary, locale }: ProfileTabsProps) {
 
   return (
     <section className="py-2">
-      <CardWithUnderlineTabs
+      <CardWithUnderlineTabs 
         tabs={tabs}
         value={activeTab}
         onValueChange={handleTabChange}

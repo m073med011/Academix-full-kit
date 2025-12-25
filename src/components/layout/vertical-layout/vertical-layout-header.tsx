@@ -26,18 +26,18 @@ export function VerticalLayoutHeader({
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background border-b border-sidebar-border">
-      <div className="container flex h-14 justify-between items-center gap-4">
-        <ToggleMobileSidebar />
-        <div className="grow flex justify-end gap-2">
-          <div className="flex items-center gap-2 me-auto">
-            <SidebarTrigger className="hidden lg:flex" />
-            <AppBreadcrumb dictionary={dictionary} />
-          </div>
+      <div className="container flex h-14 items-center gap-4">
+        <div className="flex items-center gap-2 flex-1">
+          <ToggleMobileSidebar />
+          <SidebarTrigger className="hidden lg:flex" />
+          <AppBreadcrumb dictionary={dictionary} />
+        </div>
+        <div className="flex items-center gap-2 justify-end">
           <CartIcon dictionary={dictionary} />
           <NotificationDropdown dictionary={dictionary} />
-          <FullscreenToggle />
           <ModeDropdown dictionary={dictionary} />
           <LanguageDropdown dictionary={dictionary} />
+          <FullscreenToggle />
           <UserDropdown dictionary={dictionary} locale={locale} />
         </div>
       </div>
