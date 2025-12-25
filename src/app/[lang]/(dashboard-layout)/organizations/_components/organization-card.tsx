@@ -2,14 +2,16 @@
 
 import Link from "next/link"
 import { format } from "date-fns"
-import { MoreVertical } from "lucide-react"
+import { MoreVertical, User as UserIcon } from "lucide-react"
 
 import { DefaultImage } from "@/components/ui/defult-Image"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 import {
   Organization,
   OrganizationMembership,
   OrganizationRole,
+  User,
 } from "@/types/api"
 
 import { Badge } from "@/components/ui/badge"
@@ -38,6 +40,7 @@ interface OrganizationCardProps {
     created: string
     manage: string
     viewDashboard: string
+    owner: string
     actions: {
       edit: string
       manageMembers: string
@@ -53,6 +56,7 @@ export function OrganizationCard({
 }: OrganizationCardProps) {
   const org = membership.organizationId as Organization
   const role = membership.roleId as OrganizationRole
+  const owner = org.owner as User
 
   return (
     <Card className="flex flex-col overflow-hidden transition-all hover:shadow-md">
@@ -122,20 +126,41 @@ export function OrganizationCard({
           )}
         </div>
 
-        <div className="space-y-1 text-xs text-muted-foreground">
-          <div className="flex justify-between">
-            <span>{dictionary.joined}:</span>
-            <span className="font-medium text-foreground">
-              {membership.joinedAt
-                ? format(new Date(membership.joinedAt), "PP")
-                : "N/A"}
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span>{dictionary.created}:</span>
-            <span className="font-medium text-foreground">
-              {org.createdAt ? format(new Date(org.createdAt), "PP") : "N/A"}
-            </span>
+        <div className="space-y-2">
+          {/* Owner Information */}
+          {owner && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="font-medium">{dictionary.owner}:</span>
+              <div className="flex items-center gap-1.5">
+                <Avatar className="h-5 w-5">
+                  <AvatarImage src={owner.imageProfileUrl} alt={owner.name} />
+                  <AvatarFallback className="text-[10px]">
+                    {owner.name.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="font-medium text-foreground truncate max-w-[120px]">
+                  {owner.name}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Date Information */}
+          <div className="space-y-1 text-xs text-muted-foreground">
+            <div className="flex justify-between">
+              <span>{dictionary.joined}:</span>
+              <span className="font-medium text-foreground">
+                {membership.joinedAt
+                  ? format(new Date(membership.joinedAt), "PP")
+                  : "N/A"}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span>{dictionary.created}:</span>
+              <span className="font-medium text-foreground">
+                {org.createdAt ? format(new Date(org.createdAt), "PP") : "N/A"}
+              </span>
+            </div>
           </div>
         </div>
       </CardContent>

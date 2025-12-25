@@ -248,7 +248,7 @@ export const CloudinaryUploader = forwardRef<CloudinaryUploaderRef, CloudinaryUp
       {error && (
         <Alert variant="destructive" className="bg-destructive/10 border-destructive/20 text-destructive [&>svg]:text-destructive">
           <X className="h-4 w-4" />
-          <AlertTitle>{t.uploadFailed || "Error"}</AlertTitle>
+          <AlertTitle>{t.error.uploadFailed || "Error"}</AlertTitle>
           <AlertDescription className="mt-2 flex items-center justify-between gap-2">
             <span>{error}</span>
             <Button

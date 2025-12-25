@@ -771,6 +771,7 @@
       "terms": "Terms",
       "joined": "Joined",
       "created": "Created",
+      "owner": "Owner",
       "manage": "Manage",
       "viewDashboard": "View Dashboard",
       "actions": {

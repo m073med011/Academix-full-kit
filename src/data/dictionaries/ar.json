@@ -769,6 +769,7 @@
       "terms": "الفصول الدراسية",
       "joined": "انضم",
       "created": "تاريخ الإنشاء",
+      "owner": "المالك",
       "manage": "إدارة",
       "viewDashboard": "عرض لوحة التحكم",
       "actions": {

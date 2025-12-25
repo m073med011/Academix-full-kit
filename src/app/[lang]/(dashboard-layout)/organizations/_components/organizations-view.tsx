@@ -29,6 +29,7 @@ export default function OrganizationsView({
     try {
       setLoading(true)
       const response = await organizationService.getUserOrganizations()
+      
       if (response.success && Array.isArray(response.data)) {
         setMemberships(response.data)
       }

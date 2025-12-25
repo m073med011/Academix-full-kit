@@ -5,16 +5,30 @@ import type { BaseEntity, MembershipStatus, User } from "@/types/api"
 // ============================================
 
 export interface OrganizationSettings {
+  _id?: string
   allowMultipleLevels?: boolean
   requireTermAssignment?: boolean
   allowStudentSelfEnroll?: boolean
+}
+
+export interface OrganizationPermissions {
+  canManageOrganization: boolean
+  canManageLevels: boolean
+  canManageTerms: boolean
+  canManageCourses: boolean
+  canManageStudents: boolean
+  canManageRoles: boolean
+  canRecordAttendance: boolean
+  canViewReports: boolean
 }
 
 export interface Organization extends BaseEntity {
   name: string
   description?: string
   orgcover?: string
-  creatorId: string | User
+  owner: string | User
+  creatorId?: string | User
+  deletedAt?: string | null
   settings?: OrganizationSettings
   levels?: string[]
   terms?: string[]
@@ -23,17 +37,20 @@ export interface Organization extends BaseEntity {
 export interface OrganizationRole extends BaseEntity {
   organizationId: string
   name: string
-  permissions: string[]
+  permissions: OrganizationPermissions
   description?: string
+  isSystemRole?: boolean
 }
 
 export interface OrganizationMembership extends BaseEntity {
   organizationId: string | Organization
   userId: string | User
   roleId: string | OrganizationRole
-  joinedDate: string
+  levelId?: string
+  termId?: string
+  joinedDate?: string
   joinedAt?: string
-  status: MembershipStatus
+  status: MembershipStatus | Lowercase<MembershipStatus>
 }
 
 export interface CreateOrganizationRequest {
