@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useCartStore } from "@/stores/cart-store"
 import { usePurchasedCoursesStore } from "@/stores/purchased-courses-store"
+import { useSession } from "next-auth/react"
 import {
   CheckCircle,
   Download,
@@ -50,6 +51,7 @@ export function CoursePurchaseCard({
   const addToCart = useCartStore((state) => state.addToCart)
   const cart = useCartStore((state) => state.cart)
   const purchasedCourses = usePurchasedCoursesStore((state) => state.courses)
+  const { data: session } = useSession()
 
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -188,7 +190,17 @@ export function CoursePurchaseCard({
 
           {/* Action Buttons */}
           <div className="space-y-3">
-            {courseAlreadyPurchased ? (
+            {(session?.user as any)?.id ===
+            (typeof course.instructor === "string"
+              ? course.instructor
+              : course.instructor?._id) ? (
+              <div className="flex items-center justify-center gap-2 p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
+                <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                  This is your course
+                </span>
+              </div>
+            ) : courseAlreadyPurchased ? (
               <>
                 <div className="flex items-center justify-center gap-2 p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
                   <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />

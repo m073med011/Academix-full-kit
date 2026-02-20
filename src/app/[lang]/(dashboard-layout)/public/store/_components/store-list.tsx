@@ -3,20 +3,21 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useParams } from "next/navigation"
+import { useSession } from "next-auth/react"
 import { AlertCircle, HelpCircle, Loader2, Star } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType } from "@/types"
 import type { Course, CoursePagination, User } from "@/types/api"
 
-import { cn } from "@/lib/utils"
 import { typography } from "@/lib/typography"
+import { cn } from "@/lib/utils"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { DefaultImage } from "@/components/ui/defult-Image"
 import { Card, CardContent } from "@/components/ui/card"
+import { DefaultImage } from "@/components/ui/defult-Image"
 import { Label } from "@/components/ui/label"
 import {
   Pagination,
@@ -60,6 +61,7 @@ export function StoreList({
   const params = useParams()
   const locale = params.lang as LocaleType
   const t = dictionary.storePage
+  const { data: session } = useSession()
 
   // Helper to get instructor name
   const getInstructorName = (
@@ -261,7 +263,12 @@ export function StoreList({
                         )}
                       </p>
                       <div onClick={(e) => e.preventDefault()}>
-                        <AddToCartButton courseId={course._id} size="sm" />
+                        {(session?.user as any)?.id !==
+                          (typeof course.instructor === "string"
+                            ? course.instructor
+                            : course.instructor?._id) && (
+                          <AddToCartButton courseId={course._id} size="sm" />
+                        )}
                       </div>
                     </div>
                   </CardContent>

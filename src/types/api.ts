@@ -317,6 +317,13 @@ export interface UpdateCourseRequest extends Partial<CreateCourseRequest> {}
 // Material Types
 // ============================================
 
+
+export interface QuizQuestion {
+  text: string
+  options: string[]
+  correctAnswer: string
+}
+
 export interface Material extends BaseEntity {
   title: string
   description?: string
@@ -335,6 +342,9 @@ export interface Material extends BaseEntity {
   allowLate?: boolean
   openInNewTab?: boolean
   moduleId?: string
+  assignmentFileUrl?: string
+  quizQuestions?: QuizQuestion[]
+  thumbnailUrl?: string
 }
 
 export interface CreateMaterialRequest {
@@ -355,6 +365,9 @@ export interface CreateMaterialRequest {
   allowLate?: boolean
   openInNewTab?: boolean
   moduleId?: string
+  assignmentFileUrl?: string
+  quizQuestions?: QuizQuestion[]
+  thumbnailUrl?: string
 }
 
 // ============================================

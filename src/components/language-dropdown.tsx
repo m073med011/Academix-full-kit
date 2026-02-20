@@ -4,6 +4,12 @@ import { useCallback } from "react"
 import Link from "next/link"
 import { useParams, usePathname } from "next/navigation"
 import { Earth } from "lucide-react"
+import Image from "next/image"
+
+const flags = {
+  ar: "/images/icons/Palestine-01-1.svg",
+  en: "/images/icons/uk.svg",
+}
 
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType } from "@/types"
@@ -47,7 +53,13 @@ export function LanguageDropdown({
     <DropdownMenu dir={direction}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" aria-label="Language">
-          <Earth className="size-4" />
+          <Image
+            src={flags[locale]}
+            alt={locale}
+            width={20}
+            height={20}
+            className="rounded-sm object-cover"
+          />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
@@ -69,8 +81,18 @@ export function LanguageDropdown({
                 href={relocalizePathname(pathname, locale)}
                 onClick={() => setLocale(locale)}
               >
-                <DropdownMenuRadioItem value={locale}>
-                  {localizedLocaleName}
+                <DropdownMenuRadioItem
+                  value={locale}
+                  className="flex items-center gap-2"
+                >
+                  <Image
+                    src={flags[locale]}
+                    alt={localizedLocaleName}
+                    width={20}
+                    height={20}
+                    className="rounded-sm object-cover"
+                  />
+                  <span>{localizedLocaleName}</span>
                 </DropdownMenuRadioItem>
               </Link>
             )

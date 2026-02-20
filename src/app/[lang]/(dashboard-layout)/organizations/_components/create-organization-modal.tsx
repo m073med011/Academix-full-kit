@@ -5,12 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import * as z from "zod"
-import { Loader2 } from "lucide-react"
+import { Loader2, Plus } from "lucide-react"
 
 import type { CloudinaryUploadResult } from "@/app/[lang]/(dashboard-layout)/pages/account/courses/_services/cloudinary-service"
+import type { CloudinaryUploaderRef } from "@/components/ui/cloudinary-uploader"
 
 import { Button, ButtonLoading } from "@/components/ui/button"
-import { CloudinaryUploader, type CloudinaryUploaderRef } from "@/components/ui/cloudinary-uploader"
+import { CloudinaryUploader } from "@/components/ui/cloudinary-uploader"
 import {
   Dialog,
   DialogContent,
@@ -19,6 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Form,
   FormControl,
@@ -90,7 +92,25 @@ export function CreateOrganizationModal({
   const onSubmit = async (data: CreateOrganizationFormData) => {
     try {
       setIsSubmitting(true)
-      const response = await organizationService.createOrganization(data)
+
+      // Auto-upload image if selected but not uploaded
+      let uploadedUrl = data.orgcover
+      if (uploaderRef.current) {
+        try {
+          const uploadResult = await uploaderRef.current.upload()
+          if (uploadResult?.secureUrl) {
+            uploadedUrl = uploadResult.secureUrl
+          }
+        } catch (uploadError: any) {
+          // Ignore "No file selected" error, but rethrow real errors
+          if (uploadError.message !== "No file selected") {
+            throw uploadError
+          }
+        }
+      }
+
+      const submissionData = { ...data, orgcover: uploadedUrl }
+      const response = await organizationService.createOrganization(submissionData)
 
       if (response.success) {
         toast.success(createModal.success, {
@@ -118,22 +138,23 @@ export function CreateOrganizationModal({
       const currentOrgCover = form.getValues("orgcover")
       // If there's an uploaded image but user is closing without creating, delete it
       if (currentOrgCover) {
-         uploaderRef.current?.deleteFile()
-            .then(() => {
-               form.setValue("orgcover", "")
-               onOpenChange(false)
-            })
-            .catch((err) => {
-               console.error("Failed to cleanup image on close:", err)
-               // Close anyway? or keep open? User wants "if remove suceded close"
-               // If it fails, maybe we should force close or notify.
-               // Let's assume on failure we just force close to avoid locking user.
-               onOpenChange(false)
-            })
-         return
+        uploaderRef.current
+          ?.deleteFile()
+          .then(() => {
+            form.setValue("orgcover", "")
+            onOpenChange(false)
+          })
+          .catch((err) => {
+            console.error("Failed to cleanup image on close:", err)
+            // Close anyway? or keep open? User wants "if remove suceded close"
+            // If it fails, maybe we should force close or notify.
+            // Let's assume on failure we just force close to avoid locking user.
+            onOpenChange(false)
+          })
+        return
       }
     }
-    
+
     onOpenChange(isOpen)
   }
 
@@ -141,7 +162,7 @@ export function CreateOrganizationModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent 
+      <DialogContent
         className="sm:max-w-[600px]"
         onInteractOutside={(e) => {
           // If processing, prevent interaction outside
@@ -150,76 +171,84 @@ export function CreateOrganizationModal({
           }
         }}
         onEscapeKeyDown={(e) => {
-           if (isImageProcessing) {
-             e.preventDefault()
-           }
+          if (isImageProcessing) {
+            e.preventDefault()
+          }
         }}
       >
-        <DialogHeader>
+        <DialogHeader className="px-4">
           <DialogTitle>{createModal.title}</DialogTitle>
           <DialogDescription>{createModal.description}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Organization Name */}
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col max-h-[70vh]"
+          >
+            {/* Scrollable Content Area */}
+            <ScrollArea className="px-4">
+              <div className="space-y-6">
+                {/* Organization Name */}
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{createModal.name}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={createModal.namePlaceholder}
+                          {...field}
+                          disabled={isSubmitting}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Organization Description */}
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{createModal.description}</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder={createModal.descriptionPlaceholder}
+                          className="resize-none"
+                          rows={4}
+                          {...field}
+                          disabled={isSubmitting}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Organization Cover Image */}
                 <FormItem>
-                  <FormLabel>{createModal.name}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={createModal.namePlaceholder}
-                      {...field}
-                      disabled={isSubmitting}
-                    />
-                  </FormControl>
-                  <FormMessage />
+                  <FormLabel>{createModal.orgCover}</FormLabel>
+                  <CloudinaryUploader
+                    onUploadComplete={handleUploadComplete}
+                    accept="image/*"
+                    showTypeSelector={false}
+                    defaultResourceType="image"
+                    showUploadedUrl={false}
+                    dictionary={fullDictionary}
+                    placeholder={createModal.noImageChosen}
+                    buttonLabel={createModal.chooseImage}
+                    onProcessChange={setIsImageProcessing}
+                    ref={uploaderRef}
+                  />
                 </FormItem>
-              )}
-            />
+              </div>
+            </ScrollArea>
 
-            {/* Organization Description */}
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{createModal.description}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder={createModal.descriptionPlaceholder}
-                      className="resize-none"
-                      rows={4}
-                      {...field}
-                      disabled={isSubmitting}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Organization Cover Image */}
-            <FormItem>
-              <FormLabel>{createModal.orgCover}</FormLabel>
-              <CloudinaryUploader
-                onUploadComplete={handleUploadComplete}
-                accept="image/*"
-                showTypeSelector={false}
-                defaultResourceType="image"
-                showUploadedUrl={false}
-                dictionary={fullDictionary}
-                placeholder={createModal.noImageChosen}
-                buttonLabel={createModal.chooseImage}
-                onProcessChange={setIsImageProcessing}
-                ref={uploaderRef}
-              />
-            </FormItem>
-
-            <DialogFooter>
+            <DialogFooter className="mt-6">
               <Button
                 type="button"
                 variant="outline"
@@ -232,7 +261,7 @@ export function CreateOrganizationModal({
                 type="submit"
                 isLoading={isSubmitting}
                 disabled={isBusy}
-                icon={Loader2}
+                icon={Plus}
               >
                 {isSubmitting ? createModal.creating : createModal.create}
               </ButtonLoading>

@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-
-
+import { courseService } from "@/app/[lang]/(dashboard-layout)/pages/account/courses/_services/course-service"
+import { toast } from "sonner"
 import {
   BookOpen,
   CheckCircle,
@@ -15,16 +15,13 @@ import {
 
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType } from "@/types"
+import type { CreateCourseRequest } from "@/types/api"
 import type { CourseFormData } from "../types"
 import { initialCourseFormData } from "../types"
 
-import { Button } from "@/components/ui/button"
 import { ensureLocalizedPathname } from "@/lib/i18n"
 
-import { toast } from "sonner"
-
-import { courseService } from "@/app/[lang]/(dashboard-layout)/pages/account/courses/_services/course-service"
-import type { CreateCourseRequest } from "@/types/api"
+import { Button } from "@/components/ui/button"
 import {
   Steps,
   StepsConnector,
@@ -94,7 +91,7 @@ export function WizardContainer({
 
   const handlePublish = async () => {
     if (isPublishingRef.current) return
-    
+
     if (!isStepValid(5)) {
       toast.error("Please complete all required fields before publishing")
       return
@@ -104,7 +101,6 @@ export function WizardContainer({
     setIsPublishing(true)
 
     try {
-      
       // 1. Create the course with basic info
       const createCourseData: CreateCourseRequest = {
         title: formData.title,
@@ -124,7 +120,7 @@ export function WizardContainer({
         isOrgPrivate: formData.isPrivate,
         modules: [], // Start with empty modules
       }
-      
+
       const createdCourse = await courseService.createCourse(createCourseData)
       const courseId = createdCourse._id
 
@@ -137,14 +133,30 @@ export function WizardContainer({
               .filter((content) => content.title && content.title.trim() !== "")
               .map(async (content, index) => {
                 // Map frontend content types to backend MaterialType
-                let type: "video" | "text" | "quiz" | "assignment" | "link" | "pdf" = "text"
-                
+                let type:
+                  | "video"
+                  | "text"
+                  | "quiz"
+                  | "assignment"
+                  | "link"
+                  | "pdf" = "text"
+
                 switch (content.type) {
-                  case "video": type = "video"; break
-                  case "article": type = "text"; break
-                  case "quiz": type = "quiz"; break
-                  case "assignment": type = "assignment"; break
-                  case "link": type = "link"; break
+                  case "video":
+                    type = "video"
+                    break
+                  case "text":
+                    type = "text"
+                    break
+                  case "quiz":
+                    type = "quiz"
+                    break
+                  case "assignment":
+                    type = "assignment"
+                    break
+                  case "link":
+                    type = "link"
+                    break
                 }
 
                 // Create material
@@ -165,13 +177,18 @@ export function WizardContainer({
                   submissionTypes: content.submissionTypes,
                   allowLate: content.allowLate,
                   openInNewTab: content.openInNewTab,
+                  // New fields added for persistence
+                  thumbnailUrl: content.thumbnailUrl,
+                  quizQuestions: content.quizQuestions,
+                  assignmentFileUrl: content.assignmentFileUrl,
                 }
 
-                const createdMaterial = await courseService.createMaterial(materialData)
-                
+                const createdMaterial =
+                  await courseService.createMaterial(materialData)
+
                 return {
                   materialId: createdMaterial._id,
-                  order: index
+                  order: index,
                 }
               })
 
@@ -179,7 +196,7 @@ export function WizardContainer({
 
             return {
               title: module.title,
-              items
+              items,
             }
           })
       )
@@ -187,16 +204,14 @@ export function WizardContainer({
       // 3. Update course with modules containing material references
       if (modulesWithMaterials.length > 0) {
         await courseService.updateCourse(courseId, {
-          modules: modulesWithMaterials
+          modules: modulesWithMaterials,
         })
       }
 
       toast.success("Course published successfully!")
-      
+
       // Redirect to public course page
-      router.push(
-        ensureLocalizedPathname(`/public/course/${courseId}`, locale)
-      )
+      router.push(ensureLocalizedPathname(`/public/course/${courseId}`, locale))
     } catch (error) {
       console.error("Failed to publish course:", error)
       toast.error("Failed to publish course. Please try again.")
@@ -235,37 +250,66 @@ export function WizardContainer({
       allowJump={true}
       className="gap-8"
     >
-      <StepsList>
-        <StepsItem
-          step={0}
-          label={tSteps.basicInfo}
-          icon={<FileText className="size-5" />}
-        />
-        <StepsConnector afterStep={0} />
-        <StepsItem
-          step={1}
-          label={tSteps.curriculum}
-          icon={<BookOpen className="size-5" />}
-        />
-        <StepsConnector afterStep={1} />
-        <StepsItem
-          step={2}
-          label={tSteps.pricing}
-          icon={<DollarSign className="size-5" />}
-        />
-        <StepsConnector afterStep={2} />
-        <StepsItem
-          step={3}
-          label={tSteps.media}
-          icon={<ImageIcon className="size-5" />}
-        />
-        <StepsConnector afterStep={3} />
-        <StepsItem
-          step={4}
-          label={tSteps.review}
-          icon={<CheckCircle className="size-5" />}
-        />
-      </StepsList>
+      {/* Steps header with navigation buttons on left and right */}
+      <div className="flex items-start gap-4 w-full">
+        {/* Left side - Back button */}
+        <div className="shrink-0 pt-3">
+          {currentStep > 1 ? (
+            <Button variant="outline" onClick={handleBack}>
+              {tActions.back}
+            </Button>
+          ) : (
+            <div className="w-[80px]" />
+          )}
+        </div>
+
+        {/* Center - Steps list */}
+        <StepsList className="flex-1">
+          <StepsItem
+            step={0}
+            label={tSteps.basicInfo}
+            icon={<FileText className="size-5" />}
+          />
+          <StepsConnector afterStep={0} />
+          <StepsItem
+            step={1}
+            label={tSteps.curriculum}
+            icon={<BookOpen className="size-5" />}
+          />
+          <StepsConnector afterStep={1} />
+          <StepsItem
+            step={2}
+            label={tSteps.pricing}
+            icon={<DollarSign className="size-5" />}
+          />
+          <StepsConnector afterStep={2} />
+          <StepsItem
+            step={3}
+            label={tSteps.media}
+            icon={<ImageIcon className="size-5" />}
+          />
+          <StepsConnector afterStep={3} />
+          <StepsItem
+            step={4}
+            label={tSteps.review}
+            icon={<CheckCircle className="size-5" />}
+          />
+        </StepsList>
+
+        {/* Right side - Next/Publish button */}
+        <div className="shrink-0 pt-3">
+          {currentStep < 5 ? (
+            <Button onClick={handleNext} disabled={!isStepValid(currentStep)}>
+              {tActions.next}
+            </Button>
+          ) : (
+            <Button onClick={handlePublish} disabled={isPublishing}>
+              {isPublishing && <Loader2 className="mr-2 size-4 animate-spin" />}
+              {t.review.publishCourse}
+            </Button>
+          )}
+        </div>
+      </div>
 
       <StepsContent step={0}>
         <BasicInfoStep
@@ -273,16 +317,6 @@ export function WizardContainer({
           formData={formData}
           onUpdate={updateFormData}
           onNext={handleNext}
-        />
-        <StepsNavigation
-          prevLabel={tActions.back}
-          nextLabel={tActions.next}
-          hidePrev
-          nextButton={
-            <Button onClick={handleNext} disabled={!isStepValid(1)}>
-              {tActions.next}
-            </Button>
-          }
         />
       </StepsContent>
 
@@ -294,20 +328,6 @@ export function WizardContainer({
           onNext={handleNext}
           onBack={handleBack}
         />
-        <StepsNavigation
-          prevLabel={tActions.back}
-          nextLabel={tActions.next}
-          prevButton={
-            <Button variant="outline" onClick={handleBack}>
-              {tActions.back}
-            </Button>
-          }
-          nextButton={
-            <Button onClick={handleNext} disabled={!isStepValid(2)}>
-              {tActions.next}
-            </Button>
-          }
-        />
       </StepsContent>
 
       <StepsContent step={2}>
@@ -317,20 +337,6 @@ export function WizardContainer({
           onUpdate={updateFormData}
           onNext={handleNext}
           onBack={handleBack}
-        />
-        <StepsNavigation
-          prevLabel={tActions.back}
-          nextLabel={tActions.next}
-          prevButton={
-            <Button variant="outline" onClick={handleBack}>
-              {tActions.back}
-            </Button>
-          }
-          nextButton={
-            <Button onClick={handleNext} disabled={!isStepValid(3)}>
-              {tActions.next}
-            </Button>
-          }
         />
       </StepsContent>
 
@@ -342,20 +348,6 @@ export function WizardContainer({
           onNext={handleNext}
           onBack={handleBack}
         />
-        <StepsNavigation
-          prevLabel={tActions.back}
-          nextLabel={tActions.next}
-          prevButton={
-            <Button variant="outline" onClick={handleBack}>
-              {tActions.back}
-            </Button>
-          }
-          nextButton={
-            <Button onClick={handleNext} disabled={!isStepValid(4)}>
-              {tActions.next}
-            </Button>
-          }
-        />
       </StepsContent>
 
       <StepsContent step={4}>
@@ -365,22 +357,6 @@ export function WizardContainer({
           onBack={handleBack}
           onPublish={handlePublish}
           onEditStep={goToStep}
-        />
-        <StepsNavigation
-          prevLabel={tActions.back}
-          finishLabel={t.review.publishCourse}
-          onFinish={handlePublish}
-          prevButton={
-            <Button variant="outline" onClick={handleBack}>
-              {tActions.back}
-            </Button>
-          }
-          nextButton={
-            <Button onClick={handlePublish} disabled={isPublishing}>
-              {isPublishing && <Loader2 className="mr-2 size-4 animate-spin" />}
-              {t.review.publishCourse}
-            </Button>
-          }
         />
       </StepsContent>
     </Steps>

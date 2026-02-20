@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { useCartStore } from "@/stores/cart-store"
 import { usePurchasedCoursesStore } from "@/stores/purchased-courses-store"
+import { useSession } from "next-auth/react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType } from "@/types"
@@ -29,12 +30,14 @@ export function CourseDetailsView({
 }: CourseDetailsViewProps) {
   const params = useParams()
   const locale = params.lang as LocaleType
+  const { data: session } = useSession()
 
   // Initialize stores
   const initializeCart = useCartStore((state) => state.initializeCart)
   const initializePurchasedCourses = usePurchasedCoursesStore(
     (state) => state.initializePurchasedCourses
   )
+  const purchasedCourses = usePurchasedCoursesStore((state) => state.courses)
 
   const [isLoadingStores, setIsLoadingStores] = useState(true)
 
@@ -52,15 +55,19 @@ export function CourseDetailsView({
     initStores()
   }, [initializeCart, initializePurchasedCourses])
 
+  // Check if user has access to full course content
+  const isOwner =
+    (session?.user as any)?.id ===
+    (typeof course.instructor === "string"
+      ? course.instructor
+      : course.instructor?._id)
+
+  const isPurchased = purchasedCourses.some((c) => c._id === course._id)
+
+  const hasAccess = isOwner || isPurchased
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header Navigation */}
-      <CourseBreadcrumb
-        dictionary={dictionary}
-        locale={locale}
-        category={course.category}
-        title={course.title}
-      />
 
       {/* Main Content */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -68,7 +75,7 @@ export function CourseDetailsView({
           {/* Left Column - Course Details */}
           <div className="lg:col-span-2 space-y-8">
             <CourseHeader dictionary={dictionary} course={course} />
-            <CourseTabs dictionary={dictionary} course={course} />
+            <CourseTabs dictionary={dictionary} course={course} hasAccess={hasAccess} />
           </div>
 
           {/* Right Column - Purchase Card */}

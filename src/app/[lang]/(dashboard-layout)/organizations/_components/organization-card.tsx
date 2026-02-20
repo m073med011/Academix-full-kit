@@ -2,11 +2,6 @@
 
 import Link from "next/link"
 import { format } from "date-fns"
-import { MoreVertical, User as UserIcon } from "lucide-react"
-
-import { DefaultImage } from "@/components/ui/defult-Image"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-
 import {
   Organization,
   OrganizationMembership,
@@ -14,6 +9,7 @@ import {
   User,
 } from "@/types/api"
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,14 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Separator } from "@/components/ui/separator"
-
+import { DefaultImage } from "@/components/ui/defult-Image"
 interface OrganizationCardProps {
   membership: OrganizationMembership
   dictionary: {
@@ -81,24 +70,6 @@ export function OrganizationCard({
             </Badge>
           </div>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="-mr-2 h-8 w-8">
-              <MoreVertical className="h-4 w-4" />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>{dictionary.actions.edit}</DropdownMenuItem>
-            <DropdownMenuItem>
-              {dictionary.actions.manageMembers}
-            </DropdownMenuItem>
-            <Separator className="my-1" />
-            <DropdownMenuItem className="text-destructive">
-              {dictionary.actions.leave}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </CardHeader>
       <CardContent className="flex-1 space-y-4">
         <p className="line-clamp-2 text-sm text-muted-foreground">
@@ -170,7 +141,7 @@ export function OrganizationCard({
           <div className="flex items-center gap-1">
             {/* Placeholder for future member count */}
           </div>
-          <Link href={`/organizations/${org._id}`}>
+          <Link href={`/organizations/${org._id}?tab=about`}>
             <Button
               variant="ghost"
               size="sm"

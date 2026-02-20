@@ -12,9 +12,14 @@ import { CourseReviewsTab } from "./course-reviews-tab"
 interface CourseTabsProps {
   dictionary: DictionaryType
   course: Course
+  hasAccess?: boolean
 }
 
-export function CourseTabs({ dictionary, course }: CourseTabsProps) {
+export function CourseTabs({
+  dictionary,
+  course,
+  hasAccess = false,
+}: CourseTabsProps) {
   const t = dictionary.courseDetailsPage?.tabs
 
   return (
@@ -35,7 +40,11 @@ export function CourseTabs({ dictionary, course }: CourseTabsProps) {
       </TabsContent>
 
       <TabsContent value="curriculum" className="mt-6">
-        <CourseCurriculumTab dictionary={dictionary} course={course} />
+        <CourseCurriculumTab
+          dictionary={dictionary}
+          course={course}
+          hasAccess={hasAccess}
+        />
       </TabsContent>
 
       <TabsContent value="instructor" className="mt-6">

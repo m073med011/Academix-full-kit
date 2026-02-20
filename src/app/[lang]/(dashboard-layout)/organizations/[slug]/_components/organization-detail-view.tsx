@@ -1,13 +1,16 @@
 "use client"
 
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 
 import type { TabItem } from "@/app/[lang]/(dashboard-layout)/(design-system)/cards/basic/_components/card-with-underline-tabs"
+import { Organization } from "@/types/api"
 
 import { CardWithUnderlineTabs } from "@/app/[lang]/(dashboard-layout)/(design-system)/cards/basic/_components/card-with-underline-tabs"
 import { CoursesTab } from "./courses-tab"
 import { OrganizationHeader } from "./organization-header"
 import { PlaceholderTab } from "./placeholder-tab"
+import { AboutTab } from "./about-tab"
 
 interface OrganizationDetailViewProps {
   dictionary: {
@@ -61,12 +64,26 @@ interface OrganizationDetailViewProps {
       }
     }
   }
+  organization: Organization
 }
 
 export default function OrganizationDetailView({
   dictionary,
+  organization,
 }: OrganizationDetailViewProps) {
   const dict = dictionary
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const validTabs = ["about", "courses", "levels", "terms", "students", "members", "settings", "roles"]
+  const tabFromUrl = searchParams.get("tab")
+  const currentTab = tabFromUrl && validTabs.includes(tabFromUrl) ? tabFromUrl : "about"
+
+  const handleTabChange = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("tab", value)
+    router.push(`?${params.toString()}`, { scroll: false })
+  }
 
   const handleAddCourse = () => {
     toast.success("Add New Course clicked")
@@ -77,7 +94,18 @@ export default function OrganizationDetailView({
     {
       value: "about",
       label: dict.tabs.about,
-      content: <PlaceholderTab message={dict.courses.comingSoon.about} />,
+      content: (
+        <AboutTab
+          organization={organization}
+          dictionary={{
+            title: dict.tabs.about,
+            description: dict.organization.description,
+            owner: "Owner",
+            created: "Created At",
+            contact: "Contact Information",
+          }}
+        />
+      ),
     },
     {
       value: "courses",
@@ -127,14 +155,17 @@ export default function OrganizationDetailView({
     <div className="container space-y-6 p-4 md:p-6">
       <OrganizationHeader
         dictionary={{
-          title: dict.organization.title,
-          description: dict.organization.description,
           addNewCourse: dict.courses.addNewCourse,
         }}
+        organization={organization}
         onAddCourse={handleAddCourse}
       />
 
-      <CardWithUnderlineTabs tabs={organizationTabs} defaultValue="courses" />
+      <CardWithUnderlineTabs 
+        tabs={organizationTabs} 
+        value={currentTab}
+        onValueChange={handleTabChange}
+      />
     </div>
   )
 }

@@ -2,6 +2,8 @@
 
 import { Plus } from "lucide-react"
 
+import { Organization } from "@/types/api"
+
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -12,25 +14,34 @@ import {
 
 interface OrganizationHeaderProps {
   dictionary: {
-    title: string
-    description: string
     addNewCourse: string
   }
+  organization: Organization
   onAddCourse: () => void
 }
 
 export function OrganizationHeader({
   dictionary,
+  organization,
   onAddCourse,
 }: OrganizationHeaderProps) {
   return (
-    <Card>
+    <Card className="overflow-hidden">
+      {organization.orgcover && (
+        <div className="h-48 w-full">
+          <img
+            src={organization.orgcover}
+            alt={organization.name}
+            className="h-full w-full object-cover"
+          />
+        </div>
+      )}
       <CardHeader>
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <CardTitle className="text-2xl">{dictionary.title}</CardTitle>
+            <CardTitle className="text-2xl">{organization.name}</CardTitle>
             <CardDescription className="mt-1.5">
-              {dictionary.description}
+              {organization.description}
             </CardDescription>
           </div>
           <Button onClick={onAddCourse} className="w-full md:w-auto">

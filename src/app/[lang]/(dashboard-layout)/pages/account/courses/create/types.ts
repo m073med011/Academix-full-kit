@@ -34,22 +34,30 @@ export interface CourseModule {
 
 export interface CourseContent {
   id: string
-  type: "video" | "article" | "quiz" | "assignment" | "link"
+  type: "video" | "text" | "quiz" | "assignment" | "link" // Changed article to text
   title: string
   status: "published" | "draft"
   // Video fields
   url?: string
   isFreePreview?: boolean
   allowDownloads?: boolean
-  // Article fields
+  // Article/Text fields
   content?: string
   duration?: number // read time in minutes
+  thumbnailUrl?: string // Added
   // Assignment fields
   description?: string
   points?: number
   dueDate?: string
   submissionTypes?: string[]
   allowLate?: boolean
+  assignmentFileUrl?: string // Added
+  // Quiz fields
+  quizQuestions?: { // Added
+    text: string
+    options: string[]
+    correctAnswer: string
+  }[]
   // Link fields
   openInNewTab?: boolean
   // Legacy fields

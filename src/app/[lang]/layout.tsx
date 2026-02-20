@@ -1,4 +1,4 @@
-import { Cairo, Lato } from "next/font/google"
+import { Revalia, Amiri } from "next/font/google"
 import { getServerSession } from "next-auth"
 
 import { i18n } from "@/configs/i18n"
@@ -29,17 +29,15 @@ export const metadata: Metadata = {
 
 // Define fonts for the application
 // More info: https://nextjs.org/docs/app/building-your-application/optimizing/fonts
-const latoFont = Lato({
+const revaliaFont = Revalia({
   subsets: ["latin"],
-  weight: ["100", "300", "400", "700", "900"],
-  style: ["normal", "italic"],
-  variable: "--font-lato",
+  weight: ["400"],
+  variable: "--font-revalia",
 })
-const cairoFont = Cairo({
-  subsets: ["arabic"],
+const amiriFont = Amiri({
+  subsets: ["arabic", "latin"],
   weight: ["400", "700"],
-  style: ["normal"],
-  variable: "--font-cairo",
+  variable: "--font-amiri",
 })
 
 export default async function RootLayout(props: {
@@ -57,10 +55,10 @@ export default async function RootLayout(props: {
     <html lang={params.lang} dir={direction} suppressHydrationWarning>
       <body
         className={cn(
-          "[&:lang(en)]:font-lato [&:lang(ar)]:font-cairo", // Set font styles based on the language
+          "[&:lang(en)]:font-revalia [&:lang(ar)]:font-amiri", // Set font styles based on the language
           "bg-background text-foreground antialiased overscroll-none", // Set background, text, , anti-aliasing styles, and overscroll behavior
-          latoFont.variable, // Include Lato font variable
-          cairoFont.variable // Include Cairo font variable
+          revaliaFont.variable, // Include Revalia font variable
+          amiriFont.variable // Include Amiri font variable
         )}
       >
         <Providers locale={params.lang} direction={direction} session={session}>

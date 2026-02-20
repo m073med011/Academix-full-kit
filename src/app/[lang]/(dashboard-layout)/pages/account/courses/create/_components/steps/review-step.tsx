@@ -1,14 +1,36 @@
 "use client"
 
-import { ArrowLeft, CheckCircle, ChevronRight, Pencil } from "lucide-react"
+import { useState } from "react"
+import {
+  ArrowLeft,
+  CheckCircle,
+  ChevronDown,
+  ChevronRight,
+  ExternalLink,
+  FileText,
+  HelpCircle,
+  Link as LinkIcon,
+  Pencil,
+  PlayCircle,
+  ClipboardList,
+  Eye,
+  Download,
+  Clock,
+} from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
-import type { CourseFormData } from "../../types"
+import type { CourseFormData, CourseContent } from "../../types"
 import { WIZARD_STEPS } from "../../types"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 
 interface ReviewStepProps {
   dictionary: DictionaryType
@@ -16,6 +38,175 @@ interface ReviewStepProps {
   onBack: () => void
   onPublish: () => void
   onEditStep: (step: number) => void
+}
+
+// Helper function to get the icon for content type
+const getContentTypeIcon = (type: CourseContent["type"]) => {
+  switch (type) {
+    case "video":
+      return <PlayCircle className="size-4 text-blue-500" />
+    case "text":
+      return <FileText className="size-4 text-green-500" />
+    case "quiz":
+      return <HelpCircle className="size-4 text-purple-500" />
+    case "assignment":
+      return <ClipboardList className="size-4 text-orange-500" />
+    case "link":
+      return <LinkIcon className="size-4 text-cyan-500" />
+    default:
+      return <FileText className="size-4 text-muted-foreground" />
+  }
+}
+
+// Helper function to get the content type label
+const getContentTypeLabel = (type: CourseContent["type"]) => {
+  switch (type) {
+    case "video":
+      return "Video"
+    case "text":
+      return "Article"
+    case "quiz":
+      return "Quiz"
+    case "assignment":
+      return "Assignment"
+    case "link":
+      return "Link"
+    default:
+      return type
+  }
+}
+
+// Module preview component
+function CurriculumModulePreview({
+  module,
+  moduleIndex,
+}: {
+  module: CourseFormData["modules"][number]
+  moduleIndex: number
+}) {
+  const [isOpen, setIsOpen] = useState(true)
+
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <CollapsibleTrigger className="w-full">
+        <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
+          {isOpen ? (
+            <ChevronDown className="size-4 text-muted-foreground" />
+          ) : (
+            <ChevronRight className="size-4 text-muted-foreground" />
+          )}
+          <span className="font-medium text-sm">
+            Module {moduleIndex + 1}: {module.title}
+          </span>
+          <Badge variant="secondary" className="ml-auto text-xs">
+            {module.contents.length} item{module.contents.length !== 1 ? "s" : ""}
+          </Badge>
+        </div>
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <div className="ml-7 mt-2 space-y-2">
+          {module.contents.length === 0 ? (
+            <p className="text-sm text-muted-foreground italic pl-2">
+              No materials in this module
+            </p>
+          ) : (
+            module.contents.map((content, contentIndex) => (
+              <ContentItemPreview
+                key={content.id}
+                content={content}
+                contentIndex={contentIndex}
+              />
+            ))
+          )}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
+  )
+}
+
+// Content item preview component
+function ContentItemPreview({
+  content,
+  contentIndex,
+}: {
+  content: CourseContent
+  contentIndex: number
+}) {
+  return (
+    <div className="flex items-start gap-3 p-3 border rounded-lg bg-background">
+      <div className="flex-shrink-0 mt-0.5">
+        {getContentTypeIcon(content.type)}
+      </div>
+      <div className="flex-1 min-w-0 space-y-1">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-sm font-medium truncate">{content.title}</span>
+          <Badge variant="outline" className="text-xs">
+            {getContentTypeLabel(content.type)}
+          </Badge>
+          {content.status === "draft" && (
+            <Badge variant="secondary" className="text-xs">
+              Draft
+            </Badge>
+          )}
+        </div>
+
+        {/* Description */}
+        {content.description && (
+          <p className="text-xs text-muted-foreground line-clamp-2">
+            {content.description}
+          </p>
+        )}
+
+        {/* URL/Link for video and link types */}
+        {(content.type === "video" || content.type === "link") && content.url && (
+          <div className="flex items-center gap-1 text-xs text-primary">
+            <ExternalLink className="size-3" />
+            <a
+              href={content.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="truncate max-w-xs hover:underline"
+            >
+              {content.url}
+            </a>
+          </div>
+        )}
+
+        {/* Metadata badges */}
+        <div className="flex flex-wrap gap-2 mt-1">
+          {content.isFreePreview && (
+            <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+              <Eye className="size-3" />
+              <span>Free Preview</span>
+            </div>
+          )}
+          {content.allowDownloads && (
+            <div className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
+              <Download className="size-3" />
+              <span>Downloads Allowed</span>
+            </div>
+          )}
+          {content.duration && content.duration > 0 && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Clock className="size-3" />
+              <span>{content.duration} min</span>
+            </div>
+          )}
+          {content.points && content.points > 0 && (
+            <div className="text-xs text-orange-600 dark:text-orange-400">
+              {content.points} points
+            </div>
+          )}
+          {content.openInNewTab && content.type === "link" && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <ExternalLink className="size-3" />
+              <span>Opens in new tab</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export function ReviewStep({
@@ -99,7 +290,7 @@ export function ReviewStep({
             </CardContent>
           </Card>
 
-          {/* Curriculum */}
+          {/* Curriculum Preview */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>{t.curriculum}</CardTitle>
@@ -117,6 +308,23 @@ export function ReviewStep({
                 />
               </div>
             </CardHeader>
+            <CardContent className="space-y-4">
+              {formData.modules.length === 0 ? (
+                <p className="text-sm text-muted-foreground italic">
+                  No modules added yet
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {formData.modules.map((module, moduleIndex) => (
+                    <CurriculumModulePreview
+                      key={module.id}
+                      module={module}
+                      moduleIndex={moduleIndex}
+                    />
+                  ))}
+                </div>
+              )}
+            </CardContent>
           </Card>
 
           {/* Course Media */}
@@ -179,41 +387,37 @@ export function ReviewStep({
                 <ul className="space-y-3">
                   <li className="flex items-center text-sm">
                     <CheckCircle
-                      className={`size-5 me-2 ${
-                        basicInfoComplete
+                      className={`size-5 me-2 ${basicInfoComplete
                           ? "text-green-500"
                           : "text-muted-foreground"
-                      }`}
+                        }`}
                     />
                     <span>{t.basicInfoComplete}</span>
                   </li>
                   <li className="flex items-center text-sm">
                     <CheckCircle
-                      className={`size-5 me-2 ${
-                        curriculumComplete
+                      className={`size-5 me-2 ${curriculumComplete
                           ? "text-green-500"
                           : "text-muted-foreground"
-                      }`}
+                        }`}
                     />
                     <span>{t.curriculumAdded}</span>
                   </li>
                   <li className="flex items-center text-sm">
                     <CheckCircle
-                      className={`size-5 me-2 ${
-                        mediaComplete
+                      className={`size-5 me-2 ${mediaComplete
                           ? "text-green-500"
                           : "text-muted-foreground"
-                      }`}
+                        }`}
                     />
                     <span>{t.mediaUploaded}</span>
                   </li>
                   <li className="flex items-center text-sm">
                     <CheckCircle
-                      className={`size-5 me-2 ${
-                        pricingComplete
+                      className={`size-5 me-2 ${pricingComplete
                           ? "text-green-500"
                           : "text-muted-foreground"
-                      }`}
+                        }`}
                     />
                     <span>{t.pricingSet}</span>
                   </li>

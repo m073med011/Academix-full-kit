@@ -1,5 +1,5 @@
 import { CreateOrganizationRequest } from "../_types/types"
-import { OrganizationMembership } from "@/types/api"
+import { Organization, OrganizationMembership } from "@/types/api"
 
 import { apiClient } from "@/lib/api-client"
 
@@ -10,5 +10,9 @@ export const organizationService = {
 
   createOrganization: async (data: CreateOrganizationRequest) => {
     return apiClient.post("/organizations", data)
+  },
+
+  getOrganizationById: async (id: string) => {
+    return apiClient.get<Organization>(`/organizations/${id}`)
   },
 }

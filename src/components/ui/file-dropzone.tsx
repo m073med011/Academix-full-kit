@@ -117,15 +117,13 @@ export function FileDropzone({
             {files.map((file) => (
               <div
                 key={file.id}
-                className="relative flex flex-col gap-2 rounded-lg border bg-background p-2 cursor-auto"
+                className="relative flex flex-col w-full rounded-lg border bg-background p-2 cursor-auto"
               >
                 {file.type.startsWith("image/") ? (
-                  <Image
+                  <img
                     src={file.url}
                     alt={file.name}
-                    width={165}
-                    height={165}
-                    className="self-center aspect-square rounded object-contain pointer-events-none"
+                    className="w-full max-h-[175px]  pointer-events-none"
                   />
                 ) : (
                   <FileThumbnail

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import {
   ArrowLeft,
   BookOpen,
@@ -8,11 +8,13 @@ import {
   FileText,
   HelpCircle,
   Link as LinkIcon,
+  Loader2,
   Video,
   X,
 } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
+import { QuizQuestion } from "@/types/api"
 
 import { cn } from "@/lib/utils"
 
@@ -40,14 +42,20 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { ArticleEditor } from "../article-editor"
+import { AssignmentForm } from "../assignment-form"
+import { ExternalLinkForm } from "../external-link-form"
+import { QuizBuilder } from "../quiz-builder"
 
-type ContentType = "video" | "article" | "quiz" | "assignment" | "link"
+type ContentType = "video" | "text" | "quiz" | "assignment" | "link"
 
 interface AddContentModalProps {
   isOpen: boolean
   onClose: () => void
   onAddContent: (type: ContentType, data: any) => void
   dictionary: DictionaryType
+  mode?: "create" | "edit"
+  initialData?: any
 }
 
 export function AddContentModal({
@@ -55,45 +63,160 @@ export function AddContentModal({
   onClose,
   onAddContent,
   dictionary,
+  mode = "create",
+  initialData,
 }: AddContentModalProps) {
-  const [step, setStep] = useState<"selection" | "form">("selection")
-  const [selectedType, setSelectedType] = useState<ContentType | null>(null)
+  const [step, setStep] = useState<"selection" | "form">(
+    mode === "edit" ? "form" : "selection"
+  )
+  const [selectedType, setSelectedType] = useState<ContentType | null>(
+    (initialData?.type as ContentType) || null
+  )
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Refs for auto-upload
+  const videoUploaderRef =
+    useRef<import("@/components/ui/cloudinary-uploader").CloudinaryUploaderRef>(
+      null
+    )
+  const articleUploaderRef =
+    useRef<import("@/components/ui/cloudinary-uploader").CloudinaryUploaderRef>(
+      null
+    )
 
   // Common State
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
+  const [title, setTitle] = useState(initialData?.title || "")
+  const [description, setDescription] = useState(initialData?.description || "")
 
   // Video State
   const [videoSource, setVideoSource] = useState<
     "upload" | "embed" | "library"
-  >("upload")
-  const [videoUrl, setVideoUrl] = useState("")
-  const [isFreePreview, setIsFreePreview] = useState(false)
-  const [allowDownloads, setAllowDownloads] = useState(false)
+  >(initialData?.videoSource || "upload")
+  const [videoUrl, setVideoUrl] = useState(
+    initialData?.url || initialData?.videoUrl || ""
+  )
+  const [isFreePreview, setIsFreePreview] = useState(
+    initialData?.isFreePreview || false
+  )
+  const [allowDownloads, setAllowDownloads] = useState(
+    initialData?.allowDownloads || false
+  )
+  const [isPublished, setIsPublished] = useState(
+    initialData?.isPublished ?? true
+  )
 
   // Article State
-  const [articleContent, setArticleContent] = useState("")
-  const [readTime, setReadTime] = useState(0)
+  const [articleContent, setArticleContent] = useState(
+    initialData?.content || ""
+  )
+  const [readTime, setReadTime] = useState(initialData?.duration || 0)
 
   // Assignment State
-  const [points, setPoints] = useState(100)
-  const [dueDate, setDueDate] = useState<Date | undefined>(undefined)
-  const [submissionTypes, setSubmissionTypes] = useState<string[]>(["file"])
-  const [allowLate, setAllowLate] = useState(false)
+  const [points, setPoints] = useState(initialData?.points || 100)
+  const [dueDate, setDueDate] = useState<Date | undefined>(
+    initialData?.dueDate ? new Date(initialData.dueDate) : undefined
+  )
+  const [submissionTypes, setSubmissionTypes] = useState<string[]>(
+    initialData?.submissionTypes || ["file"]
+  )
+  const [allowLate, setAllowLate] = useState(initialData?.allowLate || false)
+  const [assignmentFileUrl, setAssignmentFileUrl] = useState(
+    initialData?.assignmentFileUrl || ""
+  )
+
+  // Quiz State
+  const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>(
+    initialData?.quizQuestions || []
+  )
+
+  // Article State (Extended)
+  const [thumbnailUrl, setThumbnailUrl] = useState(
+    initialData?.thumbnailUrl || ""
+  )
 
   // Link State
-  const [openInNewTab, setOpenInNewTab] = useState("new_tab")
+  const [openInNewTab, setOpenInNewTab] = useState(
+    initialData?.openInNewTab ?? true
+  )
+
+  // Search State
+  const [searchQuery, setSearchQuery] = useState("")
+
+  // Sync state with initialData when modal opens or data changes
+  useEffect(() => {
+    if (isOpen) {
+      if (mode === "edit" && initialData) {
+        setStep("form")
+        setSelectedType(initialData.type as ContentType)
+        setTitle(initialData.title || "")
+        setDescription(initialData.description || "")
+
+        // Video
+        setVideoSource(initialData.videoSource || "upload")
+        setVideoUrl(initialData.url || initialData.videoUrl || "")
+        setIsFreePreview(initialData.isFreePreview || false)
+        setAllowDownloads(initialData.allowDownloads || false)
+        setIsPublished(initialData.isPublished ?? true)
+
+        // Article
+        setArticleContent(initialData.content || "")
+        setReadTime(initialData.duration || 0)
+        setThumbnailUrl(initialData.thumbnailUrl || "")
+
+        // Assignment
+        setPoints(initialData.points || 100)
+        setReadTime(initialData.duration || 0) // Assignment duration
+        setDueDate(
+          initialData.dueDate ? new Date(initialData.dueDate) : undefined
+        )
+        setSubmissionTypes(initialData.submissionTypes || ["file"])
+        setAllowLate(initialData.allowLate || false)
+        setAssignmentFileUrl(initialData.assignmentFileUrl || "")
+
+        // Quiz
+        setQuizQuestions(initialData.quizQuestions || [])
+
+        // Link
+        setOpenInNewTab(initialData.openInNewTab ?? true)
+      } else {
+        // Reset for create mode
+        setStep("selection")
+        setSelectedType(null)
+        setTitle("")
+        setDescription("")
+        setVideoUrl("")
+        setArticleContent("")
+        setPoints(100)
+        setDueDate(undefined)
+        setAssignmentFileUrl("")
+        setQuizQuestions([])
+        setThumbnailUrl("")
+        setOpenInNewTab(true)
+        setIsPublished(true)
+        setIsFreePreview(false)
+        setAllowDownloads(false)
+      }
+    }
+  }, [isOpen, mode, initialData])
 
   const handleTypeSelect = (type: ContentType) => {
+    // If selected type is 'text', we treat it as 'article' in UI but 'text' in data
     setSelectedType(type)
     setStep("form")
-    // Reset form
+    // Reset form defaults for new content
     setTitle("")
     setDescription("")
     setVideoUrl("")
     setArticleContent("")
     setPoints(100)
     setDueDate(undefined)
+    setAssignmentFileUrl("")
+    setQuizQuestions([])
+    setThumbnailUrl("")
+    setOpenInNewTab(true)
+    setIsPublished(true)
+    setIsFreePreview(false)
+    setAllowDownloads(false)
   }
 
   const handleBack = () => {
@@ -109,34 +232,102 @@ export function AddContentModal({
     }, 300)
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedType) return
 
-    const commonData = { title, description }
-    let specificData = {}
+    setIsSubmitting(true)
+    let finalVideoUrl = videoUrl
 
-    switch (selectedType) {
-      case "video":
-        specificData = { videoSource, videoUrl, isFreePreview, allowDownloads }
-        break
-      case "article":
-        specificData = { content: articleContent, readTime }
-        break
-      case "assignment":
-        specificData = { points, dueDate, submissionTypes, allowLate }
-        break
-      case "link":
-        specificData = { url: videoUrl, openInNewTab } // Reusing videoUrl for link URL
-        break
+    try {
+      // Handle Auto-Upload for Video
+      if (selectedType === "video" && videoSource === "upload" && !videoUrl) {
+        if (videoUploaderRef.current) {
+          try {
+            const result = await videoUploaderRef.current.upload()
+            finalVideoUrl = result.secureUrl
+          } catch (error) {
+            console.error("Auto upload failed", error)
+            setIsSubmitting(false)
+            return // Stop submission if upload fails
+          }
+        }
+      }
+
+      // Handle Auto-Upload for Article (Thumbnail)
+      let finalThumbnailUrl = ""
+      if (selectedType === "text") {
+        if (articleUploaderRef.current) {
+          try {
+            const result = await articleUploaderRef.current.upload()
+            finalThumbnailUrl = result.secureUrl
+          } catch (error: any) {
+            if (error.message !== "No file selected") {
+              console.error("Thumbnail upload failed", error)
+            }
+          }
+        }
+      }
+
+      const commonData = { title, description, isPublished }
+      let specificData = {}
+
+      switch (selectedType) {
+        case "video":
+          specificData = {
+            videoSource,
+            videoUrl: finalVideoUrl,
+            isFreePreview,
+            allowDownloads,
+          }
+          break
+        case "text": // Changed from "article"
+          specificData = {
+            content: articleContent,
+            readTime,
+            duration: readTime,
+            isFreePreview,
+            allowDownloads,
+            thumbnailUrl: thumbnailUrl || finalThumbnailUrl,
+          }
+          break
+        case "assignment":
+          specificData = {
+            points,
+            dueDate,
+            submissionTypes,
+            allowLate,
+            assignmentFileUrl,
+            duration: readTime,
+            isFreePreview,
+            allowDownloads,
+          }
+          break
+        case "quiz":
+          specificData = { quizQuestions, isFreePreview }
+          break
+        case "link":
+          specificData = { url: videoUrl, openInNewTab } // Reusing videoUrl for link URL as per original code
+          break
+      }
+
+      onAddContent(selectedType, {
+        ...commonData,
+        ...specificData,
+        // Preserve ID if editing
+        id: initialData?.id,
+      })
+      handleClose()
+      setIsSubmitting(false)
+    } catch (e) {
+      console.error(e)
+      setIsSubmitting(false)
     }
-
-    onAddContent(selectedType, { ...commonData, ...specificData })
-    handleClose()
   }
 
   const contentTypes = [
     {
       id: "video",
+      // ...
       label: "Lesson (Video)",
       description: "Upload video files or embed from external sources",
       icon: Video,
@@ -144,7 +335,7 @@ export function AddContentModal({
       bgColor: "bg-blue-500/10",
     },
     {
-      id: "article",
+      id: "text", // Changed from "article"
       label: "Lesson (Article)",
       description: "Create text-based lessons with rich media",
       icon: FileText,
@@ -176,6 +367,16 @@ export function AddContentModal({
       bgColor: "bg-emerald-500/10",
     },
   ] as const
+
+  // Filter content types based on search query
+  const filteredContentTypes = contentTypes.filter((type) => {
+    if (!searchQuery.trim()) return true
+    const query = searchQuery.toLowerCase()
+    return (
+      type.label.toLowerCase().includes(query) ||
+      type.description.toLowerCase().includes(query)
+    )
+  })
 
   const renderForm = () => {
     switch (selectedType) {
@@ -214,11 +415,15 @@ export function AddContentModal({
 
             {videoSource === "upload" ? (
               <CloudinaryUploader
+                key={`video-${initialData?.id || "new"}-${initialData?.url || initialData?.videoUrl || ""}`}
+                ref={videoUploaderRef}
                 dictionary={dictionary}
                 defaultResourceType="video"
                 showTypeSelector={false}
                 onUploadComplete={(res) => setVideoUrl(res.secureUrl)}
+                onRemove={() => setVideoUrl("")}
                 accept="video/*"
+                initialValue={initialData?.url || initialData?.videoUrl}
               />
             ) : (
               <div className="space-y-2">
@@ -240,7 +445,15 @@ export function AddContentModal({
               />
             </div>
 
-            <div className="flex justify-between pt-2">
+            <div className="flex flex-wrap gap-4 pt-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="is-published"
+                  checked={isPublished}
+                  onCheckedChange={(c) => setIsPublished(!!c)}
+                />
+                <Label htmlFor="is-published">Published</Label>
+              </div>
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="free-preview"
@@ -261,46 +474,60 @@ export function AddContentModal({
           </div>
         )
 
-      case "article":
+      case "text": // Changed from "article"
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Lesson Title</Label>
-                  <Input
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="e.g. Understanding User Research"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Estimated Read Time (minutes)</Label>
-                  <InputSpin value={readTime} onChange={setReadTime} min={1} />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Lesson Thumbnail (Optional)</Label>
-                <CloudinaryUploader
-                  dictionary={dictionary}
-                  defaultResourceType="image"
-                  showTypeSelector={false}
-                  buttonLabel="Select Image"
-                  buttonVariant="outline"
-                  className="h-full min-h-[120px]"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label>Lesson Title</Label>
+              <Input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Understanding User Research"
+              />
             </div>
 
             <div className="space-y-2">
-              <Label>Lesson Content</Label>
-              <Editor
-                value={articleContent}
-                onValueChange={setArticleContent}
-                placeholder="Start writing your lesson content here..."
-                className="min-h-[300px]"
+              <Label>Description (Optional)</Label>
+              <Textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Add a brief description..."
               />
+            </div>
+
+            <ArticleEditor
+              dictionary={dictionary}
+              content={articleContent}
+              onChangeContent={setArticleContent}
+              duration={readTime}
+              onChangeDuration={setReadTime}
+            />
+
+            <div className="flex flex-wrap gap-4 pt-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="is-published-text"
+                  checked={isPublished}
+                  onCheckedChange={(c) => setIsPublished(!!c)}
+                />
+                <Label htmlFor="is-published-text">Published</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="free-preview-text"
+                  checked={isFreePreview}
+                  onCheckedChange={(c) => setIsFreePreview(!!c)}
+                />
+                <Label htmlFor="free-preview-text">Enable free preview</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="allow-downloads-text"
+                  checked={allowDownloads}
+                  onCheckedChange={(c) => setAllowDownloads(!!c)}
+                />
+                <Label htmlFor="allow-downloads-text">Allow downloads</Label>
+              </div>
             </div>
           </div>
         )
@@ -327,14 +554,23 @@ export function AddContentModal({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <AssignmentForm
+              dictionary={dictionary}
+              points={points}
+              onChangePoints={setPoints}
+              fileUrl={assignmentFileUrl}
+              onChangeFileUrl={setAssignmentFileUrl}
+            />
+
+            <div className="grid grid-cols-2 gap-4 mt-4">
               <div className="space-y-2">
-                <Label>Points Possible</Label>
-                <InputSpin
-                  value={points}
-                  onChange={setPoints}
+                <Label>Duration (minutes)</Label>
+                <Input
+                  type="number"
                   min={0}
-                  max={1000}
+                  value={readTime || ""}
+                  onChange={(e) => setReadTime(parseInt(e.target.value) || 0)}
+                  placeholder="e.g. 60"
                 />
               </div>
               <div className="space-y-2">
@@ -343,7 +579,7 @@ export function AddContentModal({
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 mt-4">
               <Label>Submission Type</Label>
               <div className="flex gap-4">
                 {["File Upload", "Text Entry", "Website URL"].map((type) => (
@@ -375,50 +611,95 @@ export function AddContentModal({
               />
               <Label htmlFor="allow-late">Allow Late Submissions</Label>
             </div>
+
+            <div className="flex flex-wrap gap-4 pt-4 border-t mt-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="is-published-assignment"
+                  checked={isPublished}
+                  onCheckedChange={(c) => setIsPublished(!!c)}
+                />
+                <Label htmlFor="is-published-assignment">Published</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="free-preview-assignment"
+                  checked={isFreePreview}
+                  onCheckedChange={(c) => setIsFreePreview(!!c)}
+                />
+                <Label htmlFor="free-preview-assignment">
+                  Enable free preview
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="allow-downloads-assignment"
+                  checked={allowDownloads}
+                  onCheckedChange={(c) => setAllowDownloads(!!c)}
+                />
+                <Label htmlFor="allow-downloads-assignment">
+                  Allow downloads
+                </Label>
+              </div>
+            </div>
           </div>
         )
 
       case "link":
         return (
+          <ExternalLinkForm
+            url={videoUrl}
+            onChangeUrl={setVideoUrl}
+            title={title}
+            onChangeTitle={setTitle}
+            description={description}
+            onChangeDescription={setDescription}
+            openInNewTab={openInNewTab}
+            onChangeOpenInNewTab={setOpenInNewTab}
+          />
+        )
+
+      case "quiz":
+        return (
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Link Title</Label>
+              <Label>Quiz Title</Label>
               <Input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Official Documentation"
+                placeholder="e.g. Chapter 1 Quiz"
               />
             </div>
-
             <div className="space-y-2">
-              <Label>URL</Label>
-              <Input
-                value={videoUrl}
-                onChange={(e) => setVideoUrl(e.target.value)}
-                placeholder="https://"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Open link in</Label>
-              <Select value={openInNewTab} onValueChange={setOpenInNewTab}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="new_tab">New Tab</SelectItem>
-                  <SelectItem value="same_window">Same Window</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Description (Optional)</Label>
+              <Label>Description</Label>
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Add a brief description..."
+                placeholder="Quiz instructions..."
               />
+            </div>
+            <QuizBuilder
+              questions={quizQuestions}
+              onChange={setQuizQuestions}
+            />
+
+            <div className="flex flex-wrap gap-4 pt-4 border-t mt-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="is-published-quiz"
+                  checked={isPublished}
+                  onCheckedChange={(c) => setIsPublished(!!c)}
+                />
+                <Label htmlFor="is-published-quiz">Published</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="free-preview-quiz"
+                  checked={isFreePreview}
+                  onCheckedChange={(c) => setIsFreePreview(!!c)}
+                />
+                <Label htmlFor="free-preview-quiz">Enable free preview</Label>
+              </div>
             </div>
           </div>
         )
@@ -434,17 +715,22 @@ export function AddContentModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-2xl p-0 gap-0 overflow-hidden max-h-[90vh] flex flex-col">
+      <DialogContent
+        className={cn(
+          "p-0 gap-0 overflow-hidden flex flex-col h-[85vh]",
+          step === "selection" ? "sm:max-w-md" : "sm:max-w-2xl"
+        )}
+      >
         <DialogHeader className="p-6 pb-2 shrink-0">
           <DialogTitle className="text-xl">
             {step === "selection"
               ? "Add Content to Module"
-              : `Add New ${
+              : `${mode === "edit" ? "Edit" : "Add New"} ${
                   contentTypes
                     .find((c) => c.id === selectedType)
                     ?.label.split(" ")[0]
                 }${
-                  selectedType === "video" || selectedType === "article"
+                  selectedType === "video" || selectedType === "text"
                     ? `: ${contentTypes
                         .find((c) => c.id === selectedType)
                         ?.label.split("(")[1]
@@ -459,11 +745,17 @@ export function AddContentModal({
           )}
         </DialogHeader>
 
-        <ScrollArea className="p-6 pt-2 flex-1">
+        <ScrollArea className="flex-1">
+          <div className="p-6 pt-2">
           {step === "selection" ? (
             <div className="space-y-4">
               <div className="relative">
-                <Input placeholder="Search content type..." className="pl-9" />
+                <Input
+                  placeholder="Search content type..."
+                  className="pl-9"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
                 <div className="absolute left-3 top-3 text-muted-foreground">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -484,60 +776,85 @@ export function AddContentModal({
 
               <div className="space-y-2">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Recommended
+                  {searchQuery ? "Results" : "Recommended"}
                 </p>
                 <div className="grid gap-2">
-                  {contentTypes.map((type) => (
-                    <Button
-                      key={type.id}
-                      variant="ghost"
-                      onClick={() => handleTypeSelect(type.id)}
-                      className="flex items-start gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors text-left w-full group h-auto"
-                    >
-                      <div
-                        className={cn(
-                          "p-2 rounded-md transition-colors",
-                          type.bgColor
-                        )}
+                  {filteredContentTypes.length > 0 ? (
+                    filteredContentTypes.map((type) => (
+                      <Button
+                        key={type.id}
+                        variant="ghost"
+                        onClick={() => handleTypeSelect(type.id)}
+                        className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors text-left w-full group h-auto justify-start"
                       >
-                        <type.icon className={cn("size-5", type.color)} />
-                      </div>
-                      <div>
-                        <div className="font-medium group-hover:text-primary transition-colors">
-                          {type.label}
+                        <div
+                          className={cn(
+                            "p-2 rounded-md transition-colors shrink-0",
+                            type.bgColor
+                          )}
+                        >
+                          <type.icon className={cn("size-5", type.color)} />
                         </div>
-                        <div className="text-sm text-muted-foreground">
-                          {type.description}
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium group-hover:text-primary transition-colors">
+                            {type.label}
+                          </div>
+                          <div className="text-sm text-muted-foreground truncate">
+                            {type.description}
+                          </div>
                         </div>
-                      </div>
-                    </Button>
-                  ))}
+                      </Button>
+                    ))
+                  ) : (
+                    <div className="text-center py-4 text-muted-foreground">
+                      No content types found matching "{searchQuery}"
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           ) : (
             <div className="space-y-6">{renderForm()}</div>
           )}
+          </div>
         </ScrollArea>
 
         {step === "form" && (
           <div className="p-6 pt-4 border-t shrink-0 bg-background flex justify-between items-center">
-            <Button variant="ghost" onClick={handleBack}>
+            <Button
+              variant="ghost"
+              onClick={handleBack}
+              disabled={isSubmitting || mode === "edit"}
+              className={mode === "edit" ? "invisible" : ""}
+            >
               <ArrowLeft className="size-4 mr-2" />
               Back
             </Button>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={handleClose}>
+              <Button
+                variant="outline"
+                onClick={handleClose}
+                disabled={isSubmitting}
+              >
                 Cancel
               </Button>
-              <Button onClick={handleSubmit}>
-                {selectedType === "assignment"
-                  ? "Save Assignment"
-                  : selectedType === "link"
-                    ? "Save Link"
-                    : selectedType === "article"
-                      ? "Save Lesson"
-                      : "Add Lesson"}
+              <Button onClick={handleSubmit} disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Uploading & Saving...
+                  </>
+                ) : mode === "edit" ? (
+                  "Update Lesson"
+                ) : selectedType === "assignment" ? (
+                  "Save Assignment"
+                ) : selectedType === "link" ? (
+                  "Save Link"
+                ) : selectedType === "text" ? (
+                  "Save Lesson"
+                ) : (
+                  "Add Lesson"
+                )}
               </Button>
             </div>
           </div>

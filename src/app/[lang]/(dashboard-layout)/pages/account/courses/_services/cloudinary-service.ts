@@ -132,6 +132,23 @@ export function getResourceTypeFromFile(file: File): ResourceType {
 }
 
 /**
+ * Extract public ID from Cloudinary URL
+ * Supports standard URLs:
+ * - https://res.cloudinary.com/cloud_name/image/upload/v12345/public_id.jpg
+ * - https://res.cloudinary.com/cloud_name/image/upload/public_id.jpg
+ * - https://res.cloudinary.com/cloud_name/image/upload/folder/public_id.jpg
+ */
+export function extractPublicId(url: string): string | null {
+  try {
+    const regex = /\/upload\/(?:v\d+\/)?(.+)\.[a-zA-Z0-9]+$/
+    const match = url.match(regex)
+    return match ? match[1] : null
+  } catch {
+    return null
+  }
+}
+
+/**
  * Delete a file from Cloudinary
  * Note: This requires a backend API endpoint since deletion requires a signed request
  * @param publicId - The public ID of the file to delete

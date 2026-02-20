@@ -19,6 +19,7 @@ export interface UseCloudinaryUploadReturn {
     resourceType?: ResourceType
   ) => Promise<CloudinaryUploadResult>
   deleteUpload: () => Promise<void>
+  deleteByUrl: (url: string, resourceType?: ResourceType) => Promise<void>
   isUploading: boolean
   isDeleting: boolean
   progress: number
@@ -122,6 +123,38 @@ export function useCloudinaryUpload(): UseCloudinaryUploadReturn {
     }
   }, [result])
 
+  const deleteByUrl = useCallback(
+    async (url: string, resourceType: ResourceType = "image"): Promise<void> => {
+      setIsDeleting(true)
+      setError(null)
+
+      try {
+        const { extractPublicId } = await import(
+          "@/app/[lang]/(dashboard-layout)/pages/account/courses/_services/cloudinary-service"
+        )
+        const publicId = extractPublicId(url)
+
+        if (!publicId) {
+          throw new Error("Invalid Cloudinary URL: Could not extract public ID")
+        }
+
+        await deleteFromCloudinary(publicId, resourceType)
+        // If the URL matches our current result, clear it
+        if (result?.secureUrl === url || result?.url === url) {
+          setResult(null)
+        }
+        setProgress(0)
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Delete failed"
+        setError(errorMessage)
+        throw err
+      } finally {
+        setIsDeleting(false)
+      }
+    },
+    [result]
+  )
+
   const reset = useCallback(() => {
     setIsUploading(false)
     setIsDeleting(false)
@@ -133,6 +166,7 @@ export function useCloudinaryUpload(): UseCloudinaryUploadReturn {
   return {
     upload,
     deleteUpload,
+    deleteByUrl,
     isUploading,
     isDeleting,
     progress,
