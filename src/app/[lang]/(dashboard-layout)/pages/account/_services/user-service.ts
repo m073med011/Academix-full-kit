@@ -81,7 +81,27 @@ export const userService = {
     return []
   },
 
+  /**
+   * Disable user account
+   */
+  async disableAccount(): Promise<void> {
+    const response = await apiClient.patch<void>("/users/account/disable")
 
+    if (!response.success) {
+      throw new ApiClientError("Failed to disable account", 400)
+    }
+  },
+
+  /**
+   * Delete user account permanently
+   */
+  async deleteAccount(): Promise<void> {
+    const response = await apiClient.delete<void>("/users/account")
+
+    if (!response.success) {
+      throw new ApiClientError("Failed to delete account", 400)
+    }
+  },
 
   /**
    * Upload profile image

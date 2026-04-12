@@ -1,13 +1,13 @@
 export const fontFamiliesData = [
   {
-    name: "Revalia",
-    class: "font-revalia",
+    name: "Inter",
+    class: "font-inter",
     language: "English",
     example: "Hello World",
   },
   {
-    name: "Amiri",
-    class: "font-amiri",
+    name: "Tajawal",
+    class: "font-tajawal",
     language: "Arabic",
     example: "مرحبا بالعالم",
   },

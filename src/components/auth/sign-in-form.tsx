@@ -3,8 +3,10 @@
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { signIn } from "next-auth/react"
+import { getSession, signIn } from "next-auth/react"
 import { useForm } from "react-hook-form"
+
+import type { UserRole } from "@/types/api"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType, SignInFormType } from "@/types"
@@ -28,6 +30,22 @@ import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
 import { SeparatorWithText } from "@/components/ui/separator"
 import { OAuthLinks } from "./oauth-links"
+
+// Roles the backend can legitimately return – defined outside the component
+// so the reference is stable across renders.
+const VALID_ROLES: ReadonlyArray<UserRole | "anonymous"> = [
+  "student",
+  "instructor",
+  "freelancer",
+  "organizer",
+  "admin",
+  "user",
+  "guest",
+  "anonymous", // reserved: dedicated page to be added later
+]
+
+// Fallback role when the backend doesn't return one
+const DEFAULT_ROLE = "anonymous" as const
 
 export function SignInForm({ dictionary }: { dictionary: DictionaryType }) {
   const params = useParams()
@@ -106,8 +124,30 @@ export function SignInForm({ dictionary }: { dictionary: DictionaryType }) {
         throw new Error(result.error)
       }
 
-      // Successful login
-      router.push(redirectPathname)
+      // Successful login — read the fresh session to obtain the user's role
+      const session = await getSession()
+      const rawRole = session?.user?.role
+
+      // Resolve the role:
+      //  • known valid role  → use it as-is
+      //  • "anonymous"       → pass through (dedicated page TBD)
+      //  • missing / unknown → fall back to DEFAULT_ROLE ("student")
+      const resolvedRole =
+        rawRole && VALID_ROLES.includes(rawRole) ? rawRole : DEFAULT_ROLE
+
+      // Strip any stale `role` param that may already exist in redirectPathname
+      // (e.g. captured by the middleware from a previous authenticated session)
+      // before appending the fresh one, to avoid duplicate ?role=…&role=… params.
+      const cleanUrl = new URL(redirectPathname, "http://x")
+      cleanUrl.searchParams.delete("role")
+      const cleanRedirect =
+        cleanUrl.pathname + (cleanUrl.search ? cleanUrl.search : "")
+
+      // Always append ?role=<resolvedRole> so the destination page can act on it
+      const sep = cleanRedirect.includes("?") ? "&" : "?"
+      const finalRedirect = `${cleanRedirect}${sep}role=${resolvedRole}`
+
+      router.push(ensureLocalizedPathname(finalRedirect, locale))
     } catch (error) {
       toast({
         variant: "destructive",

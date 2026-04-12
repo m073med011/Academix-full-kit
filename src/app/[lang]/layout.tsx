@@ -1,4 +1,4 @@
-import { Revalia, Amiri } from "next/font/google"
+import { Inter, Tajawal } from "next/font/google"
 import { getServerSession } from "next-auth"
 
 import { i18n } from "@/configs/i18n"
@@ -29,22 +29,21 @@ export const metadata: Metadata = {
 
 // Define fonts for the application
 // More info: https://nextjs.org/docs/app/building-your-application/optimizing/fonts
-const revaliaFont = Revalia({
+const interFont = Inter({
   subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-revalia",
+  variable: "--font-inter",
 })
-const amiriFont = Amiri({
+const tajawalFont = Tajawal({
   subsets: ["arabic", "latin"],
-  weight: ["400", "700"],
-  variable: "--font-amiri",
+  weight: ["300", "400", "500", "700", "800"],
+  variable: "--font-tajawal",
 })
 
 export default async function RootLayout(props: {
   children: ReactNode
   params: Promise<{ lang: string }>
 }) {
-  const params = await props.params as { lang: LocaleType }
+  const params = (await props.params) as { lang: LocaleType }
 
   const { children } = props
 
@@ -55,10 +54,10 @@ export default async function RootLayout(props: {
     <html lang={params.lang} dir={direction} suppressHydrationWarning>
       <body
         className={cn(
-          "[&:lang(en)]:font-revalia [&:lang(ar)]:font-amiri", // Set font styles based on the language
+          "[&:lang(en)]:font-inter [&:lang(ar)]:font-tajawal", // Set font styles based on the language
           "bg-background text-foreground antialiased overscroll-none", // Set background, text, , anti-aliasing styles, and overscroll behavior
-          revaliaFont.variable, // Include Revalia font variable
-          amiriFont.variable // Include Amiri font variable
+          interFont.variable, // Include Inter font variable
+          tajawalFont.variable // Include Tajawal font variable
         )}
       >
         <Providers locale={params.lang} direction={direction} session={session}>

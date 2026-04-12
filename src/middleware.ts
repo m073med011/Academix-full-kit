@@ -13,16 +13,29 @@ import {
 import { ensureRedirectPathname, ensureWithoutPrefix } from "@/lib/utils"
 
 function redirect(pathname: string, request: NextRequest) {
-  const { search, hash } = request.nextUrl
+  const { hash, search } = request.nextUrl
   let resolvedPathname = pathname
 
   if (isPathnameMissingLocale(pathname)) {
     const preferredLocale = getPreferredLocale(request)
     resolvedPathname = ensureLocalizedPathname(pathname, preferredLocale)
   }
-  if (search) {
-    resolvedPathname += search
-  }
+
+  // Safely merge search params
+  const [basePath, baseQuery] = resolvedPathname.split("?")
+  const searchParams = new URLSearchParams(baseQuery || "")
+  
+  // Add params from the current request (e.g., ?role=student when missing locale)
+  const incomingParams = new URLSearchParams(search)
+  incomingParams.forEach((value, key) => {
+    searchParams.set(key, value)
+  })
+
+  // We DO NOT strip 'role' here, because legitimate redirects (like locale redirects)
+  // need to preserve the role query parameter.
+  const cleanSearch = searchParams.toString()
+  resolvedPathname = basePath + (cleanSearch ? `?${cleanSearch}` : "")
+
   if (hash) {
     resolvedPathname += hash
   }
@@ -64,7 +77,9 @@ export async function middleware(request: NextRequest) {
 
     // Redirect authenticated users away from guest routes
     if (isAuthenticated && isGuest) {
-      return redirect(process.env.NEXT_PUBLIC_HOME_PATHNAME || "/", request)
+      const homePath = process.env.NEXT_PUBLIC_HOME_PATHNAME || "/"
+      const hasPrefix = homePath.includes("?") ? "&" : "?"
+      return redirect(`${homePath}${hasPrefix}role=${token.role || "anonymous"}`, request)
     }
 
     // Handle Guest Role Redirection
@@ -83,19 +98,37 @@ export async function middleware(request: NextRequest) {
       token.role !== "guest" &&
       pathnameWithoutLocale === "/role-selection"
     ) {
-      return redirect(process.env.NEXT_PUBLIC_HOME_PATHNAME || "/", request)
+      const homePath = process.env.NEXT_PUBLIC_HOME_PATHNAME || "/"
+      const hasPrefix = homePath.includes("?") ? "&" : "?"
+      return redirect(`${homePath}${hasPrefix}role=${token.role || "anonymous"}`, request)
     }
 
     // Redirect unauthenticated users from protected routes to sign-in
     if (!isAuthenticated && isProtected) {
       let redirectPathname = "/sign-in"
 
-      // Maintain the original path for redirection
+      // Maintain the original path and query for redirection
       if (pathnameWithoutLocale !== "") {
-        redirectPathname = ensureRedirectPathname(redirectPathname, pathname)
+        // We want to capture the query params so the user returns exactly where they were,
+        // but we explicitly strip 'role' so a stale role doesn't get baked into redirectTo.
+        const searchParams = new URLSearchParams(request.nextUrl.search)
+        searchParams.delete("role")
+        const cleanSearch = searchParams.toString()
+        const fullPath = pathname + (cleanSearch ? `?${cleanSearch}` : "")
+        
+        redirectPathname = ensureRedirectPathname(redirectPathname, fullPath)
       }
 
-      return redirect(redirectPathname, request)
+      // We use NextResponse.redirect directly here instead of the custom redirect() helper
+      // to avoid merging the current nextUrl.search onto the /sign-in URL, which would
+      // result in messy duplicate params like /sign-in?redirectTo=...&tab=...
+      const redirectUrl = new URL(
+        isPathnameMissingLocale(redirectPathname)
+          ? ensureLocalizedPathname(redirectPathname, getPreferredLocale(request))
+          : redirectPathname,
+        request.url
+      ).toString()
+      return NextResponse.redirect(redirectUrl)
     }
   }
 

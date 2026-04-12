@@ -6,11 +6,11 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-revalia:
-    var(--font-revalia), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+  --font-inter:
+    var(--font-inter), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-amiri:
-    var(--font-amiri), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+  --font-tajawal:
+    var(--font-tajawal), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
   --color-border: hsl(var(--border));
