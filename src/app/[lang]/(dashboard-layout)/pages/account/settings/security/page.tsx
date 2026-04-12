@@ -7,6 +7,8 @@ import { ChangePassword } from "./_components/change-password"
 import { RecentLogs } from "./_components/recent-logs"
 import { SecurityPreferences } from "./_components/security-preferences"
 
+import { DangerZone } from "./_components/danger-zone"
+
 // Define metadata for the page
 // More info: https://nextjs.org/docs/app/building-your-application/optimizing/metadata
 export const metadata: Metadata = {
@@ -20,6 +22,7 @@ export default function SecurityPage() {
       <SecurityPreferences user={userData} />
       <AccountRecoveryOptions user={userData} />
       <RecentLogs />
+      <DangerZone />
     </div>
   )
 }
