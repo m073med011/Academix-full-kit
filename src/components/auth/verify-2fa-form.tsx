@@ -1,13 +1,16 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { getSession } from "next-auth/react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
+import type { LocaleType } from "@/types"
 
+import { ensureLocalizedPathname } from "@/lib/i18n"
 import { toast } from "@/hooks/use-toast"
 import { Button, ButtonLoading } from "@/components/ui/button"
 import {
@@ -41,14 +44,14 @@ const Verify2FASchema = z.object({
 type Verify2FAFormType = z.infer<typeof Verify2FASchema>
 
 export function Verify2FAForm({ dictionary }: { dictionary: DictionaryType }) {
+  const params = useParams()
   const searchParams = useSearchParams()
   const router = useRouter()
 
   const emailParam = searchParams.get("email") || ""
-  const redirectPathname =
-    searchParams.get("redirectTo") ||
-    process.env.NEXT_PUBLIC_HOME_PATHNAME ||
-    "/"
+  const locale = params.lang as LocaleType
+  const requestedRedirect = searchParams.get("redirectTo")
+  const homePathname = process.env.NEXT_PUBLIC_HOME_PATHNAME || "/"
 
   const [isResending, setIsResending] = useState(false)
   const [countdown, setCountdown] = useState(0)
@@ -107,14 +110,31 @@ export function Verify2FAForm({ dictionary }: { dictionary: DictionaryType }) {
         }
       }
 
+      const session = await getSession()
+      const isAnonymous =
+        result.user?.role === "anonymous" || session?.user?.role === "anonymous"
+
+      let finalRedirect: string
+      if (isAnonymous) {
+        const roleSelectionPath = requestedRedirect
+          ? `/role-selection?redirectTo=${encodeURIComponent(requestedRedirect)}`
+          : "/role-selection"
+        finalRedirect = ensureLocalizedPathname(roleSelectionPath, locale)
+      } else {
+        finalRedirect = ensureLocalizedPathname(
+          requestedRedirect || homePathname,
+          locale
+        )
+      }
+
       toast({
         title: dictionary.auth.verify2FA.verificationSuccessful,
         description:
           result.message || dictionary.auth.verify2FA.verificationSuccess,
       })
 
-      // Redirect to the intended destination or home
-      router.push(redirectPathname)
+      // Use hard navigation so middleware sees the fresh JWT
+      window.location.href = finalRedirect
     } catch (error) {
       toast({
         variant: "destructive",

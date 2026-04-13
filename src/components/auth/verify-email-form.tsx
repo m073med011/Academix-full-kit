@@ -1,16 +1,18 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
+import { useParams, useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { signIn } from "next-auth/react"
+import { getSession, signIn } from "next-auth/react"
 import { useForm } from "react-hook-form"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
+import type { LocaleType } from "@/types"
 import type { VerifyEmailFormType } from "@/types"
 
 import { VerifyEmailSchema } from "@/schemas/verify-email-schema"
 
+import { ensureLocalizedPathname } from "@/lib/i18n"
 import { toast } from "@/hooks/use-toast"
 import { Button, ButtonLoading } from "@/components/ui/button"
 import {
@@ -40,13 +42,13 @@ export function VerifyEmailForm({
   onSuccess,
   dictionary,
 }: VerifyEmailFormProps) {
+  const params = useParams()
   const searchParams = useSearchParams()
 
   const emailParam = propEmail || searchParams.get("email") || ""
-  const redirectPathname =
-    process.env.NEXT_PUBLIC_HOME_PATHNAME ||
-    // searchParams.get("redirectTo") ||
-    "/"
+  const locale = params.lang as LocaleType
+  const requestedRedirect = searchParams.get("redirectTo")
+  const homePathname = process.env.NEXT_PUBLIC_HOME_PATHNAME || "/"
 
   const [isResending, setIsResending] = useState(false)
   const [countdown, setCountdown] = useState(0)
@@ -122,6 +124,24 @@ export function VerifyEmailForm({
         console.log("Re-authentication successful")
       }
 
+      const session = await getSession()
+      const isAnonymous =
+        result.user?.role === "anonymous" || session?.user?.role === "anonymous"
+
+      let finalRedirect: string
+      if (isAnonymous) {
+        // Anonymous users must pick a role first; pass along any original redirect
+        const roleSelectionPath = requestedRedirect
+          ? `/role-selection?redirectTo=${encodeURIComponent(requestedRedirect)}`
+          : "/role-selection"
+        finalRedirect = ensureLocalizedPathname(roleSelectionPath, locale)
+      } else {
+        finalRedirect = ensureLocalizedPathname(
+          requestedRedirect || homePathname,
+          locale
+        )
+      }
+
       toast({
         title: dictionary.auth.verifyEmail.emailVerified,
         description:
@@ -131,9 +151,8 @@ export function VerifyEmailForm({
       if (onSuccess) {
         onSuccess()
       } else {
-        // Redirect to the intended destination or home
-        // Force a hard navigation to ensure middleware sees the new session
-        window.location.href = redirectPathname
+        // Force a hard navigation so middleware sees the refreshed session.
+        window.location.href = finalRedirect
       }
     } catch (error) {
       toast({

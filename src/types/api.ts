@@ -15,6 +15,7 @@ export type UserRole =
   | "instructor"
   | "user"
   | "guest"
+  | "anonymous"
 
 export type CourseLevel = "beginner" | "intermediate" | "advanced" | "expert"
 

@@ -1,17 +1,24 @@
 "use client"
 
 import { useState } from "react"
+import { useParams, useSearchParams } from "next/navigation"
 import { signIn } from "next-auth/react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
+import type { LocaleType } from "@/types"
 
 import { oauthLinksData } from "@/data/oauth-links"
+import { ensureLocalizedPathname } from "@/lib/i18n"
 
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 
 export function OAuthLinks({ dictionary }: { dictionary: DictionaryType }) {
+  const params = useParams()
+  const searchParams = useSearchParams()
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+  const locale = params.lang as LocaleType
+  const redirectPathname = searchParams.get("redirectTo")
 
   const handleSignIn = async (provider: string) => {
     if (provider.toLowerCase() === "google") {
@@ -29,8 +36,15 @@ export function OAuthLinks({ dictionary }: { dictionary: DictionaryType }) {
     }
 
     try {
+      const callbackUrl = ensureLocalizedPathname(
+        redirectPathname
+          ? `/role-selection?redirectTo=${encodeURIComponent(redirectPathname)}`
+          : "/role-selection",
+        locale
+      )
+
       await signIn(provider.toLowerCase(), {
-        callbackUrl: "/en/role-selection",
+        callbackUrl,
       })
     } catch (_error) {
       setIsGoogleLoading(false)

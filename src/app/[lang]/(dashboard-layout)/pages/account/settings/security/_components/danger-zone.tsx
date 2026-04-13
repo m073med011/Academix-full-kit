@@ -2,8 +2,11 @@
 
 import { useState } from "react"
 import { signOut } from "next-auth/react"
+import { useParams } from "next/navigation"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
+
+import { ensureLocalizedPathname } from "@/lib/i18n"
 
 import {
   Card,
@@ -25,18 +28,20 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-import { userService } from "../../_services/user-service"
+import { userService } from "../../../_services/user-service"
 
 export function DangerZone() {
   const [isDisabling, setIsDisabling] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const params = useParams()
+  const locale = (params?.lang as string) || "en"
 
   const handleDisableAccount = async () => {
     try {
       setIsDisabling(true)
       await userService.disableAccount()
       toast.success("Account disabled successfully")
-      await signOut()
+      await signOut({ callbackUrl: ensureLocalizedPathname("/sign-in", locale) })
     } catch (error) {
       toast.error("Failed to disable account")
     } finally {
@@ -49,7 +54,7 @@ export function DangerZone() {
       setIsDeleting(true)
       await userService.deleteAccount()
       toast.success("Account deleted permanently")
-      await signOut()
+      await signOut({ callbackUrl: ensureLocalizedPathname("/sign-in", locale) })
     } catch (error) {
       toast.error("Failed to delete account")
     } finally {

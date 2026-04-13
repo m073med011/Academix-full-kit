@@ -25,14 +25,15 @@ function redirect(pathname: string, request: NextRequest) {
   const [basePath, baseQuery] = resolvedPathname.split("?")
   const searchParams = new URLSearchParams(baseQuery || "")
   
-  // Add params from the current request (e.g., ?role=student when missing locale)
+  // Add params from the current request but strip 'redirectTo'
+  // so it doesn't snowball across multiple redirects.
   const incomingParams = new URLSearchParams(search)
   incomingParams.forEach((value, key) => {
-    searchParams.set(key, value)
+    if (key !== "redirectTo") {
+      searchParams.set(key, value)
+    }
   })
 
-  // We DO NOT strip 'role' here, because legitimate redirects (like locale redirects)
-  // need to preserve the role query parameter.
   const cleanSearch = searchParams.toString()
   resolvedPathname = basePath + (cleanSearch ? `?${cleanSearch}` : "")
 
@@ -78,12 +79,11 @@ export async function middleware(request: NextRequest) {
     // Redirect authenticated users away from guest routes
     if (isAuthenticated && isGuest) {
       const homePath = process.env.NEXT_PUBLIC_HOME_PATHNAME || "/"
-      const hasPrefix = homePath.includes("?") ? "&" : "?"
-      return redirect(`${homePath}${hasPrefix}role=${token.role || "anonymous"}`, request)
+      return redirect(homePath, request)
     }
 
-    // Handle Guest Role Redirection
-    if (isAuthenticated && token.role === "guest") {
+    // Handle Anonymous Role Redirection (new OAuth users who haven't selected a role)
+    if (isAuthenticated && token.role === "anonymous") {
       // Allow access to role selection page
       if (pathnameWithoutLocale === "/role-selection") {
         return NextResponse.next()
@@ -95,12 +95,11 @@ export async function middleware(request: NextRequest) {
     // Prevent fully registered users from accessing role selection
     if (
       isAuthenticated &&
-      token.role !== "guest" &&
+      token.role !== "anonymous" &&
       pathnameWithoutLocale === "/role-selection"
     ) {
       const homePath = process.env.NEXT_PUBLIC_HOME_PATHNAME || "/"
-      const hasPrefix = homePath.includes("?") ? "&" : "?"
-      return redirect(`${homePath}${hasPrefix}role=${token.role || "anonymous"}`, request)
+      return redirect(homePath, request)
     }
 
     // Redirect unauthenticated users from protected routes to sign-in
@@ -109,12 +108,7 @@ export async function middleware(request: NextRequest) {
 
       // Maintain the original path and query for redirection
       if (pathnameWithoutLocale !== "") {
-        // We want to capture the query params so the user returns exactly where they were,
-        // but we explicitly strip 'role' so a stale role doesn't get baked into redirectTo.
-        const searchParams = new URLSearchParams(request.nextUrl.search)
-        searchParams.delete("role")
-        const cleanSearch = searchParams.toString()
-        const fullPath = pathname + (cleanSearch ? `?${cleanSearch}` : "")
+        const fullPath = pathname + (request.nextUrl.search || "")
         
         redirectPathname = ensureRedirectPathname(redirectPathname, fullPath)
       }

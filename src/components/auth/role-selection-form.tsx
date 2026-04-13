@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useSession } from "next-auth/react"
 import {
   Briefcase,
@@ -13,8 +13,10 @@ import {
 } from "lucide-react"
 
 import type { getDictionary } from "@/lib/get-dictionary"
+import type { LocaleType } from "@/types"
 
 import { ApiClientError } from "@/lib/api-client"
+import { ensureLocalizedPathname } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
 import { toast } from "@/hooks/use-toast"
@@ -42,10 +44,14 @@ interface RoleSelectionFormProps {
 }
 
 export function RoleSelectionForm({ dictionary }: RoleSelectionFormProps) {
+  const params = useParams()
+  const searchParams = useSearchParams()
   const router = useRouter()
   const { update } = useSession()
   const [selectedRole, setSelectedRole] = useState<RoleType>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const locale = params.lang as LocaleType
+  const redirectPathname = searchParams.get("redirectTo")
 
   const roles = [
     {
@@ -126,10 +132,23 @@ export function RoleSelectionForm({ dictionary }: RoleSelectionFormProps) {
           ),
       })
 
-      router.push(
+      // Build the destination path with the role query parameter
+      const homePath =
         process.env.NEXT_PUBLIC_HOME_PATHNAME || "/dashboards/analytics"
-      )
-      router.refresh()
+      // Use the redirect path if provided, but strip any query params
+      // (like stale redirectTo) and locale prefix to build cleanly
+      let basePath = redirectPathname
+        ? redirectPathname.split("?")[0]
+        : homePath
+      // Strip locale prefix if present (e.g. /en/dashboards → /dashboards)
+      const localePrefix = `/${locale}`
+      if (basePath.startsWith(localePrefix)) {
+        basePath = basePath.slice(localePrefix.length) || "/"
+      }
+      const destination = basePath
+
+      // Use hard navigation so middleware sees the fresh JWT with the updated role
+      window.location.href = ensureLocalizedPathname(destination, locale)
     } catch (error) {
       console.error("Role selection error:", error)
 
