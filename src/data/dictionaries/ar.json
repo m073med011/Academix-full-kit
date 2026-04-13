@@ -340,6 +340,20 @@
       "uppercase": "حرف كبير واحد على الأقل",
       "number": "رقم واحد على الأقل",
       "special": "حرف خاص واحد على الأقل"
+    },
+    "reactivateAccount": {
+      "title": "إعادة تفعيل الحساب",
+      "description": "تم تعطيل حسابك. أدخل بيانات الاعتماد الخاصة بك لإعادة تفعيله.",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "name@example.com",
+      "password": "كلمة المرور",
+      "button": "إعادة تفعيل الحساب",
+      "reactivating": "جاري إعادة التفعيل...",
+      "backToSignIn": "العودة إلى تسجيل الدخول",
+      "successTitle": "تم إعادة تفعيل الحساب!",
+      "successDescription": "تم إعادة تفعيل حسابك بنجاح. جاري إعادة التوجيه...",
+      "failedTitle": "فشل إعادة التفعيل",
+      "alreadyActive": "هذا الحساب نشط بالفعل."
     }
   },
   "label": {

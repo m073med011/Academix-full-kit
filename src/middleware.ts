@@ -76,6 +76,15 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next()
     }
 
+    // Handle Disabled Account — redirect to reactivate page
+    if (isAuthenticated && (token as any).accountDisabled) {
+      if (pathnameWithoutLocale !== "/reactivate-account") {
+        const email = token.email ? `?email=${encodeURIComponent(token.email)}` : ""
+        return redirect(`/reactivate-account${email}`, request)
+      }
+      return NextResponse.next()
+    }
+
     // Redirect authenticated users away from guest routes
     if (isAuthenticated && isGuest) {
       const homePath = process.env.NEXT_PUBLIC_HOME_PATHNAME || "/"

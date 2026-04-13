@@ -342,6 +342,20 @@
       "uppercase": "At least one uppercase letter",
       "number": "At least one number",
       "special": "At least one special character"
+    },
+    "reactivateAccount": {
+      "title": "Reactivate Account",
+      "description": "Your account has been disabled. Enter your credentials to reactivate it.",
+      "email": "Email",
+      "emailPlaceholder": "name@example.com",
+      "password": "Password",
+      "button": "Reactivate Account",
+      "reactivating": "Reactivating...",
+      "backToSignIn": "Back to Sign In",
+      "successTitle": "Account Reactivated!",
+      "successDescription": "Your account has been successfully reactivated. Redirecting...",
+      "failedTitle": "Reactivation Failed",
+      "alreadyActive": "This account is already active."
     }
   },
   "label": {

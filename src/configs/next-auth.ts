@@ -16,6 +16,7 @@ declare module "next-auth" {
       role: UserRole
       requires2FA?: boolean
       requiresEmailVerification?: boolean
+      accountDisabled?: boolean
     }
     accessToken: string
     refreshToken: string
@@ -52,6 +53,7 @@ declare module "next-auth/jwt" {
     error?: string
     requires2FA?: boolean
     requiresEmailVerification?: boolean
+    accountDisabled?: boolean
   }
 }
 
@@ -193,6 +195,12 @@ export const authOptions: NextAuthOptions = {
             )
           }
 
+          // Check if account is disabled
+          if (data.accountDisabled) {
+            console.log("Account disabled for:", data.user.email)
+            throw new Error("ACCOUNT_DISABLED:" + data.user.email)
+          }
+
           // Check if email verification is required
           if (data.requiresEmailVerification) {
             console.log("Email verification required for:", data.user.email)
@@ -324,6 +332,22 @@ export const authOptions: NextAuthOptions = {
               throw new Error(data.message || "Google authentication failed")
             }
 
+            // Handle disabled account for OAuth
+            if (data.accountDisabled) {
+              return {
+                ...token,
+                id: data.user.id,
+                email: data.user.email,
+                name: data.user.name,
+                status: "ACCOUNT_DISABLED",
+                role: data.user.role,
+                accountDisabled: true,
+                accessToken: "",
+                refreshToken: "",
+                accessTokenExpires: 0,
+              }
+            }
+
             // Handle 2FA requirement for OAuth
             if (data.requires2FA) {
               return {
@@ -432,6 +456,7 @@ export const authOptions: NextAuthOptions = {
           role: token.role,
           requires2FA: token.requires2FA,
           requiresEmailVerification: token.requiresEmailVerification,
+          accountDisabled: (token as any).accountDisabled,
         }
         session.accessToken = token.accessToken
         session.refreshToken = token.refreshToken
