@@ -56,6 +56,7 @@ export type OTPPurpose =
   | "EMAIL_VERIFICATION"
   | "PASSWORD_RESET"
   | "LOGIN_VERIFICATION"
+  | "ACCOUNT_REACTIVATION"
 
 export type DiscountType = "PERCENTAGE" | "FIXED"
 

@@ -20,7 +20,6 @@ export default function SecurityPage() {
       <ChangePassword />
       <SecurityPreferences user={userData} />
       <AccountRecoveryOptions user={userData} />
-      <RecentLogs />
       <DangerZone />
     </div>
   )

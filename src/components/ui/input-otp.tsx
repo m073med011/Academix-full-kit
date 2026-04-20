@@ -1,10 +1,10 @@
 "use client"
 
-import { useContext } from "react"
+import { forwardRef, useContext } from "react"
 import { OTPInput, OTPInputContext } from "input-otp"
 import { Minus } from "lucide-react"
 
-import type { ComponentProps } from "react"
+import type { ComponentProps, ElementRef } from "react"
 
 import { cn } from "@/lib/utils"
 
@@ -12,23 +12,60 @@ type InputOTPProps = ComponentProps<typeof OTPInput> & {
   containerClassName?: string
 }
 
-export function InputOTP({
-  className,
-  containerClassName,
-  ...props
-}: InputOTPProps) {
-  return (
-    <OTPInput
-      data-slot="input-otp"
-      containerClassName={cn(
-        "flex items-center gap-2 has-disabled:opacity-50",
-        containerClassName
-      )}
-      className={cn("disabled:cursor-not-allowed", className)}
-      {...props}
-    />
-  )
+const ARABIC_INDIC_ZERO_CODE = 0x0660
+const EXTENDED_ARABIC_INDIC_ZERO_CODE = 0x06f0
+
+export const OTP_DIGIT_PATTERN = "^[0-9\\u0660-\\u0669\\u06F0-\\u06F9]+$"
+
+export function normalizeOtpValue(value: string) {
+  return value
+    .replace(/[\u0660-\u0669]/g, (char) =>
+      String(char.charCodeAt(0) - ARABIC_INDIC_ZERO_CODE)
+    )
+    .replace(/[\u06F0-\u06F9]/g, (char) =>
+      String(char.charCodeAt(0) - EXTENDED_ARABIC_INDIC_ZERO_CODE)
+    )
 }
+
+export const InputOTP = forwardRef<ElementRef<typeof OTPInput>, InputOTPProps>(
+  function InputOTP(
+    {
+      className,
+      containerClassName,
+      defaultValue,
+      onChange,
+      pasteTransformer,
+      value,
+      ...props
+    },
+    ref
+  ) {
+    return (
+      <OTPInput
+        ref={ref}
+        data-slot="input-otp"
+        containerClassName={cn(
+          "flex items-center gap-2 has-disabled:opacity-50",
+          containerClassName
+        )}
+        className={cn("disabled:cursor-not-allowed", className)}
+        defaultValue={
+          typeof defaultValue === "string"
+            ? normalizeOtpValue(defaultValue)
+            : defaultValue
+        }
+        value={typeof value === "string" ? normalizeOtpValue(value) : value}
+        onChange={(nextValue) => onChange?.(normalizeOtpValue(nextValue))}
+        pasteTransformer={(pastedValue) =>
+          normalizeOtpValue(
+            pasteTransformer ? pasteTransformer(pastedValue) : pastedValue
+          )
+        }
+        {...props}
+      />
+    )
+  }
+)
 
 export function InputOTPGroup({ className, ...props }: ComponentProps<"div">) {
   return (

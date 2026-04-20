@@ -79,8 +79,11 @@ export async function middleware(request: NextRequest) {
     // Handle Disabled Account — redirect to reactivate page
     if (isAuthenticated && (token as any).accountDisabled) {
       if (pathnameWithoutLocale !== "/reactivate-account") {
-        const email = token.email ? `?email=${encodeURIComponent(token.email)}` : ""
-        return redirect(`/reactivate-account${email}`, request)
+        const params = new URLSearchParams()
+        if (token.email) params.set("email", token.email)
+        params.set("isOAuthUser", "true")
+        const query = params.toString() ? `?${params.toString()}` : ""
+        return redirect(`/reactivate-account${query}`, request)
       }
       return NextResponse.next()
     }

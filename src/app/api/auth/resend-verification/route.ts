@@ -12,6 +12,7 @@ const ResendVerificationSchema = z.object({
     "EMAIL_VERIFICATION",
     "PASSWORD_RESET",
     "LOGIN_VERIFICATION",
+    "ACCOUNT_REACTIVATION",
   ]),
 })
 
@@ -20,6 +21,7 @@ const purposeMap: Record<string, string> = {
   EMAIL_VERIFICATION: "email_verification",
   PASSWORD_RESET: "password_reset",
   LOGIN_VERIFICATION: "login_verification",
+  ACCOUNT_REACTIVATION: "account_reactivation",
 }
 
 export async function POST(req: Request) {
